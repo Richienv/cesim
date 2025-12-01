@@ -1,7 +1,8 @@
 'use client';
 
 import React from 'react';
-import { LayoutDashboard, PieChart, Settings, FileText, LogOut } from 'lucide-react';
+import { LayoutDashboard, PieChart, Settings, FileText, LogOut, Activity } from 'lucide-react';
+import Link from 'next/link';
 import { clsx } from 'clsx';
 
 export function Sidebar() {
@@ -17,10 +18,8 @@ export function Sidebar() {
             </div>
 
             <nav className="flex-1 p-4 space-y-1">
-                <NavItem icon={<LayoutDashboard size={20} />} label="Dashboard" active />
-                <NavItem icon={<FileText size={20} />} label="Reports" />
-                <NavItem icon={<PieChart size={20} />} label="Analytics" />
-                <NavItem icon={<Settings size={20} />} label="Settings" />
+                <NavItem icon={<LayoutDashboard size={20} />} label="Dashboard" active href="/" />
+                <NavItem icon={<Activity size={20} />} label="Simulation" href="/simulation" />
             </nav>
 
             <div className="p-4 border-t border-gray-100">
@@ -33,7 +32,24 @@ export function Sidebar() {
     );
 }
 
-function NavItem({ icon, label, active }: { icon: React.ReactNode, label: string, active?: boolean }) {
+function NavItem({ icon, label, active, href }: { icon: React.ReactNode, label: string, active?: boolean, href?: string }) {
+    if (href) {
+        return (
+            <Link
+                href={href}
+                className={clsx(
+                    "flex items-center gap-3 w-full px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200",
+                    active
+                        ? "bg-red-50 text-red-600 shadow-sm"
+                        : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"
+                )}
+            >
+                {icon}
+                {label}
+            </Link>
+        );
+    }
+
     return (
         <button
             className={clsx(
