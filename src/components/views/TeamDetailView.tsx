@@ -359,59 +359,85 @@ export function TeamDetailView({ teams, initialTeam }: TeamDetailViewProps) {
                 </div>
             </div>
 
-            {/* SECTION 2: SUPPLY CHAIN & LOGISTICS (NEW) */}
+            {/* SECTION 2: SUPPLY CHAIN FLOW (Redesigned) */}
             <div className="pt-8 border-t border-gray-100">
-                <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-                    <Truck className="w-5 h-5 text-orange-500" />
-                    Supply Chain & Logistics <span className="text-gray-400 font-normal text-sm">(Flow of Goods)</span>
+                <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
+                    <Truck className="w-5 h-5 text-indigo-600" />
+                    Supply Chain Flow <span className="text-gray-400 font-normal text-sm">(Production &rarr; Logistics &rarr; Sales)</span>
                 </h3>
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
                     {['USA', 'Asia', 'Europe'].map(regionName => {
                         const regionKey = regionName.toLowerCase() as 'usa' | 'asia' | 'europe';
                         const logistics = selectedTeam.logistics[regionKey];
                         const techs = ['Tech 1', 'Tech 2', 'Tech 3', 'Tech 4'];
 
                         return (
-                            <div key={regionName} className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                                <h4 className="font-semibold text-gray-900 mb-4 border-b border-gray-50 pb-2">{regionName} Logistics</h4>
-                                <div className="space-y-6">
+                            <div key={regionName} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden flex flex-col h-full">
+                                <div className="bg-gray-50 px-6 py-3 border-b border-gray-200 flex justify-between items-center">
+                                    <h4 className="font-bold text-gray-900">{regionName}</h4>
+                                    <div className="flex gap-2 text-[10px] font-medium uppercase text-gray-500">
+                                        <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-blue-500"></div>In-House</div>
+                                        <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-cyan-400"></div>Contract</div>
+                                        <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-purple-400"></div>Import</div>
+                                    </div>
+                                </div>
+
+                                <div className="p-6 space-y-8 flex-1">
                                     {techs.map(tech => {
                                         const lData = logistics?.[tech];
                                         if (!lData || (lData.total === 0 && lData.sales === 0)) return null;
 
+                                        // Calculate percentages for visualization
+                                        const totalSource = lData.inHouse + lData.contract + lData.imported;
+                                        // Use the larger of Source or Demand to scale the bars, so they are relative to each other
+                                        const totalDemand = Math.abs(lData.sales) + lData.exported + lData.productionBuffer;
+                                        const maxVal = Math.max(totalSource, totalDemand, 1); // Avoid div by 0
+
                                         return (
-                                            <div key={tech} className="text-sm">
-                                                <div className="flex justify-between items-center mb-1">
-                                                    <span className="font-medium text-gray-700">{tech}</span>
-                                                    <span className="text-xs text-gray-500">Total Supply: {lData.total.toFixed(0)}k</span>
+                                            <div key={tech} className="relative">
+                                                <div className="flex justify-between items-end mb-2">
+                                                    <span className="font-bold text-gray-800 text-sm">{tech}</span>
+                                                    {lData.unsatisfiedDemand > 0 && (
+                                                        <span className="text-xs font-bold text-red-500 flex items-center gap-1 bg-red-50 px-2 py-0.5 rounded-full">
+                                                            <AlertCircle className="w-3 h-3" />
+                                                            Missed: {lData.unsatisfiedDemand.toFixed(0)}k
+                                                        </span>
+                                                    )}
                                                 </div>
 
-                                                {/* Supply Bar */}
-                                                <div className="flex w-full h-2 rounded-full overflow-hidden mb-1">
-                                                    <div className="bg-blue-500 h-full" style={{ width: `${(lData.inHouse / lData.total) * 100}%` }} title="In-House" />
-                                                    <div className="bg-cyan-400 h-full" style={{ width: `${(lData.contract / lData.total) * 100}%` }} title="Contract" />
-                                                    <div className="bg-purple-400 h-full" style={{ width: `${(lData.imported / lData.total) * 100}%` }} title="Imported" />
-                                                </div>
-
-                                                {/* Demand Bar */}
-                                                <div className="flex w-full h-2 rounded-full overflow-hidden">
-                                                    <div className="bg-green-500 h-full" style={{ width: `${(Math.abs(lData.sales) / lData.total) * 100}%` }} title="Sales" />
-                                                    <div className="bg-orange-400 h-full" style={{ width: `${(lData.exported / lData.total) * 100}%` }} title="Exported" />
-                                                    <div className="bg-gray-300 h-full" style={{ width: `${(lData.productionBuffer / lData.total) * 100}%` }} title="Buffer" />
-                                                </div>
-
-                                                <div className="flex justify-between text-xs text-gray-400 mt-1">
-                                                    <span>Supply (In/Out/Imp)</span>
-                                                    <span>Demand (Sale/Exp/Buf)</span>
-                                                </div>
-
-                                                {lData.unsatisfiedDemand > 0 && (
-                                                    <div className="mt-1 text-xs text-red-500 flex items-center gap-1">
-                                                        <AlertCircle className="w-3 h-3" />
-                                                        Unsatisfied Demand: {lData.unsatisfiedDemand.toFixed(0)}k
+                                                <div className="flex items-center gap-4">
+                                                    {/* SOURCE STACK (Left) */}
+                                                    <div className="flex-1 flex flex-col gap-1">
+                                                        <div className="flex h-6 rounded-md overflow-hidden bg-gray-100 relative">
+                                                            {lData.inHouse > 0 && <div style={{ width: `${(lData.inHouse / maxVal) * 100}%` }} className="bg-blue-500 h-full transition-all hover:bg-blue-600" title={`In-House: ${lData.inHouse.toFixed(0)}k`} />}
+                                                            {lData.contract > 0 && <div style={{ width: `${(lData.contract / maxVal) * 100}%` }} className="bg-cyan-400 h-full transition-all hover:bg-cyan-500" title={`Contract: ${lData.contract.toFixed(0)}k`} />}
+                                                            {lData.imported > 0 && <div style={{ width: `${(lData.imported / maxVal) * 100}%` }} className="bg-purple-400 h-full transition-all hover:bg-purple-500" title={`Imported: ${lData.imported.toFixed(0)}k`} />}
+                                                        </div>
+                                                        <div className="flex justify-between text-[10px] text-gray-400 px-0.5">
+                                                            <span>Source</span>
+                                                            <span>{totalSource.toFixed(0)}k</span>
+                                                        </div>
                                                     </div>
-                                                )}
+
+                                                    {/* FLOW ARROW (Middle) */}
+                                                    <div className="text-gray-300">
+                                                        <ArrowRight className="w-5 h-5" />
+                                                    </div>
+
+                                                    {/* USAGE STACK (Right) */}
+                                                    <div className="flex-1 flex flex-col gap-1">
+                                                        <div className="flex h-6 rounded-md overflow-hidden bg-gray-100 relative">
+                                                            {Math.abs(lData.sales) > 0 && <div style={{ width: `${(Math.abs(lData.sales) / maxVal) * 100}%` }} className="bg-green-500 h-full transition-all hover:bg-green-600" title={`Sales: ${Math.abs(lData.sales).toFixed(0)}k`} />}
+                                                            {lData.exported > 0 && <div style={{ width: `${(lData.exported / maxVal) * 100}%` }} className="bg-orange-400 h-full transition-all hover:bg-orange-500" title={`Exported: ${lData.exported.toFixed(0)}k`} />}
+                                                            {lData.productionBuffer > 0 && <div style={{ width: `${(lData.productionBuffer / maxVal) * 100}%` }} className="bg-gray-400 h-full transition-all hover:bg-gray-500" title={`Buffer: ${lData.productionBuffer.toFixed(0)}k`} />}
+                                                        </div>
+                                                        <div className="flex justify-between text-[10px] text-gray-400 px-0.5">
+                                                            <span>Usage</span>
+                                                            <span>{totalDemand.toFixed(0)}k</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         );
                                     })}
@@ -419,32 +445,6 @@ export function TeamDetailView({ teams, initialTeam }: TeamDetailViewProps) {
                             </div>
                         );
                     })}
-                </div>
-            </div>
-
-            {/* SECTION 3: MANUFACTURING DETAILS (NEW) */}
-            <div className="pt-8 border-t border-gray-100">
-                <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-                    <Factory className="w-5 h-5 text-gray-600" />
-                    Manufacturing Details <span className="text-gray-400 font-normal text-sm">(In-House vs Contract)</span>
-                </h3>
-
-                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                    <div className="h-[300px] w-full">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={manufacturingData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                                <XAxis dataKey="name" />
-                                <YAxis />
-                                <Tooltip />
-                                <Legend />
-                                <Bar dataKey="USA In-House" stackId="usa" fill="#3b82f6" />
-                                <Bar dataKey="USA Contract" stackId="usa" fill="#93c5fd" />
-                                <Bar dataKey="Asia In-House" stackId="asia" fill="#ef4444" />
-                                <Bar dataKey="Asia Contract" stackId="asia" fill="#fca5a5" />
-                            </BarChart>
-                        </ResponsiveContainer>
-                    </div>
                 </div>
             </div>
 
