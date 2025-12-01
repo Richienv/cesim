@@ -40,8 +40,8 @@ export const parseCesimData = (fileBuffer: ArrayBuffer): RoundData => {
         },
         market: { global: {}, usa: {}, asia: {}, europe: {} },
         manufacturing: {
-            usa: { inHouse: {}, contract: {} },
-            asia: { inHouse: {}, contract: {} }
+            usa: { inHouse: {}, contract: {}, capacityUsage: {} },
+            asia: { inHouse: {}, contract: {}, capacityUsage: {} }
         },
         logistics: { usa: {}, asia: {}, europe: {} },
         costs: { usa: {}, asia: {}, europe: {} },
@@ -236,6 +236,7 @@ export const parseCesimData = (fileBuffer: ArrayBuffer): RoundData => {
 
             if (label.includes("In-house manufacturing")) { currentSection = "inHouse"; continue; }
             if (label.includes("Contract manufacturing")) { currentSection = "contract"; continue; }
+            if (label.includes("Capacity usage")) { currentSection = "capacityUsage"; continue; }
             if (label === "USA" || label === "Asia") { currentRegion = label.toLowerCase(); continue; }
 
             if (label.startsWith("Tech")) {
@@ -247,6 +248,12 @@ export const parseCesimData = (fileBuffer: ArrayBuffer): RoundData => {
                             team.manufacturing[currentRegion as "usa" | "asia"].inHouse[label] = val;
                         } else if (currentSection === "contract" && (currentRegion === "usa" || currentRegion === "asia")) {
                             team.manufacturing[currentRegion as "usa" | "asia"].contract[label] = val;
+                        } else if (currentSection === "capacityUsage" && (currentRegion === "usa" || currentRegion === "asia")) {
+                            // Ensure capacityUsage object exists (it might not be initialized in the map above if we didn't update the initial state)
+                            if (!team.manufacturing[currentRegion as "usa" | "asia"].capacityUsage) {
+                                team.manufacturing[currentRegion as "usa" | "asia"].capacityUsage = {};
+                            }
+                            team.manufacturing[currentRegion as "usa" | "asia"].capacityUsage[label] = val;
                         }
                     }
                 });
@@ -271,7 +278,10 @@ export const parseCesimData = (fileBuffer: ArrayBuffer): RoundData => {
                 "Contract manufacturing": "contract",
                 "Imported from": "imported",
                 "Total products": "total",
-                "Sales in": "sales"
+                "Sales in": "sales",
+                "Exported to": "exported",
+                "Production buffer": "productionBuffer",
+                "Unsatisfied demand": "unsatisfiedDemand"
             };
 
             let key: string | undefined;
@@ -286,7 +296,7 @@ export const parseCesimData = (fileBuffer: ArrayBuffer): RoundData => {
                     if (typeof val === 'number' && !isNaN(val)) {
                         const regionLogistics = team.logistics[currentRegion as "usa" | "asia" | "europe"];
                         if (!regionLogistics[currentTech]) {
-                            regionLogistics[currentTech] = { inHouse: 0, contract: 0, imported: 0, total: 0, sales: 0 };
+                            regionLogistics[currentTech] = { inHouse: 0, contract: 0, imported: 0, total: 0, sales: 0, exported: 0, productionBuffer: 0, unsatisfiedDemand: 0 };
                         }
                         (regionLogistics[currentTech] as any)[key!] = val;
                     }

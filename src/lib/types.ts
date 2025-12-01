@@ -9,6 +9,7 @@ export interface TechMetrics {
 export interface RegionManufacturing {
     inHouse: TechMetrics;
     contract: TechMetrics;
+    capacityUsage: TechMetrics;
 }
 
 export interface LogisticsData {
@@ -18,6 +19,9 @@ export interface LogisticsData {
         imported: number;
         total: number;
         sales: number;
+        exported: number;
+        productionBuffer: number;
+        unsatisfiedDemand: number;
     };
 }
 
