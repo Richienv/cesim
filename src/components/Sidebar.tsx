@@ -3,9 +3,12 @@
 import React from 'react';
 import { LayoutDashboard, PieChart, Settings, FileText, LogOut, Activity } from 'lucide-react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { clsx } from 'clsx';
 
 export function Sidebar() {
+    const pathname = usePathname();
+
     return (
         <aside className="fixed left-0 top-0 h-full w-64 bg-white border-r border-gray-200 hidden md:flex flex-col z-50">
             <div className="p-6 border-b border-gray-100">
@@ -18,8 +21,24 @@ export function Sidebar() {
             </div>
 
             <nav className="flex-1 p-4 space-y-1">
-                <NavItem icon={<LayoutDashboard size={20} />} label="Dashboard" active href="/" />
-                <NavItem icon={<Activity size={20} />} label="Simulation" href="/simulation" />
+                <NavItem
+                    icon={<LayoutDashboard size={20} />}
+                    label="Dashboard"
+                    active={pathname === '/'}
+                    href="/"
+                />
+                <NavItem
+                    icon={<FileText size={20} />}
+                    label="Case Descriptive"
+                    active={pathname === '/case-description'}
+                    href="/case-description"
+                />
+                <NavItem
+                    icon={<Activity size={20} />}
+                    label="Simulation"
+                    active={pathname?.startsWith('/simulation') || false}
+                    href="/simulation"
+                />
             </nav>
 
             <div className="p-4 border-t border-gray-100">

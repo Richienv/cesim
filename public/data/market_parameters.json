@@ -5,7 +5,7 @@
     },
     "market_prospects": {
         "demand_forecast": {
-            "summary": "Global economy recovering. Strong growth expected.",
+            "summary": "The global economy has gradually recovered, and consumer confidence has rebounded. Analysts predict strong growth in three markets this round: Asia is expected to grow by 30-35%, Europe by 10-15%, and the US by 20-25%. The AI-embedded features of next-generation smartphones (Tech2) are driving young consumers wild. Those who have tested the technology are very satisfied with how AI algorithms enhance image quality, with media outlets calling it the starting point of a revolution in mobile photography.",
             "growth_projections": {
                 "asia": "30-35%",
                 "europe": "10-15%",
@@ -17,72 +17,277 @@
         },
         "cost_outlook": {
             "summary": "Supply chains recovered but costs remain high.",
-            "specifics": "Tariffs on US exports to Asia increased from $7 to $12 per unit due to US-China relations."
+            "specifics": "While supply chains have recovered, costs remain high. Affected by US-China relations, tariffs on US exports to Asia have increased from $7 per mobile phone last year to $12 this year."
         },
         "financial_outlook": {
-            "summary": "EU corporate tax set at 31%. Euro expected to fall.",
+            "summary": "The EU has reached an agreement on corporate income tax, which will remain at 31% across EU member states. Economists believe that Europe's high tax policy on businesses will exacerbate its increasingly precarious position in the global market. The euro is expected to fall.",
             "implications": "High tax policy in Europe may affect competitiveness."
         }
     },
-    "parameters": {
-        "shipping_costs_usd": {
-            "usa_to_asia": 15.0,
-            "usa_to_europe": 9.0,
-            "asia_to_usa": 15.0,
-            "asia_to_europe": 5.0
-        },
-        "tariffs_usd": {
-            "usa_to_asia": 12.0,
-            "usa_to_europe": 3.0,
-            "asia_to_usa": 7.0,
-            "asia_to_europe": 3.0
-        },
-        "management_costs_usd": {
-            "fixed_per_round": {
-                "usa": 35000,
-                "asia": 10000,
-                "europe": 10000
+    "detailed_parameters": {
+        "shipping_costs": [
+            {
+                "route": "United States → Asia",
+                "this_round": 15.0,
+                "last_round": 15.0
             },
-            "basic_per_factory": {
-                "usa": 6000,
-                "asia": 6000
+            {
+                "route": "USA → Europe",
+                "this_round": 9.0,
+                "last_round": 9.0
+            },
+            {
+                "route": "Asia → United States",
+                "this_round": 15.0,
+                "last_round": 15.0
+            },
+            {
+                "route": "Asia → Europe",
+                "this_round": 5.0,
+                "last_round": 5.0
             }
-        },
+        ],
+        "tariffs": [
+            {
+                "route": "United States → Asia",
+                "this_round": 12.0,
+                "last_round": 7.0
+            },
+            {
+                "route": "USA → Europe",
+                "this_round": 3.0,
+                "last_round": 3.0
+            },
+            {
+                "route": "Asia → United States",
+                "this_round": 7.0,
+                "last_round": 7.0
+            },
+            {
+                "route": "Asia → Europe",
+                "this_round": 3.0,
+                "last_round": 3.0
+            }
+        ],
+        "tariffs_percentage": [
+            {
+                "route": "United States → Asia",
+                "this_round": 0.0,
+                "last_round": 0.0
+            },
+            {
+                "route": "USA → Europe",
+                "this_round": 0.0,
+                "last_round": 0.0
+            },
+            {
+                "route": "Asia → United States",
+                "this_round": 0.0,
+                "last_round": 0.0
+            },
+            {
+                "route": "Asia → Europe",
+                "this_round": 0.0,
+                "last_round": 0.0
+            }
+        ],
+        "fixed_management_costs": [
+            {
+                "region": "USA",
+                "this_round": 35000,
+                "last_round": 35000
+            },
+            {
+                "region": "Asia",
+                "this_round": 10000,
+                "last_round": 10000
+            },
+            {
+                "region": "Europe",
+                "this_round": 10000,
+                "last_round": 10000
+            }
+        ],
+        "basic_management_cost_per_factory": [
+            {
+                "region": "USA",
+                "this_round": 6000,
+                "last_round": 6000
+            },
+            {
+                "region": "Asia",
+                "this_round": 6000,
+                "last_round": 6000
+            }
+        ],
+        "variable_management_costs": [
+            {
+                "region": "USA",
+                "this_round": 0.0,
+                "last_round": 0.0
+            },
+            {
+                "region": "Asia",
+                "this_round": 0.0,
+                "last_round": 0.0
+            },
+            {
+                "region": "Europe",
+                "this_round": 0.0,
+                "last_round": 0.0
+            }
+        ],
+        "exchange_rates": [
+            {
+                "pair": "1 RMB =",
+                "this_round": 0.1235,
+                "last_round": 0.1235
+            },
+            {
+                "pair": "1 EUR =",
+                "this_round": 1.3968,
+                "last_round": 1.4400
+            }
+        ],
         "finance": {
-            "interest_rates": {
-                "long_term_debt": 4.0,
-                "short_term_debt": {
-                    "usa": 5.0,
-                    "asia": 5.5,
-                    "europe": 4.5
+            "par_value": {
+                "this_round": 10,
+                "last_round": 10
+            },
+            "min_cash": [
+                {
+                    "region": "Minimum cash in the US, 1,000 USD",
+                    "this_round": 2000,
+                    "last_round": 2000
                 },
-                "cash_interest": {
-                    "usa": 2.5,
-                    "asia": 4.5,
-                    "europe": 0.5
+                {
+                    "region": "Minimum cash in Asia, 1,000 USD",
+                    "this_round": 2000,
+                    "last_round": 2000
+                },
+                {
+                    "region": "Minimum cash in Europe, 1,000 USD",
+                    "this_round": 2000,
+                    "last_round": 2000
                 }
+            ],
+            "interest_rates": {
+                "long_term": {
+                    "region": "Long-term loan interest rates, United States",
+                    "this_round": 4.0,
+                    "last_round": 4.0
+                },
+                "short_term": [
+                    {
+                        "region": "USA",
+                        "this_round": 5.0,
+                        "last_round": 5.0
+                    },
+                    {
+                        "region": "Asia",
+                        "this_round": 5.5,
+                        "last_round": 5.5
+                    },
+                    {
+                        "region": "Europe",
+                        "this_round": 4.5,
+                        "last_round": 4.5
+                    }
+                ],
+                "cash": [
+                    {
+                        "region": "USA",
+                        "this_round": 2.5,
+                        "last_round": 2.5
+                    },
+                    {
+                        "region": "Asia",
+                        "this_round": 4.5,
+                        "last_round": 4.5
+                    },
+                    {
+                        "region": "Europe",
+                        "this_round": 0.5,
+                        "last_round": 0.5
+                    }
+                ]
             },
-            "corporate_tax_rate": {
-                "usa": 35.0,
-                "asia": 15.0,
-                "europe": 31.0
+            "cost_of_capital": {
+                "this_round": 9.0,
+                "last_round": 9.0
             },
-            "capital_opportunity_cost": 9.0,
-            "minimum_cash_usd": 2000
+            "corporate_tax": [
+                {
+                    "region": "USA",
+                    "this_round": 35.0,
+                    "last_round": 35.0
+                },
+                {
+                    "region": "Asia",
+                    "this_round": 15.0,
+                    "last_round": 15.0
+                },
+                {
+                    "region": "Europe",
+                    "this_round": 31.0,
+                    "last_round": 30.0
+                }
+            ]
         },
         "production": {
-            "investment_cost_k_usd": {
-                "usa": 140000,
-                "asia": 160000
-            },
-            "plant_delay_rounds": 2,
-            "payment_delay_rounds": 1,
-            "depreciation_rate": 15.0,
-            "cost_per_feature_usd": 6.0
-        },
-        "exchange_rates": {
-            "rmb_to_usd": 0.1235,
-            "eur_to_usd": 1.3968
+            "plant_delay": [
+                {
+                    "metric": "New production capacity after investment",
+                    "this_round": 2,
+                    "last_round": 2
+                },
+                {
+                    "metric": "Payment after investment",
+                    "this_round": 1,
+                    "last_round": 1
+                }
+            ],
+            "investment_cost": [
+                {
+                    "region": "USA",
+                    "this_round": 140000,
+                    "last_round": 140000
+                },
+                {
+                    "region": "Asia",
+                    "this_round": 160000,
+                    "last_round": 160000
+                }
+            ],
+            "depreciation": [
+                {
+                    "region": "USA",
+                    "this_round": 15.0,
+                    "last_round": 15.0
+                },
+                {
+                    "region": "Asia",
+                    "this_round": 15.0,
+                    "last_round": 15.0
+                }
+            ],
+            "cost_per_feature": [
+                {
+                    "region": "USA",
+                    "this_round": 6.0,
+                    "last_round": 6.0
+                },
+                {
+                    "region": "Asia",
+                    "this_round": 6.0,
+                    "last_round": 6.0
+                },
+                {
+                    "region": "Europe",
+                    "this_round": 6.0,
+                    "last_round": 6.0
+                }
+            ]
         }
     }
 }
