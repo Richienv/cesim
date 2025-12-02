@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { LayoutDashboard, PieChart, Settings, FileText, LogOut, Activity } from 'lucide-react';
+import { LayoutDashboard, PieChart, Settings, FileText, LogOut, Activity, Zap } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { clsx } from 'clsx';
@@ -21,6 +21,12 @@ export function Sidebar() {
             </div>
 
             <nav className="flex-1 p-4 space-y-1">
+                <NavItem
+                    icon={<Zap size={20} />}
+                    label="Cesim Algorithm"
+                    active={pathname === '/cesim-algorithm'}
+                    href="/cesim-algorithm"
+                />
                 <NavItem
                     icon={<LayoutDashboard size={20} />}
                     label="Dashboard"

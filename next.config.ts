@@ -2,7 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* config options here */
-  // Forced restart for Tailwind config update
+  // Forced restart for Sidebar update
 };
 
 export default nextConfig;

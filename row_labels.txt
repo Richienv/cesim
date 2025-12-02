@@ -1,0 +1,693 @@
+Round results, Practice round 3
+
+Income statement, k USD, Global
+Sales revenue
+Sales revenue
+Costs and expenses
+In-house manufacturing costs
+Feature costs
+Contract manufacturing costs
+Transportation and tariffs
+R&D
+Promotion
+Administration
+Costs and expenses total
+Operating profit before depreciation (EBITDA)
+Depreciation from fixed assets
+Operating profit (EBIT)
+Net financing expenses
+Profit before taxes
+Income taxes
+Profit for the round
+Balance sheet, k USD, Global
+Assets
+Fixed assets
+Receivables
+Cash and cash equivalents
+Total assets
+Shareholders' equity
+Share capital
+Additional paid-in capital
+Profit for the round
+Retained earnings
+Total equity
+Shareholders' liabilities
+Long-term debts
+Short-term debts (unplanned)
+Payables
+Total liabilities
+Total shareholders' equity and liabilities
+Income statement, k USD, USA
+Sales revenue
+from markets
+from internal transfers
+Sales revenue total
+Costs and expenses
+In-house manufacturing costs
+Feature costs
+Contract manufacturing costs
+Transportation and tariffs
+R&D
+Promotion
+Administration
+Costs of imported products
+Costs and expenses total
+Operating profit before depreciation (EBITDA)
+Depreciation from fixed assets
+Operating profit (EBIT)
+Net financing expenses
+Profit before taxes
+Income taxes
+Profit for the round
+Balance sheet, k USD, USA
+Assets
+Fixed assets
+Receivables
+Cash and cash equivalents
+Total assets
+Shareholders' equity
+Share capital
+Additional paid-in capital
+Profit for the round
+Retained earnings
+Total equity
+Shareholders' liabilities
+Long-term debts
+Short-term debts (unplanned)
+Internal loans
+Payables
+Total liabilities
+Total shareholders' equity and liabilities
+Parent company's cash flow statement, k USD
+Cash provided by operating activities
+Operating profit before depreciation (EBITDA)
+Change in receivables (incr - / decr +)
+Change in inventories (incr - / decr +)
+Change in payables (incr + / decr -)
+Net financing expenses (expense - / income +)
+Income taxes
+Total
+Cash provided by investment activities
+Plant investments
+Cash flow before financing activities
+Cash provided by financing activities
+Dividends
+Proceeds from equity issues and buybacks
+Dividends received from subsidiaries
+Change in long-term debt (incr + / decr -)
+Change in short-term debt (incr + / decr -)
+Change in internal loans
+Total
+Change in cash and cash equivalents
+Cash 1.1.
+Cash 31.12.
+Income statement, k USD, Asia
+Sales revenue
+from markets
+from internal transfers
+Sales revenue total
+Costs and expenses
+In-house manufacturing costs
+Feature costs
+Contract manufacturing costs
+Transportation and tariffs
+R&D
+Promotion
+Administration
+Costs of imported products
+Costs and expenses total
+Operating profit before depreciation (EBITDA)
+Depreciation from fixed assets
+Operating profit (EBIT)
+Net financing expenses
+Profit before taxes
+Income taxes
+Profit for the round
+Balance sheet, k USD, Asia
+Assets
+Fixed assets
+Receivables
+Cash and cash equivalents
+Total assets
+Shareholders' equity
+Share capital
+Profit for the round
+Retained earnings
+Total equity
+Shareholders' liabilities
+Short-term debts (unplanned)
+Internal loans
+Payables
+Total liabilities
+Total shareholders' equity and liabilities
+Cash flow statement, k USD, Asia
+Cash provided by operating activities
+Operating profit before depreciation (EBITDA)
+Change in receivables (incr - / decr +)
+Change in inventories (incr - / decr +)
+Change in payables (incr + / decr -)
+Net financing expenses (expense - / income +)
+Income taxes
+Total
+Cash provided by investment activities
+Plant investments
+Cash flow before financing activities
+Cash provided by financing activities
+Dividends paid to parent company
+Change in short-term debt (incr + / decr -)
+Change in internal loans
+Total
+Change in cash and cash equivalents
+Cash 1.1.
+Cash 31.12.
+Income statement, k USD, Europe
+Sales revenue
+Sales revenue
+Costs and expenses
+Feature costs
+Transportation and tariffs
+Promotion
+Administration
+Costs of imported products
+Costs and expenses total
+Operating profit before depreciation (EBITDA)
+Depreciation from fixed assets
+Operating profit (EBIT)
+Net financing expenses
+Profit before taxes
+Income taxes
+Profit for the round
+Balance sheet, k USD, Europe
+Assets
+Fixed assets
+Receivables
+Cash and cash equivalents
+Total assets
+Shareholders' equity
+Share capital
+Profit for the round
+Retained earnings
+Total equity
+Shareholders' liabilities
+Short-term debts (unplanned)
+Internal loans
+Payables
+Total liabilities
+Total shareholders' equity and liabilities
+Ratios and key financial indicators
+Ratios
+Cumulative earnings, k USD
+Market capitalization of the company, k USD
+Shares outstanding at the end of round, k shares
+Share price at the end of round, USD
+Average trading price during the round, USD
+Dividend yield, %
+P/E ratio
+Cumulative total shareholder return (p.a.), %
+Key financial indicators, %
+Gross margin
+Operating profit before depreciation (EBITDA)
+Operating profit (EBIT)
+Return on sales (ROS)
+Equity ratio
+Net debt to equity (gearing)
+Return on capital employed (ROCE)
+Return on equity (ROE)
+Earnings per share (EPS), USD
+Market report, global
+Global market shares, %
+Tech 1
+Tech 2
+Tech 3
+Tech 4
+Total
+Market report, USA
+Tech 1
+Selling price, USD
+Number of offered features
+Sales, k units
+Demand, k units
+Tech 2
+Selling price, USD
+Number of offered features
+Sales, k units
+Demand, k units
+Tech 3
+Selling price, USD
+Number of offered features
+Sales, k units
+Demand, k units
+Tech 4
+Selling price, USD
+Number of offered features
+Sales, k units
+Demand, k units
+USA market shares, %
+Tech 1
+Tech 2
+Tech 3
+Tech 4
+Total
+Market report, Asia
+Tech 1
+Selling Price, RMB
+Number of offered features
+Sales, k units
+Demand, k units
+Tech 2
+Selling Price, RMB
+Number of offered features
+Sales, k units
+Demand, k units
+Tech 3
+Selling Price, RMB
+Number of offered features
+Sales, k units
+Demand, k units
+Tech 4
+Selling Price, RMB
+Number of offered features
+Sales, k units
+Demand, k units
+Asia market shares, %
+Tech 1
+Tech 2
+Tech 3
+Tech 4
+Total
+Market report, Europe
+Tech 1
+Selling Price, EUR
+Number of offered features
+Sales, k units
+Demand, k units
+Tech 2
+Selling Price, EUR
+Number of offered features
+Sales, k units
+Demand, k units
+Tech 3
+Selling Price, EUR
+Number of offered features
+Sales, k units
+Demand, k units
+Tech 4
+Selling Price, EUR
+Number of offered features
+Sales, k units
+Demand, k units
+Europe market shares, %
+Tech 1
+Tech 2
+Tech 3
+Tech 4
+Total
+Manufacturing details
+In-house manufacturing, k units
+USA
+Tech 1
+Tech 2
+Tech 3
+Tech 4
+Asia
+Tech 1
+Tech 2
+Tech 3
+Tech 4
+Contract manufacturing, k units
+USA
+Tech 1
+Tech 2
+Tech 3
+Tech 4
+Asia
+Tech 1
+Tech 2
+Tech 3
+Tech 4
+Capacity usage, %
+USA
+Tech 1
+Tech 2
+Tech 3
+Tech 4
+Free capacity
+Asia
+Tech 1
+Tech 2
+Tech 3
+Tech 4
+Free capacity
+Number of plants
+This round
+USA
+Asia
+Next round
+USA
+Asia
+After next round
+USA
+Asia
+Logistics details
+Tech 1, k units
+USA
+In-house manufacturing
+Contract manufacturing
+Imported from Asia
+Total products
+Sales in USA
+Exported to Asia
+Exported to Europe
+Production buffer
+Unsatisfied demand
+Asia
+In-house manufacturing
+Contract manufacturing
+Imported from USA
+Total products
+Sales in Asia
+Exported to USA
+Exported to Europe
+Production buffer
+Unsatisfied demand
+Europe
+Imported from USA
+Imported from Asia
+Total products
+Sales in Europe
+Unsatisfied demand
+Tech 2, k units
+USA
+In-house manufacturing
+Contract manufacturing
+Imported from Asia
+Total products
+Sales in USA
+Exported to Asia
+Exported to Europe
+Production buffer
+Unsatisfied demand
+Asia
+In-house manufacturing
+Contract manufacturing
+Imported from USA
+Total products
+Sales in Asia
+Exported to USA
+Exported to Europe
+Production buffer
+Unsatisfied demand
+Europe
+Imported from USA
+Imported from Asia
+Total products
+Sales in Europe
+Unsatisfied demand
+Tech 3, k units
+USA
+In-house manufacturing
+Contract manufacturing
+Imported from Asia
+Total products
+Sales in USA
+Exported to Asia
+Exported to Europe
+Production buffer
+Unsatisfied demand
+Asia
+In-house manufacturing
+Contract manufacturing
+Imported from USA
+Total products
+Sales in Asia
+Exported to USA
+Exported to Europe
+Production buffer
+Unsatisfied demand
+Europe
+Imported from USA
+Imported from Asia
+Total products
+Sales in Europe
+Unsatisfied demand
+Tech 4, k units
+USA
+In-house manufacturing
+Contract manufacturing
+Imported from Asia
+Total products
+Sales in USA
+Exported to Asia
+Exported to Europe
+Production buffer
+Unsatisfied demand
+Asia
+In-house manufacturing
+Contract manufacturing
+Imported from USA
+Total products
+Sales in Asia
+Exported to USA
+Exported to Europe
+Production buffer
+Unsatisfied demand
+Europe
+Imported from USA
+Imported from Asia
+Total products
+Sales in Europe
+Unsatisfied demand
+Origin of products sold in, k units
+USA
+USA
+Asia
+Asia
+USA
+Asia
+Europe
+USA
+Asia
+Cost report
+Transportation cost incl. tariffs per sold product, USD
+USA
+Tech 1
+Tech 2
+Tech 3
+Tech 4
+Average logistics cost per sold product
+Asia
+Tech 1
+Tech 2
+Tech 3
+Tech 4
+Average logistics cost per sold product
+Europe
+Tech 1
+Tech 2
+Tech 3
+Tech 4
+Average logistics cost per sold product
+In-house manufacturing cost per unit, USD
+USA
+Tech 1
+Tech 2
+Tech 3
+Tech 4
+Asia
+Tech 1
+Tech 2
+Tech 3
+Tech 4
+Contract manufacturing cost per unit, USD
+USA
+Tech 1
+Tech 2
+Tech 3
+Tech 4
+Asia
+Tech 1
+Tech 2
+Tech 3
+Tech 4
+Average unit cost per sold product, USD
+USA
+Tech 1
+Tech 2
+Tech 3
+Tech 4
+Weighted average
+Asia
+Tech 1
+Tech 2
+Tech 3
+Tech 4
+Weighted average
+Europe
+Tech 1
+Tech 2
+Tech 3
+Tech 4
+Weighted average
+Production scrap, %
+USA
+Tech 1
+Tech 2
+Tech 3
+Tech 4
+Asia
+Tech 1
+Tech 2
+Tech 3
+Tech 4
+Company-specific debt interest rates, %
+USA, long
+USA, short
+Asia, short
+Europe, short
+Margin breakdown by tech, k USD, USA
+Tech 1
+Sales revenue
+Sales revenue
+Costs and expenses
+In-house and contract manufacturing
+Cost of imported products
+Transportation and tariffs
+Feature costs
+Total costs of unit sold
+Gross profit
+Promotion
+Gross margin
+Tech 2
+Sales revenue
+Sales revenue
+Costs and expenses
+In-house and contract manufacturing
+Cost of imported products
+Transportation and tariffs
+Feature costs
+Total costs of unit sold
+Gross profit
+Promotion
+Gross margin
+Tech 3
+Sales revenue
+Sales revenue
+Costs and expenses
+In-house and contract manufacturing
+Cost of imported products
+Transportation and tariffs
+Feature costs
+Total costs of unit sold
+Gross profit
+Promotion
+Gross margin
+Tech 4
+Sales revenue
+Sales revenue
+Costs and expenses
+In-house and contract manufacturing
+Cost of imported products
+Transportation and tariffs
+Feature costs
+Total costs of unit sold
+Gross profit
+Promotion
+Gross margin
+Margin breakdown by tech, k USD, Asia
+Tech 1
+Sales revenue
+Sales revenue
+Costs and expenses
+In-house and contract manufacturing
+Cost of imported products
+Transportation and tariffs
+Feature costs
+Total costs of unit sold
+Gross profit
+Promotion
+Gross margin
+Tech 2
+Sales revenue
+Sales revenue
+Costs and expenses
+In-house and contract manufacturing
+Cost of imported products
+Transportation and tariffs
+Feature costs
+Total costs of unit sold
+Gross profit
+Promotion
+Gross margin
+Tech 3
+Sales revenue
+Sales revenue
+Costs and expenses
+In-house and contract manufacturing
+Cost of imported products
+Transportation and tariffs
+Feature costs
+Total costs of unit sold
+Gross profit
+Promotion
+Gross margin
+Tech 4
+Sales revenue
+Sales revenue
+Costs and expenses
+In-house and contract manufacturing
+Cost of imported products
+Transportation and tariffs
+Feature costs
+Total costs of unit sold
+Gross profit
+Promotion
+Gross margin
+Margin breakdown by tech, k USD, Europe
+Tech 1
+Sales revenue
+Sales revenue
+Costs and expenses
+In-house and contract manufacturing
+Cost of imported products
+Transportation and tariffs
+Feature costs
+Total costs of unit sold
+Gross profit
+Promotion
+Gross margin
+Tech 2
+Sales revenue
+Sales revenue
+Costs and expenses
+In-house and contract manufacturing
+Cost of imported products
+Transportation and tariffs
+Feature costs
+Total costs of unit sold
+Gross profit
+Promotion
+Gross margin
+Tech 3
+Sales revenue
+Sales revenue
+Costs and expenses
+In-house and contract manufacturing
+Cost of imported products
+Transportation and tariffs
+Feature costs
+Total costs of unit sold
+Gross profit
+Promotion
+Gross margin
+Tech 4
+Sales revenue
+Sales revenue
+Costs and expenses
+In-house and contract manufacturing
+Cost of imported products
+Transportation and tariffs
+Feature costs
+Total costs of unit sold
+Gross profit
+Promotion
+Gross margin
