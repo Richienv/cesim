@@ -78,40 +78,49 @@ function WhatIfContent() {
     const userScenarios = [
         {
             round: 1,
-            focus: "R1: The Big Bet (High Debt)",
+            focus: "R1: Hybrid Start (T1 + T2)",
             demand: "Growth: 20%",
             production: {
                 capacity: "Build 2 Plants in Asia (Total 4)",
-                allocation: "T1: 60% / T2: 40% (Asia Production)",
+                allocation: "T1: 60% / T2: 40%",
                 outsourcing: "No"
             },
             rnd: {
                 tech: "Buy Tech 2 License + Start Tech 4 R&D",
-                features: "T1: 1 feature",
-                budget: "$350k+ (High Spend)"
+                features: "T1: 1, T2: 1",
+                budget: "$350k+"
             },
             marketing: {
-                usa: { price: 290, promo: 25 },
-                asia: { price: 2100, promo: 35 },
-                europe: { price: 160, promo: 22 }
+                usa: [
+                    { tech: "Tech 1", price: 290, promo: 15 },
+                    { tech: "Tech 2", price: 450, promo: 10 }
+                ],
+                asia: [
+                    { tech: "Tech 1", price: 2100, promo: 20 },
+                    { tech: "Tech 2", price: 3200, promo: 15 }
+                ],
+                europe: [
+                    { tech: "Tech 1", price: 160, promo: 12 },
+                    { tech: "Tech 2", price: 320, promo: 10 }
+                ]
             },
             logistics: "Prioritize Asia. Export T2 to USA/EU.",
             tax: "Transfer Pricing: 2.00",
-            finance: "Long-term Loan ($800k) to fund T2 License + T4 R&D.",
+            finance: "Long-term Loan ($800k).",
             analysis: {
-                score: 78,
-                compliments: ["Aggressive start."],
-                critiques: ["High Cash Burn. Watch liquidity."],
+                score: 80,
+                compliments: ["Good T1/T2 mix."],
+                critiques: ["High cash burn."],
                 outcome: "High Risk / High Reward."
             }
         },
         {
             round: 2,
-            focus: "R2: Tech 2 Launch & Survival",
+            focus: "R2: T2 Expansion",
             demand: "T2 Demand Explodes",
             production: {
-                capacity: "Build 1 Plant in Asia. Run 98% Util.",
-                allocation: "T1: 50% / T2: 50%",
+                capacity: "Build 1 Plant in Asia.",
+                allocation: "T1: 40% / T2: 60%",
                 outsourcing: "Yes (Overflow)"
             },
             rnd: {
@@ -120,13 +129,22 @@ function WhatIfContent() {
                 budget: "$200k"
             },
             marketing: {
-                usa: { price: 480, promo: 25 },
-                asia: { price: 3500, promo: 45 },
-                europe: { price: 360, promo: 25 }
+                usa: [
+                    { tech: "Tech 1", price: 280, promo: 15 },
+                    { tech: "Tech 2", price: 440, promo: 20 }
+                ],
+                asia: [
+                    { tech: "Tech 1", price: 2000, promo: 25 },
+                    { tech: "Tech 2", price: 3100, promo: 30 }
+                ],
+                europe: [
+                    { tech: "Tech 1", price: 150, promo: 15 },
+                    { tech: "Tech 2", price: 310, promo: 20 }
+                ]
             },
             logistics: "Push T2 to all markets.",
             tax: "Transfer Pricing: 2.00",
-            finance: "Repay Short-term debt. No Dividends.",
+            finance: "Repay Short-term debt.",
             analysis: {
                 score: 85,
                 compliments: ["T2 margins stabilize cash flow."],
@@ -136,65 +154,83 @@ function WhatIfContent() {
         },
         {
             round: 3,
-            focus: "R3: Cash Cow & Prep for T4",
+            focus: "R3: Cash Cow",
             demand: "Strong T2 Growth",
             production: {
-                capacity: "Build 1 Plant in Asia (Total 6)",
+                capacity: "Build 1 Plant in Asia.",
                 allocation: "T1: 30% / T2: 70%",
                 outsourcing: "No"
             },
             rnd: {
-                tech: "Finish Tech 4 R&D (Ready R4)",
+                tech: "Finish Tech 4 R&D",
                 features: "T1: 1, T2: 4",
                 budget: "$200k"
             },
             marketing: {
-                usa: { price: 470, promo: 25 },
-                asia: { price: 3400, promo: 50 },
-                europe: { price: 340, promo: 30 }
+                usa: [
+                    { tech: "Tech 1", price: 270, promo: 15 },
+                    { tech: "Tech 2", price: 430, promo: 25 }
+                ],
+                asia: [
+                    { tech: "Tech 1", price: 1900, promo: 30 },
+                    { tech: "Tech 2", price: 3000, promo: 40 }
+                ],
+                europe: [
+                    { tech: "Tech 1", price: 140, promo: 15 },
+                    { tech: "Tech 2", price: 300, promo: 25 }
+                ]
             },
             logistics: "Maximize T2 sales.",
             tax: "Transfer Pricing: 2.00",
-            finance: "Start repaying Long-term loan.",
+            finance: "Repay Long-term loan.",
             analysis: {
                 score: 90,
-                compliments: ["T4 is ready for next round!"],
+                compliments: ["T4 is ready!"],
                 critiques: ["None."],
-                outcome: "Ready for market dominance."
+                outcome: "Ready for dominance."
             }
         },
         {
             round: 4,
-            focus: "R4: Tech 4 Launch (Early Adopter)",
-            demand: "T4 Monopoly in High-End",
+            focus: "R4: T4 Launch (Split Strategy)",
+            demand: "T4 High-End Monopoly",
             production: {
-                capacity: "Maintain. Max Efficiency.",
+                capacity: "Maintain.",
                 allocation: "T2: 40% / T4: 60%",
-                outsourcing: "Yes (T2 Overflow)"
+                outsourcing: "Yes"
             },
             rnd: {
                 tech: "Feature Optimization",
-                features: "T2: 5, T4: 8 (USA Target)",
+                features: "T2: 5, T4: 8",
                 budget: "$150k"
             },
             marketing: {
-                usa: { price: 680, promo: 35 },
-                asia: { price: 4800, promo: 60 },
-                europe: { price: 550, promo: 40 }
+                usa: [
+                    { tech: "Tech 2", price: 400, promo: 20 },
+                    { tech: "Tech 4", price: 650, promo: 30 }
+                ],
+                asia: [
+                    { tech: "Tech 1", price: 1800, promo: 30 },
+                    { tech: "Tech 2", price: 2900, promo: 40 }
+                ],
+                europe: [
+                    { tech: "Tech 2", price: 290, promo: 20 },
+                    { tech: "Tech 4", price: 550, promo: 30 }
+                ]
             },
             logistics: "Prioritize T4 to USA/EU.",
             tax: "Transfer Pricing: 2.00",
-            finance: "Pay Dividends ($0.50).",
+            finance: "Pay Dividends.",
             analysis: {
                 score: 95,
-                compliments: ["You own the T4 market alone."],
-                critiques: ["Competitors are 2 rounds behind."],
+                compliments: ["Smart split: T4 in rich markets, T1/T2 in Asia."],
+                critiques: ["Complex logistics."],
                 outcome: "Market Leader."
             }
         },
         {
             round: 5,
-            focus: "R5: Feature Wars",
+            focus: "R5: T4 Expansion",
             demand: "T4 Mass Market",
             production: {
                 capacity: "No new plants.",
@@ -203,27 +239,36 @@ function WhatIfContent() {
             },
             rnd: {
                 tech: "Maintenance",
-                features: "T4: 10 (Max)",
+                features: "T4: 10",
                 budget: "$100k"
             },
             marketing: {
-                usa: { price: 650, promo: 30 },
-                asia: { price: 4500, promo: 80 },
-                europe: { price: 520, promo: 50 }
+                usa: [
+                    { tech: "Tech 2", price: 380, promo: 15 },
+                    { tech: "Tech 4", price: 620, promo: 40 }
+                ],
+                asia: [
+                    { tech: "Tech 2", price: 2800, promo: 40 },
+                    { tech: "Tech 4", price: 4500, promo: 60 }
+                ],
+                europe: [
+                    { tech: "Tech 2", price: 280, promo: 20 },
+                    { tech: "Tech 4", price: 520, promo: 40 }
+                ]
             },
             logistics: "Global T4 distribution.",
             tax: "Transfer Pricing: 2.00",
-            finance: "High Dividend ($1.00).",
+            finance: "High Dividend.",
             analysis: {
                 score: 98,
-                compliments: ["Massive margins on T4."],
+                compliments: ["Massive margins."],
                 critiques: [],
                 outcome: "Profit machine."
             }
         },
         {
             round: 6,
-            focus: "R6: Profit Harvest",
+            focus: "R6: T4 Dominance",
             demand: "Peak T4",
             production: {
                 capacity: "Convert lines to T4.",
@@ -236,13 +281,22 @@ function WhatIfContent() {
                 budget: "$0"
             },
             marketing: {
-                usa: { price: 750, promo: 30 },
-                asia: { price: 5500, promo: 80 },
-                europe: { price: 650, promo: 40 }
+                usa: [
+                    { tech: "Tech 2", price: 350, promo: 10 },
+                    { tech: "Tech 4", price: 600, promo: 40 }
+                ],
+                asia: [
+                    { tech: "Tech 2", price: 2600, promo: 30 },
+                    { tech: "Tech 4", price: 4200, promo: 70 }
+                ],
+                europe: [
+                    { tech: "Tech 2", price: 260, promo: 15 },
+                    { tech: "Tech 4", price: 500, promo: 40 }
+                ]
             },
             logistics: "Prioritize T4.",
             tax: "Transfer Pricing: 2.00",
-            finance: "Massive Dividend ($2.00).",
+            finance: "Massive Dividend.",
             analysis: {
                 score: 99,
                 compliments: ["Perfect execution."],
@@ -255,7 +309,7 @@ function WhatIfContent() {
             focus: "R7: Endgame",
             demand: "Last Round",
             production: {
-                capacity: "Match Demand exactly.",
+                capacity: "Match Demand.",
                 allocation: "T4: 100%",
                 outsourcing: "No"
             },
@@ -265,9 +319,18 @@ function WhatIfContent() {
                 budget: "$0"
             },
             marketing: {
-                usa: { price: 700, promo: 10 },
-                asia: { price: 5000, promo: 10 },
-                europe: { price: 600, promo: 10 }
+                usa: [
+                    { tech: "Tech 4", price: 550, promo: 10 },
+                    { tech: "Tech 2", price: 300, promo: 5 }
+                ],
+                asia: [
+                    { tech: "Tech 4", price: 4000, promo: 10 },
+                    { tech: "Tech 2", price: 2500, promo: 5 }
+                ],
+                europe: [
+                    { tech: "Tech 4", price: 480, promo: 10 },
+                    { tech: "Tech 2", price: 250, promo: 5 }
+                ]
             },
             logistics: "Clear inventory.",
             tax: "Irrelevant.",
@@ -463,9 +526,15 @@ function ActualRoundContent() {
                 budget: "$400k (High - Internal R&D)"
             },
             marketing: {
-                usa: { price: 280, promo: 23 },
-                asia: { price: 2000, promo: 35 },
-                europe: { price: 150, promo: 20 }
+                usa: [
+                    { tech: "Tech 1", price: 280, promo: 23 }
+                ],
+                asia: [
+                    { tech: "Tech 1", price: 2000, promo: 35 }
+                ],
+                europe: [
+                    { tech: "Tech 1", price: 150, promo: 20 }
+                ]
             },
             logistics: "Prioritize Asia local sales. Avoid US->Asia exports.",
             tax: "Transfer Pricing: 2.00 (Max Profit Shift to Asia)",
@@ -486,9 +555,18 @@ function ActualRoundContent() {
                 budget: "$350k"
             },
             marketing: {
-                usa: { price: 470, promo: 25 },
-                asia: { price: 3400, promo: 45 },
-                europe: { price: 350, promo: 25 }
+                usa: [
+                    { tech: "Tech 1", price: 270, promo: 15 },
+                    { tech: "Tech 2", price: 470, promo: 25 }
+                ],
+                asia: [
+                    { tech: "Tech 1", price: 1900, promo: 25 },
+                    { tech: "Tech 2", price: 3400, promo: 45 }
+                ],
+                europe: [
+                    { tech: "Tech 1", price: 140, promo: 15 },
+                    { tech: "Tech 2", price: 350, promo: 25 }
+                ]
             },
             logistics: "Prioritize T2 delivery to all regions.",
             tax: "Transfer Pricing: 2.00",
@@ -509,9 +587,18 @@ function ActualRoundContent() {
                 budget: "$400k"
             },
             marketing: {
-                usa: { price: 450, promo: 25 },
-                asia: { price: 3200, promo: 60 },
-                europe: { price: 320, promo: 30 }
+                usa: [
+                    { tech: "Tech 2", price: 450, promo: 25 },
+                    { tech: "Tech 3", price: 550, promo: 30 }
+                ],
+                asia: [
+                    { tech: "Tech 2", price: 3200, promo: 60 },
+                    { tech: "Tech 3", price: 4000, promo: 40 }
+                ],
+                europe: [
+                    { tech: "Tech 2", price: 320, promo: 30 },
+                    { tech: "Tech 3", price: 420, promo: 30 }
+                ]
             },
             logistics: "Asia -> Europe -> USA",
             tax: "Transfer Pricing: 2.00",
@@ -532,9 +619,18 @@ function ActualRoundContent() {
                 budget: "$200k"
             },
             marketing: {
-                usa: { price: 650, promo: 30 },
-                asia: { price: 4500, promo: 80 },
-                europe: { price: 500, promo: 35 }
+                usa: [
+                    { tech: "Tech 3", price: 520, promo: 20 },
+                    { tech: "Tech 4", price: 650, promo: 30 }
+                ],
+                asia: [
+                    { tech: "Tech 2", price: 2900, promo: 40 },
+                    { tech: "Tech 4", price: 4500, promo: 80 }
+                ],
+                europe: [
+                    { tech: "Tech 3", price: 400, promo: 20 },
+                    { tech: "Tech 4", price: 500, promo: 35 }
+                ]
             },
             logistics: "Prioritize T4 to USA (Feature Lovers).",
             tax: "Transfer Pricing: 2.00",
@@ -555,9 +651,18 @@ function ActualRoundContent() {
                 budget: "$150k"
             },
             marketing: {
-                usa: { price: 600, promo: 30 },
-                asia: { price: 4200, promo: 90 },
-                europe: { price: 550, promo: 50 }
+                usa: [
+                    { tech: "Tech 3", price: 500, promo: 15 },
+                    { tech: "Tech 4", price: 620, promo: 40 }
+                ],
+                asia: [
+                    { tech: "Tech 3", price: 3800, promo: 30 },
+                    { tech: "Tech 4", price: 4200, promo: 90 }
+                ],
+                europe: [
+                    { tech: "Tech 3", price: 380, promo: 20 },
+                    { tech: "Tech 4", price: 550, promo: 50 }
+                ]
             },
             logistics: "Global distribution optimization.",
             tax: "Transfer Pricing: 2.00",
@@ -578,9 +683,18 @@ function ActualRoundContent() {
                 budget: "$0"
             },
             marketing: {
-                usa: { price: 750, promo: 30 },
-                asia: { price: 5500, promo: 80 },
-                europe: { price: 650, promo: 40 }
+                usa: [
+                    { tech: "Tech 3", price: 450, promo: 10 },
+                    { tech: "Tech 4", price: 600, promo: 40 }
+                ],
+                asia: [
+                    { tech: "Tech 3", price: 3500, promo: 20 },
+                    { tech: "Tech 4", price: 4000, promo: 80 }
+                ],
+                europe: [
+                    { tech: "Tech 3", price: 350, promo: 15 },
+                    { tech: "Tech 4", price: 520, promo: 40 }
+                ]
             },
             logistics: "Prioritize T4 (Highest Margin).",
             tax: "Transfer Pricing: 2.00",
@@ -601,9 +715,18 @@ function ActualRoundContent() {
                 budget: "$0"
             },
             marketing: {
-                usa: { price: 700, promo: 10 },
-                asia: { price: 5000, promo: 10 },
-                europe: { price: 600, promo: 10 }
+                usa: [
+                    { tech: "Tech 4", price: 550, promo: 10 },
+                    { tech: "Tech 3", price: 400, promo: 5 }
+                ],
+                asia: [
+                    { tech: "Tech 4", price: 3800, promo: 10 },
+                    { tech: "Tech 3", price: 3000, promo: 5 }
+                ],
+                europe: [
+                    { tech: "Tech 4", price: 480, promo: 10 },
+                    { tech: "Tech 3", price: 300, promo: 5 }
+                ]
             },
             logistics: "Clear all stock.",
             tax: "Irrelevant (Game ends).",
@@ -816,18 +939,30 @@ function DetailedRoundCard({ data, isCritique = false }: any) {
                         <Globe className="w-4 h-4" /> Marketing (Price / Promo)
                     </h4>
                     <div className="bg-blue-50 p-4 rounded-lg text-base space-y-2 text-blue-900">
-                        <div className="flex justify-between border-b border-blue-100 pb-1 mb-1">
-                            <span>USA</span>
-                            <span className="font-mono">${data.marketing.usa.price} / {data.marketing.usa.promo}k</span>
-                        </div>
-                        <div className="flex justify-between border-b border-blue-100 pb-1 mb-1">
-                            <span>Asia</span>
-                            <span className="font-mono">{data.marketing.asia.price} / {data.marketing.asia.promo}k</span>
-                        </div>
-                        <div className="flex justify-between">
-                            <span>Europe</span>
-                            <span className="font-mono">{data.marketing.europe.price} / {data.marketing.europe.promo}k</span>
-                        </div>
+                        {['usa', 'asia', 'europe'].map((region) => {
+                            const regionData = data.marketing[region];
+                            const regionName = region.toUpperCase();
+
+                            if (Array.isArray(regionData)) {
+                                return (
+                                    <div key={region} className="border-b border-blue-200 pb-2 mb-2 last:border-0 last:pb-0 last:mb-0">
+                                        <div className="font-bold text-xs uppercase text-blue-500 mb-1">{regionName}</div>
+                                        {regionData.map((item: any, i: number) => (
+                                            <div key={i} className="flex justify-between text-sm mb-1 last:mb-0">
+                                                <span className="text-blue-700 font-medium">{item.tech}</span>
+                                                <span className="font-mono text-blue-900 font-bold">${item.price} / {item.promo}k</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                );
+                            }
+                            return (
+                                <div key={region} className="flex justify-between border-b border-blue-200 pb-1 mb-1 last:border-0 last:pb-0 last:mb-0">
+                                    <span>{regionName}</span>
+                                    <span className="font-mono font-bold">${regionData.price} / {regionData.promo}k</span>
+                                </div>
+                            );
+                        })}
                     </div>
                 </div>
 
