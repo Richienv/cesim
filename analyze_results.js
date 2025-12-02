@@ -15,20 +15,19 @@ function analyzeFile(filePath) {
     const sheet = workbook.Sheets[sheetName];
     const data = XLSX.utils.sheet_to_json(sheet, { header: 1 });
 
-    // 1. Get Team Names from Row 4 (Index 4)
+    // 1. Get Team Names
     const teamRowIndex = 4;
     const teamRow = data[teamRowIndex];
     const teams = [];
     if (teamRow) {
         for (let i = 1; i < teamRow.length; i++) {
             if (teamRow[i]) {
-                teams.push({ name: teamRow[i], index: i, data: {} });
+                teams.push({ name: teamRow[i], index: i, data: { prices: {}, promotion: {}, rnd: 0, revenue: 0, profit: 0 } });
             }
         }
     }
-    console.log("Teams found:", teams.map(t => t.name).join(", "));
 
-    // 2. Scan rows for metrics with state tracking
+    // 2. Scan rows
     let currentSection = '';
     let currentMarket = '';
     let currentTech = '';
@@ -44,9 +43,8 @@ function analyzeFile(filePath) {
         else if (label.includes('Income statement, k USD, USA')) { currentSection = 'IncomeStatement'; currentMarket = 'USA'; }
         else if (label.includes('Income statement, k USD, Asia')) { currentSection = 'IncomeStatement'; currentMarket = 'Asia'; }
         else if (label.includes('Income statement, k USD, Europe')) { currentSection = 'IncomeStatement'; currentMarket = 'Europe'; }
-        else if (label.includes('Manufacturing details')) { currentSection = 'Manufacturing'; }
 
-        // Detect Tech (only within Market Report for now to avoid confusion)
+        // Detect Tech
         if (currentSection === 'MarketReport') {
             if (label === 'Tech 1') currentTech = 'Tech 1';
             if (label === 'Tech 2') currentTech = 'Tech 2';
@@ -55,28 +53,21 @@ function analyzeFile(filePath) {
         }
 
         // Extract Data
-
-        // Global Metrics
-        if (label.includes('Cumulative total shareholder return') || label.includes('Shareholder return')) {
-            teams.forEach(team => team.data.tsr = row[team.index]);
-        }
         if (label.includes('Round profit')) {
-            teams.forEach(team => team.data.profit = row[team.index]);
+            teams.forEach(team => team.data.profit = parseFloat(row[team.index]) || 0);
         }
         if (label.includes('Sales revenue') && !currentSection) {
-            teams.forEach(team => team.data.revenue = row[team.index]);
+            teams.forEach(team => team.data.revenue = parseFloat(row[team.index]) || 0);
         }
         if (label.includes('R&D') && !currentSection) {
-            teams.forEach(team => team.data.rnd = row[team.index]);
+            teams.forEach(team => team.data.rnd = parseFloat(row[team.index]) || 0);
         }
 
-        // Market Specific Metrics
         if (currentSection === 'MarketReport') {
             if (label.includes('Selling price') || label.includes('Selling Price')) {
                 teams.forEach(team => {
-                    if (!team.data.prices) team.data.prices = {};
                     const key = `${currentMarket}_${currentTech}`;
-                    team.data.prices[key] = row[team.index];
+                    team.data.prices[key] = parseFloat(row[team.index]) || 0;
                 });
             }
         }
@@ -84,64 +75,53 @@ function analyzeFile(filePath) {
         if (currentSection === 'IncomeStatement') {
             if (label.includes('Promotion')) {
                 teams.forEach(team => {
-                    if (!team.data.promotion) team.data.promotion = {};
-                    team.data.promotion[currentMarket] = row[team.index];
+                    team.data.promotion[currentMarket] = parseFloat(row[team.index]) || 0;
                 });
             }
         }
+    });
 
-        // Manufacturing
-        if (currentSection === 'Manufacturing') {
-            if (label.includes('Number of plants') && label.includes('Next round')) {
-                // This might need more specific parsing as "Next round" is a sub-header
-                // Let's look for "USA" and "Asia" under "Number of plants" -> "Next round"
-                // Actually, let's just grab "Capacity usage" for now as a proxy for aggression
-            }
-            if (label.includes('Capacity usage')) {
-                teams.forEach(team => {
-                    if (!team.data.capacity) team.data.capacity = {};
-                    team.data.capacity[`${currentMarket || 'Global'}_${currentTech || 'Total'}`] = row[team.index];
-                });
-            }
-        }
+    // 3. Analyze Market Dynamics
+    console.log("MARKET DYNAMICS:");
 
-        // Finance (Global Balance Sheet / Cash Flow)
-        if (label.includes('Dividends') && !label.includes('received')) {
-            teams.forEach(team => team.data.dividends = row[team.index]);
-        }
-        if (label.includes('Long-term debts')) {
-            teams.forEach(team => team.data.debt = row[team.index]);
-        }
-        if (label.includes('Share capital')) {
-            teams.forEach(team => team.data.equity = row[team.index]);
+    // R&D Analysis
+    const avgRnD = teams.reduce((sum, t) => sum + t.data.rnd, 0) / teams.length;
+    const maxRnD = Math.max(...teams.map(t => t.data.rnd));
+    console.log(`Average R&D: $${avgRnD.toFixed(0)}k | Max R&D: $${maxRnD.toFixed(0)}k`);
+
+    // Price Analysis
+    const markets = ['USA', 'Asia', 'Europe'];
+    const techs = ['Tech 1', 'Tech 2', 'Tech 3', 'Tech 4'];
+
+    markets.forEach(market => {
+        techs.forEach(tech => {
+            const key = `${market}_${tech}`;
+            const prices = teams.map(t => t.data.prices[key]).filter(p => p > 0);
+            if (prices.length > 0) {
+                const avgPrice = prices.reduce((a, b) => a + b, 0) / prices.length;
+                const minPrice = Math.min(...prices);
+                const maxPrice = Math.max(...prices);
+                console.log(`${key} Price: Avg ${avgPrice.toFixed(0)} | Min ${minPrice} | Max ${maxPrice} | Spread: ${maxPrice - minPrice}`);
+            }
+        });
+    });
+
+    // Promotion Analysis
+    markets.forEach(market => {
+        const promos = teams.map(t => t.data.promotion[market]).filter(p => p > 0);
+        if (promos.length > 0) {
+            const avgPromo = promos.reduce((a, b) => a + b, 0) / promos.length;
+            console.log(`${market} Avg Promotion: $${avgPromo.toFixed(0)}k`);
         }
     });
 
-    // 3. Find Winner
-    let winner = teams.reduce((prev, current) => {
-        const prevScore = prev.data.tsr || prev.data.profit || 0;
-        const currScore = current.data.tsr || current.data.profit || 0;
-        return (currScore > prevScore) ? current : prev;
+    // Loser Analysis (Bottom 3 Teams)
+    const sortedTeams = [...teams].sort((a, b) => b.data.profit - a.data.profit);
+    const losers = sortedTeams.slice(-3);
+    console.log("\nBOTTOM 3 TEAMS (What NOT to do):");
+    losers.forEach(loser => {
+        console.log(`- ${loser.name} (Profit: ${loser.data.profit}): R&D ${loser.data.rnd} | USA T1 Price: ${loser.data.prices['USA_Tech 1']}`);
     });
-
-    console.log(`WINNER: ${winner.name} (Score: ${winner.data.tsr || winner.data.profit})`);
-
-    // Explicitly print Pink's data
-    const pink = teams.find(t => t.name === 'Pink');
-    if (pink) {
-        console.log("PINK Strategy:");
-        console.log("Global Revenue:", pink.data.revenue);
-        console.log("Global R&D:", pink.data.rnd);
-        console.log("Dividends:", pink.data.dividends);
-        console.log("Debt:", pink.data.debt);
-        console.log("Equity:", pink.data.equity);
-        console.log("Prices:", JSON.stringify(pink.data.prices, null, 2));
-        console.log("Promotion:", JSON.stringify(pink.data.promotion, null, 2));
-        console.log("Capacity Usage:", JSON.stringify(pink.data.capacity, null, 2));
-    }
-
-    // Dump labels to file for inspection
-    // fs.writeFileSync('row_labels.txt', rowLabels.join('\n')); // This line was removed as rowLabels is no longer collected
 }
 
 files.forEach(file => {

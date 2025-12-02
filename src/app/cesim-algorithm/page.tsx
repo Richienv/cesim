@@ -33,7 +33,7 @@ export default function CesimAlgorithmPage() {
                     </div>
                 </header>
 
-                <div className="p-8 max-w-6xl mx-auto space-y-8">
+                <div className="p-8 md:p-12 max-w-[1920px] mx-auto space-y-12">
 
                     {/* Tab Navigation */}
                     <div className="flex space-x-1 bg-gray-200 p-1 rounded-xl w-fit">
@@ -208,111 +208,252 @@ function PracticeRoundContent() {
 }
 
 function ActualRoundContent() {
+    const rounds = [
+        {
+            round: 1,
+            focus: "Foundation & Asia Capacity",
+            demand: "Global Growth: ~20%",
+            production: {
+                capacity: "Build 2 Plants in Asia (Total 4)",
+                allocation: "T1: 100% (No T2 yet)",
+                outsourcing: "No"
+            },
+            rnd: {
+                tech: "License Tech 2 immediately",
+                features: "T1: 1 feature (Cost focus)",
+                budget: "$350k (Aggressive)"
+            },
+            marketing: {
+                usa: { price: 280, promo: 23 },
+                asia: { price: 2000, promo: 35 },
+                europe: { price: 150, promo: 20 }
+            },
+            logistics: "Prioritize Asia local sales. Avoid US->Asia exports.",
+            tax: "Transfer Pricing: 1.40 (Max profit in Asia)",
+            finance: "Take Long-term Loan ($500k) for plants. No Dividends."
+        },
+        {
+            round: 2,
+            focus: "Tech 2 Launch & Premium Pricing",
+            demand: "Tech 2 Demand explodes (Early Adopters)",
+            production: {
+                capacity: "Build 1 Plant in Asia. Run 95% Util.",
+                allocation: "T1: 60%, T2: 40%",
+                outsourcing: "Yes (if demand > capacity)"
+            },
+            rnd: {
+                tech: "In-house Tech 2 improvements",
+                features: "T1: 1, T2: 3-4 (Differentiation)",
+                budget: "$280k"
+            },
+            marketing: {
+                usa: { price: 470, promo: 25 },
+                asia: { price: 3400, promo: 45 },
+                europe: { price: 350, promo: 25 }
+            },
+            logistics: "Prioritize T2 delivery to all regions.",
+            tax: "Transfer Pricing: 1.40",
+            finance: "Repay short-term debt. Small Dividend ($0.10)."
+        },
+        {
+            round: 3,
+            focus: "Asia Market Share Grab",
+            demand: "Asia T2 growth > 40%",
+            production: {
+                capacity: "Build 1 Plant in Asia (Total 6)",
+                allocation: "T1: 40%, T2: 60%",
+                outsourcing: "No (Capacity should catch up)"
+            },
+            rnd: {
+                tech: "Maintenance only",
+                features: "T1: 1, T2: 4",
+                budget: "$150k"
+            },
+            marketing: {
+                usa: { price: 450, promo: 25 },
+                asia: { price: 3200, promo: 60 },
+                europe: { price: 320, promo: 30 }
+            },
+            logistics: "Asia -> Europe -> USA",
+            tax: "Transfer Pricing: 1.40",
+            finance: "High Dividend ($0.50). Buyback shares if cash > $2M."
+        },
+        {
+            round: 4,
+            focus: "Tech 3 Launch (Asia First)",
+            demand: "Tech 3 starts in Asia (35% coverage)",
+            production: {
+                capacity: "Maintain. Maximize efficiency.",
+                allocation: "T1: 20%, T2: 50%, T3: 30%",
+                outsourcing: "Yes (for T1 overflow)"
+            },
+            rnd: {
+                tech: "Start Tech 4 Investment",
+                features: "T3: 6-8 (Premium)",
+                budget: "$500k (Tech 4 prep)"
+            },
+            marketing: {
+                usa: { price: 420, promo: 25 },
+                asia: { price: 4500, promo: 80 },
+                europe: { price: 300, promo: 35 }
+            },
+            logistics: "Prioritize T3 to Asia.",
+            tax: "Transfer Pricing: 1.40",
+            finance: "Dividend: $0.80. Cash accumulation for T4."
+        },
+        {
+            round: 5,
+            focus: "Tech 3 Expansion & Tech 4 Prep",
+            demand: "Tech 3 hits USA/EU. T4 Early Adopters in EU.",
+            production: {
+                capacity: "No new plants (Risk of overcapacity later)",
+                allocation: "T1: 10%, T2: 40%, T3: 50%",
+                outsourcing: "No"
+            },
+            rnd: {
+                tech: "Finalize Tech 4",
+                features: "T3: 8, T4: 10 (Max)",
+                budget: "$800k (Heavy)"
+            },
+            marketing: {
+                usa: { price: 600, promo: 30 },
+                asia: { price: 4200, promo: 90 },
+                europe: { price: 550, promo: 50 }
+            },
+            logistics: "Global distribution optimization.",
+            tax: "Transfer Pricing: 1.40",
+            finance: "Dividend: $1.00."
+        },
+        {
+            round: 6,
+            focus: "Tech 4 Global Launch",
+            demand: "Tech 4 Global Rollout. T1 dead.",
+            production: {
+                capacity: "Convert T1 lines to T4.",
+                allocation: "T2: 20%, T3: 40%, T4: 40%",
+                outsourcing: "No"
+            },
+            rnd: {
+                tech: "Stop R&D (Sunk cost)",
+                features: "T4: 10 (Max)",
+                budget: "$0"
+            },
+            marketing: {
+                usa: { price: 750, promo: 30 },
+                asia: { price: 5500, promo: 80 },
+                europe: { price: 650, promo: 40 }
+            },
+            logistics: "Prioritize T4 (Highest Margin).",
+            tax: "Transfer Pricing: 1.40",
+            finance: "Dividend: $2.00 (Massive Payout)."
+        },
+        {
+            round: 7,
+            focus: "Endgame: Inventory Clearance",
+            demand: "Last round. No future.",
+            production: {
+                capacity: "Produce ONLY confirmed demand.",
+                allocation: "Match orders exactly.",
+                outsourcing: "No"
+            },
+            rnd: {
+                tech: "None",
+                features: "Max all",
+                budget: "$0"
+            },
+            marketing: {
+                usa: { price: 700, promo: 10 },
+                asia: { price: 5000, promo: 10 },
+                europe: { price: 600, promo: 10 }
+            },
+            logistics: "Clear all stock.",
+            tax: "Irrelevant (Game ends).",
+            finance: "Pay out ALL remaining cash as dividends."
+        }
+    ];
+
     return (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
             {/* Strategy Overview */}
-            <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-100">
-                <h2 className="text-2xl font-bold text-gray-900 mb-4">7-Round Strategic Forecast</h2>
-                <p className="text-gray-600 leading-relaxed mb-6">
-                    Extending the winning "Pink" strategy to a 7-round game requires careful timing of Tech 3 and Tech 4 launches based on network coverage. The goal is to be the <strong>first mover</strong> in Asia/Europe for new technologies while milking the USA market.
+            <div className="bg-white rounded-xl p-8 md:p-10 shadow-sm border border-gray-100">
+                <h2 className="text-3xl font-bold text-gray-900 mb-6">7-Round Detailed Strategy</h2>
+                <p className="text-gray-600 text-lg leading-relaxed mb-8">
+                    This playbook provides specific, variable-aware targets for every department. The core strategy relies on <strong>Asia-based production</strong> to minimize tariffs and tax, while aggressively moving up the technology ladder to capture high-margin early adopters.
                 </p>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="bg-purple-50 p-6 rounded-xl border border-purple-100">
-                        <h3 className="font-bold text-purple-900 mb-3 flex items-center gap-2">
-                            <Zap className="w-5 h-5" />
-                            Tech Launch Schedule
-                        </h3>
-                        <ul className="space-y-3 text-sm text-purple-800">
-                            <li className="flex justify-between">
-                                <span>Tech 2:</span>
-                                <span className="font-bold">Round 2 (Global)</span>
-                            </li>
-                            <li className="flex justify-between">
-                                <span>Tech 3:</span>
-                                <span className="font-bold">Round 4 (Asia/EU), Round 5 (USA)</span>
-                            </li>
-                            <li className="flex justify-between">
-                                <span>Tech 4:</span>
-                                <span className="font-bold">Round 5 (EU), Round 6 (Global)</span>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <div className="bg-blue-50 p-6 rounded-xl border border-blue-100">
-                        <h3 className="font-bold text-blue-900 mb-3 flex items-center gap-2">
-                            <Target className="w-5 h-5" />
-                            Feature Optimization
-                        </h3>
-                        <ul className="space-y-3 text-sm text-blue-800">
-                            <li className="flex justify-between">
-                                <span>Tech 1:</span>
-                                <span className="font-bold">Low Features (Cost Leader)</span>
-                            </li>
-                            <li className="flex justify-between">
-                                <span>Tech 2:</span>
-                                <span className="font-bold">High Features (Differentiation)</span>
-                            </li>
-                            <li className="flex justify-between">
-                                <span>Tech 3/4:</span>
-                                <span className="font-bold">Max Features (Premium)</span>
-                            </li>
-                        </ul>
+                {/* Financial Logic Section */}
+                <div className="bg-slate-50 p-8 rounded-xl border border-slate-200 mb-10">
+                    <h3 className="text-xl font-bold text-slate-900 mb-4 flex items-center gap-3">
+                        <DollarSign className="w-5 h-5" />
+                        Financial Logic: Why Asia First?
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-base">
+                        <div>
+                            <p className="font-bold text-slate-700">1. Tax Arbitrage</p>
+                            <p className="text-slate-600">Asia Tax: <strong>15%</strong> vs USA: <strong>35%</strong>. Shifting profit to Asia saves 20% on every dollar earned.</p>
+                        </div>
+                        <div>
+                            <p className="font-bold text-slate-700">2. Tariff Avoidance</p>
+                            <p className="text-slate-600">US→Asia Tariff ($12) + Shipping ($15) = <strong>$27/unit loss</strong>. Producing in Asia for Asia/EU avoids this.</p>
+                        </div>
+                        <div>
+                            <p className="font-bold text-slate-700">3. Lower Fixed Costs</p>
+                            <p className="text-slate-600">Asia Fixed Cost: <strong>$10k</strong> vs USA: <strong>$35k</strong>. Lower breakeven point for new factories.</p>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            {/* 7-Round Timeline */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/50">
-                    <h3 className="font-bold text-gray-900">Strategic Timeline (Rounds 4-7)</h3>
-                </div>
-                <div className="p-6">
-                    <div className="relative border-l-2 border-gray-200 ml-3 space-y-12">
+            {/* Detailed Round Cards */}
+            <div className="space-y-6">
+                {rounds.map((round) => (
+                    <DetailedRoundCard key={round.round} data={round} />
+                ))}
+            </div>
 
-                        <TimelineItem
-                            round="Round 4"
-                            title="Tech 3 Entry (Asia Focus)"
-                            data={{
-                                "Focus": "Launch Tech 3 in Asia (35% coverage)",
-                                "R&D": "Invest heavily in Tech 4",
-                                "Pricing": "Premium for T3, Competitive for T2",
-                                "Production": "Shift capacity to Asia for T3"
-                            }}
-                        />
+            {/* Market Dynamics (Data-Driven) */}
+            <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
+                    <BarChart3 className="w-5 h-5 text-gray-500" />
+                    Market Dynamics (Data-Driven Insights)
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="p-4 bg-red-50 rounded-lg border border-red-100">
+                        <h4 className="font-bold text-red-900 mb-2">The Zero R&D Trap</h4>
+                        <p className="text-sm text-red-800 mb-2">
+                            Teams that spent <strong>$0 on R&D</strong> in Round 1 ended with <strong>$0 Profit</strong>.
+                        </p>
+                        <div className="h-20 flex items-end gap-1 mt-2">
+                            <Bar label="Winner" height="80%" color="bg-green-500" value="$388k" />
+                            <Bar label="Loser" height="5%" color="bg-red-500" value="$0" />
+                        </div>
+                        <p className="text-xs text-center text-red-600 mt-1">Round 1 R&D Spend</p>
+                    </div>
 
-                        <TimelineItem
-                            round="Round 5"
-                            title="Tech 3 Expansion & Tech 4 Prep"
-                            data={{
-                                "Focus": "Launch Tech 3 in USA/Europe. Prep Tech 4.",
-                                "R&D": "Finalize Tech 4 development",
-                                "Marketing": "Aggressive push in Europe (High Growth)",
-                                "Competitor": "Expect others to dump T1 inventory"
-                            }}
-                        />
+                    <div className="p-4 bg-orange-50 rounded-lg border border-orange-100">
+                        <h4 className="font-bold text-orange-900 mb-2">Tech 1 Price Crash</h4>
+                        <p className="text-sm text-orange-800 mb-2">
+                            Tech 1 prices in Asia crashed from $280 to $150 by Round 3.
+                        </p>
+                        <div className="h-20 flex items-end gap-1 mt-2">
+                            <Bar label="R1" height="90%" color="bg-orange-300" value="$280" />
+                            <Bar label="R2" height="60%" color="bg-orange-400" value="$200" />
+                            <Bar label="R3" height="40%" color="bg-orange-500" value="$150" />
+                        </div>
+                        <p className="text-xs text-center text-orange-600 mt-1">Tech 1 Price Trend</p>
+                    </div>
 
-                        <TimelineItem
-                            round="Round 6"
-                            title="Tech 4 Global Launch"
-                            data={{
-                                "Focus": "Full Tech 4 rollout. Phase out Tech 1.",
-                                "R&D": "Stop all R&D (Endgame)",
-                                "Pricing": "Skim pricing for T4 (Max Price)",
-                                "Dividends": "Start massive payouts"
-                            }}
-                        />
-
-                        <TimelineItem
-                            round="Round 7"
-                            title="Endgame & Cash Harvest"
-                            data={{
-                                "Focus": "Empty inventory. Maximize dividends.",
-                                "Production": "Exact match to demand (No overstock)",
-                                "Marketing": "Cut maintenance marketing",
-                                "Financials": "Pay out all excess cash"
-                            }}
-                        />
+                    <div className="p-4 bg-blue-50 rounded-lg border border-blue-100">
+                        <h4 className="font-bold text-blue-900 mb-2">Marketing Inflation</h4>
+                        <p className="text-sm text-blue-800 mb-2">
+                            Avg marketing spend in Asia grew <strong>50% per round</strong>.
+                        </p>
+                        <div className="h-20 flex items-end gap-1 mt-2">
+                            <Bar label="R1" height="40%" color="bg-blue-300" value="$22k" />
+                            <Bar label="R2" height="60%" color="bg-blue-400" value="$34k" />
+                            <Bar label="R3" height="90%" color="bg-blue-500" value="$37k" />
+                        </div>
+                        <p className="text-xs text-center text-blue-600 mt-1">Asia Marketing Avg</p>
                     </div>
                 </div>
             </div>
@@ -325,21 +466,21 @@ function ActualRoundContent() {
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div className="p-4 bg-red-50 rounded-lg border border-red-100">
-                        <h4 className="font-bold text-red-900 mb-2">Price Wars</h4>
+                        <h4 className="font-bold text-red-900 mb-2">Tariff Trap</h4>
                         <p className="text-sm text-red-800">
-                            Teams lagging in Tech will slash Tech 1 prices. <strong>Do not follow.</strong> Abandon the low-end market and focus on high-margin Tech 2/3/4.
+                            Competitors exporting from USA to Asia will bleed cash due to the $27/unit penalty. <strong>Exploit this</strong> by undercutting them with local Asia production.
                         </p>
                     </div>
                     <div className="p-4 bg-orange-50 rounded-lg border border-orange-100">
-                        <h4 className="font-bold text-orange-900 mb-2">Late Tech Entry</h4>
+                        <h4 className="font-bold text-orange-900 mb-2">R&D Lag</h4>
                         <p className="text-sm text-orange-800">
-                            Most teams will be late to Tech 4. Use this window (Round 6) to capture 100% of the early adopter segment at max price.
+                            Teams starting Tech 4 R&D in Round 5 will be too late. Your Round 4 start ensures you own the "Early Adopter" segment in Round 6.
                         </p>
                     </div>
                     <div className="p-4 bg-green-50 rounded-lg border border-green-100">
-                        <h4 className="font-bold text-green-900 mb-2">Production Panic</h4>
+                        <h4 className="font-bold text-green-900 mb-2">Feature Bloat</h4>
                         <p className="text-sm text-green-800">
-                            Teams often overproduce in the final round. Trust your forecasts and produce <strong>exactly</strong> what you need to end with 0 inventory.
+                            Don't over-feature Tech 1. Competitors adding 5+ features to T1 are wasting margin. Keep T1 lean (1-2 features).
                         </p>
                     </div>
                 </div>
@@ -390,6 +531,88 @@ function Bar({ label, height, color, value }: any) {
             <div className="mb-2 text-xs font-bold text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity">{value}</div>
             <div className={`w-full rounded-t-lg ${color} transition-all duration-500 hover:opacity-80`} style={{ height }}></div>
             <div className="mt-2 text-xs text-gray-500 font-medium">{label}</div>
+        </div>
+    );
+}
+
+function DetailedRoundCard({ data }: any) {
+    return (
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <div className="bg-gray-50 px-8 py-5 border-b border-gray-200 flex justify-between items-center">
+                <div className="flex items-center gap-4">
+                    <span className="bg-purple-600 text-white text-sm font-bold px-3 py-1.5 rounded uppercase">Round {data.round}</span>
+                    <h3 className="text-xl font-bold text-gray-900">{data.focus}</h3>
+                </div>
+                <span className="text-sm font-medium text-gray-500 bg-white px-3 py-1.5 rounded border border-gray-200">{data.demand}</span>
+            </div>
+
+            <div className="p-8 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+                {/* Production */}
+                <div className="space-y-3">
+                    <h4 className="text-sm font-bold text-gray-400 uppercase flex items-center gap-2">
+                        <Target className="w-4 h-4" /> Production
+                    </h4>
+                    <div className="bg-gray-50 p-4 rounded-lg text-base space-y-2">
+                        <p><span className="font-semibold">Capacity:</span> {data.production.capacity}</p>
+                        <p><span className="font-semibold">Allocation:</span> {data.production.allocation}</p>
+                        <p><span className="font-semibold">Outsource:</span> {data.production.outsourcing}</p>
+                    </div>
+                </div>
+
+                {/* R&D */}
+                <div className="space-y-3">
+                    <h4 className="text-sm font-bold text-gray-400 uppercase flex items-center gap-2">
+                        <Zap className="w-4 h-4" /> R&D
+                    </h4>
+                    <div className="bg-yellow-50 p-4 rounded-lg text-base space-y-2 text-yellow-900">
+                        <p><span className="font-semibold">Tech:</span> {data.rnd.tech}</p>
+                        <p><span className="font-semibold">Features:</span> {data.rnd.features}</p>
+                        <p><span className="font-semibold">Budget:</span> {data.rnd.budget}</p>
+                    </div>
+                </div>
+
+                {/* Marketing */}
+                <div className="space-y-3">
+                    <h4 className="text-sm font-bold text-gray-400 uppercase flex items-center gap-2">
+                        <Globe className="w-4 h-4" /> Marketing (Price / Promo)
+                    </h4>
+                    <div className="bg-blue-50 p-4 rounded-lg text-base space-y-2 text-blue-900">
+                        <div className="flex justify-between border-b border-blue-100 pb-1 mb-1">
+                            <span>USA</span>
+                            <span className="font-mono">${data.marketing.usa.price} / {data.marketing.usa.promo}k</span>
+                        </div>
+                        <div className="flex justify-between border-b border-blue-100 pb-1 mb-1">
+                            <span>Asia</span>
+                            <span className="font-mono">{data.marketing.asia.price} / {data.marketing.asia.promo}k</span>
+                        </div>
+                        <div className="flex justify-between">
+                            <span>Europe</span>
+                            <span className="font-mono">{data.marketing.europe.price} / {data.marketing.europe.promo}k</span>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Logistics & Tax */}
+                <div className="space-y-3">
+                    <h4 className="text-sm font-bold text-gray-400 uppercase flex items-center gap-2">
+                        <TrendingUp className="w-4 h-4" /> Logistics & Tax
+                    </h4>
+                    <div className="bg-gray-50 p-4 rounded-lg text-base space-y-2">
+                        <p><span className="font-semibold">Logistics:</span> {data.logistics}</p>
+                        <p><span className="font-semibold">Tax:</span> {data.tax}</p>
+                    </div>
+                </div>
+
+                {/* Finance */}
+                <div className="space-y-3">
+                    <h4 className="text-sm font-bold text-gray-400 uppercase flex items-center gap-2">
+                        <DollarSign className="w-4 h-4" /> Finance
+                    </h4>
+                    <div className="bg-green-50 p-4 rounded-lg text-base space-y-2 text-green-900">
+                        <p>{data.finance}</p>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 }
