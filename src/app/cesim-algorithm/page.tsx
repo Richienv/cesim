@@ -11,7 +11,8 @@ import {
     BarChart3,
     Lightbulb,
     Rocket,
-    BrainCircuit
+    BrainCircuit,
+    AlertTriangle
 } from 'lucide-react';
 
 export default function CesimAlgorithmPage() {
@@ -107,11 +108,25 @@ function WhatIfContent() {
             logistics: "Prioritize Asia. Export T2 to USA/EU.",
             tax: "Transfer Pricing: 2.00",
             finance: "Long-term Loan ($800k).",
+            forecast: {
+                demand: { usa: 7500, asia: 10600, europe: 12900 },
+                growth: { usa: 20, asia: 30, europe: 10 },
+                share: {
+                    usa: { "Tech 1": 15, "Tech 2": 5 },
+                    asia: { "Tech 1": 20, "Tech 2": 8 },
+                    europe: { "Tech 1": 12, "Tech 2": 4 }
+                }
+            },
             analysis: {
                 score: 80,
-                compliments: ["Good T1/T2 mix."],
-                critiques: ["High cash burn."],
+                compliments: ["Maximized Learning Curve (Internal Production).", "Good T1/T2 mix."],
+                critiques: ["High cash burn.", "Risk of Unsold Inventory."],
                 outcome: "High Risk / High Reward."
+            },
+            competitor_intel: {
+                title: "Killer Threat: Pink Team Strategy",
+                description: "If Pink Team keeps pricing T1 < $280 with low marketing, our high-marketing strategy will bleed cash if we try to match their price.",
+                implication: "We CANNOT lower price anymore. We must differentiate (Features/Promo) or cede the low-end."
             }
         },
         {
@@ -145,11 +160,25 @@ function WhatIfContent() {
             logistics: "Push T2 to all markets.",
             tax: "Transfer Pricing: 2.00",
             finance: "Repay Short-term debt.",
+            forecast: {
+                demand: { usa: 9000, asia: 13800, europe: 14200 },
+                growth: { usa: 20, asia: 30, europe: 10 },
+                share: {
+                    usa: { "Tech 1": 12, "Tech 2": 15 },
+                    asia: { "Tech 1": 18, "Tech 2": 20 },
+                    europe: { "Tech 1": 10, "Tech 2": 12 }
+                }
+            },
             analysis: {
                 score: 85,
-                compliments: ["T2 margins stabilize cash flow."],
-                critiques: ["Still heavy debt load."],
+                compliments: ["Perfect R&D Timing (Next Round Availability).", "T2 margins stabilize cash flow."],
+                critiques: ["Still heavy debt load.", "Over-reliance on Outsourcing (No Learning Curve)."],
                 outcome: "Stabilization phase."
+            },
+            competitor_intel: {
+                title: "Killer Threat: Early T2 Dump",
+                description: "Competitors may launch T2 early with low prices to grab market share before we scale.",
+                implication: "Maintain premium pricing for T2. Let them fight for the low-margin scraps."
             }
         },
         {
@@ -183,11 +212,28 @@ function WhatIfContent() {
             logistics: "Maximize T2 sales.",
             tax: "Transfer Pricing: 2.00",
             finance: "Repay Long-term loan.",
+            forecast: {
+                demand: { usa: 10840, asia: 18050, europe: 15650 },
+                growth: { usa: 20, asia: 30, europe: 10 },
+                share: {
+                    usa: { "Tech 1": 8, "Tech 2": 25 },
+                    asia: { "Tech 1": 15, "Tech 2": 30 },
+                    europe: { "Tech 1": 6, "Tech 2": 20 }
+                }
+            },
             analysis: {
                 score: 90,
-                compliments: ["T4 is ready!"],
-                critiques: ["None."],
+                compliments: ["T4 is ready!", "Good cash preservation."],
+                critiques: [
+                    "Logistics Inefficiency: Exporting T2 to USA incurs high tariffs ($27/unit).",
+                    "Forecast Variance Risk: >10% error triggers inventory holding penalties."
+                ],
                 outcome: "Ready for dominance."
+            },
+            competitor_intel: {
+                title: "Killer Threat: Market Saturation",
+                description: "If 5+ teams dump T2 inventory simultaneously, prices will crash below $300.",
+                implication: "Shift focus to T4 R&D immediately. Do not get stuck with T2 inventory."
             }
         },
         {
@@ -221,11 +267,31 @@ function WhatIfContent() {
             logistics: "Prioritize T4 to USA/EU.",
             tax: "Transfer Pricing: 2.00",
             finance: "Pay Dividends.",
+            forecast: {
+                demand: { usa: 13000, asia: 23400, europe: 17200 },
+                growth: { usa: 20, asia: 30, europe: 10 },
+                share: {
+                    usa: { "Tech 2": 15, "Tech 4": 10 },
+                    asia: { "Tech 1": 10, "Tech 2": 25 },
+                    europe: { "Tech 2": 12, "Tech 4": 8 }
+                }
+            },
             analysis: {
                 score: 95,
-                compliments: ["Smart split: T4 in rich markets, T1/T2 in Asia."],
-                critiques: ["Complex logistics."],
+                compliments: [
+                    "Smart split: T4 in rich markets, T1/T2 in Asia.",
+                    "Market Fit: High Feature T4 aligns with USA's inelastic demand."
+                ],
+                critiques: [
+                    "Complex logistics.",
+                    "Feature Bloat Risk: 10 Features on T4 may be overkill for Europe (Price Sensitive)."
+                ],
                 outcome: "Market Leader."
+            },
+            competitor_intel: {
+                title: "Killer Threat: Feature War",
+                description: "Competitors hitting 8+ features on T4 will steal our 'High End' customers.",
+                implication: "We must hit 8 features on T4 this round. No compromise."
             }
         },
         {
@@ -259,11 +325,27 @@ function WhatIfContent() {
             logistics: "Global T4 distribution.",
             tax: "Transfer Pricing: 2.00",
             finance: "High Dividend.",
+            forecast: {
+                demand: { usa: 15600, asia: 30400, europe: 18900 },
+                growth: { usa: 20, asia: 30, europe: 10 },
+                share: {
+                    usa: { "Tech 2": 10, "Tech 4": 25 },
+                    asia: { "Tech 2": 20, "Tech 4": 15 },
+                    europe: { "Tech 2": 8, "Tech 4": 20 }
+                }
+            },
             analysis: {
                 score: 98,
                 compliments: ["Massive margins."],
-                critiques: [],
+                critiques: [
+                    "Supply Chain Exposure: High reliance on shipping exposes us to fuel cost volatility."
+                ],
                 outcome: "Profit machine."
+            },
+            competitor_intel: {
+                title: "Killer Threat: T4 Early Adopters",
+                description: "Competitors launching T4 in USA/EU early will capture the premium segment.",
+                implication: "We must launch T4 NOW in USA/EU to secure the high ground."
             }
         },
         {
@@ -297,11 +379,27 @@ function WhatIfContent() {
             logistics: "Prioritize T4.",
             tax: "Transfer Pricing: 2.00",
             finance: "Massive Dividend.",
+            forecast: {
+                demand: { usa: 18700, asia: 39500, europe: 20800 },
+                growth: { usa: 20, asia: 30, europe: 10 },
+                share: {
+                    usa: { "Tech 2": 5, "Tech 4": 35 },
+                    asia: { "Tech 2": 15, "Tech 4": 25 },
+                    europe: { "Tech 2": 5, "Tech 4": 30 }
+                }
+            },
             analysis: {
                 score: 99,
                 compliments: ["Perfect execution."],
-                critiques: [],
+                critiques: [
+                    "Capital Allocation: R&D spend on T3 yields diminishing returns. Pivot to cash preservation."
+                ],
                 outcome: "Unbeatable."
+            },
+            competitor_intel: {
+                title: "Killer Threat: T3 Price War",
+                description: "T3 becomes a commodity. Competitors will slash prices to clear stock.",
+                implication: "Do not engage. Focus on T4 premium margin."
             }
         },
         {
@@ -335,11 +433,25 @@ function WhatIfContent() {
             logistics: "Clear inventory.",
             tax: "Irrelevant.",
             finance: "Pay out ALL cash.",
+            forecast: {
+                demand: { usa: 22400, asia: 51300, europe: 22900 },
+                growth: { usa: 20, asia: 30, europe: 10 },
+                share: {
+                    usa: { "Tech 4": 40, "Tech 2": 2 },
+                    asia: { "Tech 4": 35, "Tech 2": 8 },
+                    europe: { "Tech 4": 38, "Tech 2": 3 }
+                }
+            },
             analysis: {
                 score: 100,
-                compliments: ["Victory."],
-                critiques: [],
+                compliments: ["Zero Inventory Target Met.", "Victory."],
+                critiques: ["None."],
                 outcome: "Winner."
+            },
+            competitor_intel: {
+                title: "Killer Threat: End Game Loss",
+                description: "Unsold inventory is SCRAPPED at zero value (Total Loss). We must hit EXACT demand.",
+                implication: "Produce ONLY confirmed demand. Do not build inventory."
             }
         }
     ];
@@ -538,7 +650,21 @@ function ActualRoundContent() {
             },
             logistics: "Prioritize Asia local sales. Avoid US->Asia exports.",
             tax: "Transfer Pricing: 2.00 (Max Profit Shift to Asia)",
-            finance: "Take Long-term Loan ($500k) for plants. No Dividends."
+            finance: "Take Long-term Loan ($500k) for plants. No Dividends.",
+            forecast: {
+                demand: { usa: 7500, asia: 10600, europe: 12900 },
+                growth: { usa: 20, asia: 30, europe: 10 },
+                share: {
+                    usa: { "Tech 1": 15 },
+                    asia: { "Tech 1": 20 },
+                    europe: { "Tech 1": 12 }
+                }
+            },
+            competitor_intel: {
+                title: "Killer Threat: Pink Team Strategy",
+                description: "If Pink Team keeps pricing T1 < $280 with low marketing, our high-marketing strategy will bleed cash if we try to match their price.",
+                implication: "We CANNOT lower price anymore. We must differentiate (Features/Promo) or cede the low-end."
+            }
         },
         {
             round: 2,
@@ -570,7 +696,21 @@ function ActualRoundContent() {
             },
             logistics: "Prioritize T2 delivery to all regions.",
             tax: "Transfer Pricing: 2.00",
-            finance: "Repay short-term debt. Small Dividend ($0.10)."
+            finance: "Repay short-term debt. Small Dividend ($0.10).",
+            forecast: {
+                demand: { usa: 9000, asia: 13800, europe: 14200 },
+                growth: { usa: 20, asia: 30, europe: 10 },
+                share: {
+                    usa: { "Tech 1": 12, "Tech 2": 15 },
+                    asia: { "Tech 1": 18, "Tech 2": 20 },
+                    europe: { "Tech 1": 10, "Tech 2": 12 }
+                }
+            },
+            competitor_intel: {
+                title: "Killer Threat: Early T2 Dump",
+                description: "Competitors may launch T2 early with low prices to grab market share before we scale.",
+                implication: "Maintain premium pricing for T2. Let them fight for the low-margin scraps."
+            }
         },
         {
             round: 3,
@@ -602,7 +742,30 @@ function ActualRoundContent() {
             },
             logistics: "Asia -> Europe -> USA",
             tax: "Transfer Pricing: 2.00",
-            finance: "High Dividend ($0.50). Buyback shares if cash > $2M."
+            finance: "High Dividend ($0.50). Buyback shares if cash > $2M.",
+            forecast: {
+                demand: { usa: 10840, asia: 18050, europe: 15650 },
+                growth: { usa: 20, asia: 30, europe: 10 },
+                share: {
+                    usa: { "Tech 2": 20, "Tech 3": 5 },
+                    asia: { "Tech 2": 25, "Tech 3": 8 },
+                    europe: { "Tech 2": 18, "Tech 3": 4 }
+                }
+            },
+            analysis: {
+                score: 90,
+                compliments: ["T4 is ready!", "Good cash preservation."],
+                critiques: [
+                    "Logistics Inefficiency: Exporting T2 to USA incurs high tariffs ($27/unit).",
+                    "Forecast Variance Risk: >10% error triggers inventory holding penalties."
+                ],
+                outcome: "Ready for dominance."
+            },
+            competitor_intel: {
+                title: "Killer Threat: Market Saturation",
+                description: "If 5+ teams dump T2 inventory simultaneously, prices will crash below $300.",
+                implication: "Shift focus to T4 R&D immediately. Do not get stuck with T2 inventory."
+            }
         },
         {
             round: 4,
@@ -634,7 +797,33 @@ function ActualRoundContent() {
             },
             logistics: "Prioritize T4 to USA (Feature Lovers).",
             tax: "Transfer Pricing: 2.00",
-            finance: "Dividend: $0.80. Cash accumulation."
+            finance: "Dividend: $0.80. Cash accumulation.",
+            forecast: {
+                demand: { usa: 13000, asia: 23400, europe: 17200 },
+                growth: { usa: 20, asia: 30, europe: 10 },
+                share: {
+                    usa: { "Tech 3": 15, "Tech 4": 10 },
+                    asia: { "Tech 2": 20, "Tech 4": 12 },
+                    europe: { "Tech 3": 12, "Tech 4": 8 }
+                }
+            },
+            analysis: {
+                score: 95,
+                compliments: [
+                    "Smart split: T4 in rich markets, T1/T2 in Asia.",
+                    "Market Fit: High Feature T4 aligns with USA's inelastic demand."
+                ],
+                critiques: [
+                    "Complex logistics.",
+                    "Feature Bloat Risk: 10 Features on T4 may be overkill for Europe (Price Sensitive)."
+                ],
+                outcome: "Market Leader."
+            },
+            competitor_intel: {
+                title: "Killer Threat: Feature War",
+                description: "Competitors hitting 8+ features on T4 will steal our 'High End' customers.",
+                implication: "We must hit 8 features on T4 this round. No compromise."
+            }
         },
         {
             round: 5,
@@ -666,7 +855,29 @@ function ActualRoundContent() {
             },
             logistics: "Global distribution optimization.",
             tax: "Transfer Pricing: 2.00",
-            finance: "Dividend: $1.00."
+            finance: "Dividend: $1.00.",
+            forecast: {
+                demand: { usa: 15600, asia: 30400, europe: 18900 },
+                growth: { usa: 20, asia: 30, europe: 10 },
+                share: {
+                    usa: { "Tech 3": 20, "Tech 4": 25 },
+                    asia: { "Tech 3": 15, "Tech 4": 30 },
+                    europe: { "Tech 3": 18, "Tech 4": 20 }
+                }
+            },
+            analysis: {
+                score: 98,
+                compliments: ["Massive margins."],
+                critiques: [
+                    "Supply Chain Exposure: High reliance on shipping exposes us to fuel cost volatility."
+                ],
+                outcome: "Profit machine."
+            },
+            competitor_intel: {
+                title: "Killer Threat: T4 Early Adopters",
+                description: "Competitors launching T4 in USA/EU early will capture the premium segment.",
+                implication: "We must launch T4 NOW in USA/EU to secure the high ground."
+            }
         },
         {
             round: 6,
@@ -698,7 +909,29 @@ function ActualRoundContent() {
             },
             logistics: "Prioritize T4 (Highest Margin).",
             tax: "Transfer Pricing: 2.00",
-            finance: "Dividend: $2.00 (Massive Payout)."
+            finance: "Dividend: $2.00 (Massive Payout).",
+            forecast: {
+                demand: { usa: 18700, asia: 39500, europe: 20800 },
+                growth: { usa: 20, asia: 30, europe: 10 },
+                share: {
+                    usa: { "Tech 3": 10, "Tech 4": 40 },
+                    asia: { "Tech 3": 15, "Tech 4": 35 },
+                    europe: { "Tech 3": 12, "Tech 4": 30 }
+                }
+            },
+            analysis: {
+                score: 99,
+                compliments: ["Perfect execution."],
+                critiques: [
+                    "Capital Allocation: R&D spend on T3 yields diminishing returns. Pivot to cash preservation."
+                ],
+                outcome: "Unbeatable."
+            },
+            competitor_intel: {
+                title: "Killer Threat: T3 Price War",
+                description: "T3 becomes a commodity. Competitors will slash prices to clear stock.",
+                implication: "Do not engage. Focus on T4 premium margin."
+            }
         },
         {
             round: 7,
@@ -730,7 +963,33 @@ function ActualRoundContent() {
             },
             logistics: "Clear all stock.",
             tax: "Irrelevant (Game ends).",
-            finance: "Pay out ALL remaining cash as dividends."
+            finance: "Pay out ALL remaining cash as dividends.",
+            forecast: {
+                demand: { usa: 22400, asia: 51300, europe: 22900 },
+                network: {
+                    usa: { t1: 100, t2: 100, t3: 98, t4: 95 },
+                    asia: { t1: 100, t2: 99, t3: 95, t4: 85 },
+                    europe: { t1: 100, t2: 100, t3: 97, t4: 92 }
+                },
+                share: {
+                    usa: { "Tech 4": 45, "Tech 3": 5 },
+                    asia: { "Tech 4": 40, "Tech 3": 10 },
+                    europe: { "Tech 4": 42, "Tech 3": 5 }
+                }
+            },
+            analysis: {
+                score: 100,
+                compliments: ["Zero Inventory Target Met.", "Victory."],
+                critiques: [
+                    "Execution Risk: Any unsold inventory is a total loss (Scrapped at $0)."
+                ],
+                outcome: "Winner."
+            },
+            competitor_intel: {
+                title: "Killer Threat: End Game Loss",
+                description: "Unsold inventory is SCRAPPED at zero value (Total Loss). We must hit EXACT demand.",
+                implication: "Produce ONLY confirmed demand. Do not build inventory."
+            }
         }
     ];
 
@@ -986,6 +1245,77 @@ function DetailedRoundCard({ data, isCritique = false }: any) {
                         <p>{data.finance}</p>
                     </div>
                 </div>
+
+                {/* Market Forecast (Refined) */}
+                {data.forecast && (
+                    <div className="md:col-span-2 xl:col-span-3 space-y-4 pt-6 border-t border-gray-100">
+                        <div className="flex items-center justify-between">
+                            <h4 className="text-sm font-bold text-gray-400 uppercase flex items-center gap-2">
+                                <BarChart3 className="w-4 h-4" /> Market Forecast
+                            </h4>
+                            <span className="text-xs font-medium text-gray-400 bg-gray-50 px-2 py-1 rounded">
+                                *Sales = Total Demand × Market Share
+                            </span>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            {['usa', 'asia', 'europe'].map((region) => {
+                                const r = region as 'usa' | 'asia' | 'europe';
+                                const demand = data.forecast.demand[r];
+                                const growth = data.forecast.growth ? data.forecast.growth[r] : 0;
+                                const shares = data.forecast.share[r];
+                                const totalShare = Object.values(shares).reduce((a: number, b: unknown) => a + (b as number), 0);
+                                const projectedSales = Math.round(demand * (totalShare as number / 100));
+
+                                return (
+                                    <div key={region} className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+                                        {/* Header: Total Market Demand */}
+                                        <div className="bg-gray-50 px-4 py-3 border-b border-gray-100 flex justify-between items-center">
+                                            <span className="font-bold text-gray-900 uppercase">{region}</span>
+                                            <div className="text-right">
+                                                <div className="text-xs text-gray-500 uppercase font-bold">Total Demand</div>
+                                                <div className="font-mono font-bold text-gray-900">
+                                                    {(demand / 1000).toFixed(1)}M
+                                                    <span className={`ml-1 text-xs ${growth >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                                                        {growth > 0 ? '+' : ''}{growth}%
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Body: Company Share & Sales */}
+                                        <div className="p-4 space-y-4">
+                                            {/* Market Share Breakdown */}
+                                            <div className="space-y-2">
+                                                <div className="flex justify-between text-xs font-bold text-gray-400 uppercase">
+                                                    <span>Our Share</span>
+                                                    <span>{totalShare}% Total</span>
+                                                </div>
+                                                {Object.entries(shares).map(([tech, share]: any) => (
+                                                    <div key={tech} className="flex items-center justify-between text-sm">
+                                                        <span className="text-gray-600 font-medium">{tech}</span>
+                                                        <div className="flex items-center gap-2">
+                                                            <div className="w-24 h-2 bg-gray-100 rounded-full overflow-hidden">
+                                                                <div className="h-full bg-blue-500" style={{ width: `${share * 3}%` }}></div> {/* Visual scale x3 for visibility */}
+                                                            </div>
+                                                            <span className="font-bold text-gray-900 w-8 text-right">{share}%</span>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+
+                                            {/* Calculated Sales */}
+                                            <div className="pt-3 border-t border-gray-100 flex justify-between items-center bg-blue-50/50 -mx-4 -mb-4 px-4 py-3">
+                                                <span className="text-xs font-bold text-blue-800 uppercase">Est. Sales Volume</span>
+                                                <span className="font-mono font-bold text-blue-700 text-lg">{projectedSales.toLocaleString()}k</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                )}
             </div>
 
             {/* Critique Overlay */}
@@ -1027,6 +1357,25 @@ function DetailedRoundCard({ data, isCritique = false }: any) {
                             </ul>
                         </div>
                     </div>
+
+                    {/* Competitor Intelligence (New) */}
+                    {data.competitor_intel && (
+                        <div className="mt-8 pt-6 border-t border-gray-800">
+                            <h5 className="font-bold text-rose-400 mb-3 flex items-center gap-2 uppercase text-sm tracking-wider">
+                                <AlertTriangle className="w-4 h-4" /> Competitor Intelligence (Killer Threats)
+                            </h5>
+                            <div className="bg-rose-900/20 border border-rose-900/50 rounded-lg p-4">
+                                <h6 className="font-bold text-rose-200 mb-2">{data.competitor_intel.title}</h6>
+                                <p className="text-sm text-gray-300 mb-3 leading-relaxed">
+                                    {data.competitor_intel.description}
+                                </p>
+                                <div className="flex items-start gap-2 text-xs font-bold text-rose-400 uppercase">
+                                    <span className="shrink-0">⚠ Implication:</span>
+                                    <span>{data.competitor_intel.implication}</span>
+                                </div>
+                            </div>
+                        </div>
+                    )}
 
                     <div className="mt-8 pt-6 border-t border-gray-800">
                         <h5 className="font-bold text-gray-400 mb-2 text-sm uppercase">Projected Outcome</h5>
