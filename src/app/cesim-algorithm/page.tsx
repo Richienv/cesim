@@ -36,6 +36,9 @@ export default function CesimAlgorithmPage() {
                 <div className="p-8 md:p-12 max-w-[1920px] mx-auto space-y-12">
 
                     {/* Tab Navigation */}
+
+
+                    {/* Tab Navigation */}
                     <div className="flex space-x-1 bg-gray-200 p-1 rounded-xl w-fit">
                         <button
                             onClick={() => setActiveTab('practice')}
@@ -49,16 +52,252 @@ export default function CesimAlgorithmPage() {
                         >
                             7-Round Forecast (Actual)
                         </button>
+                        <button
+                            onClick={() => setActiveTab('whatif')}
+                            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === 'whatif' ? 'bg-white text-rose-600 shadow-sm' : 'text-gray-500 hover:text-gray-900'}`}
+                        >
+                            What-If Analysis (Critique)
+                        </button>
                     </div>
 
                     {activeTab === 'practice' ? (
                         <PracticeRoundContent />
-                    ) : (
+                    ) : activeTab === 'actual' ? (
                         <ActualRoundContent />
+                    ) : (
+                        <WhatIfContent />
                     )}
 
                 </div>
             </main>
+        </div>
+    );
+}
+
+function WhatIfContent() {
+    const userScenarios = [
+        {
+            round: 1,
+            focus: "R1: The Big Bet (High Debt)",
+            demand: "Growth: 20%",
+            production: {
+                capacity: "Build 2 Plants in Asia (Total 4)",
+                allocation: "T1: 60% / T2: 40% (Asia Production)",
+                outsourcing: "No"
+            },
+            rnd: {
+                tech: "Buy Tech 2 License + Start Tech 4 R&D",
+                features: "T1: 1 feature",
+                budget: "$350k+ (High Spend)"
+            },
+            marketing: {
+                usa: { price: 290, promo: 25 },
+                asia: { price: 2100, promo: 35 },
+                europe: { price: 160, promo: 22 }
+            },
+            logistics: "Prioritize Asia. Export T2 to USA/EU.",
+            tax: "Transfer Pricing: 2.00",
+            finance: "Long-term Loan ($800k) to fund T2 License + T4 R&D.",
+            analysis: {
+                score: 78,
+                compliments: ["Aggressive start."],
+                critiques: ["High Cash Burn. Watch liquidity."],
+                outcome: "High Risk / High Reward."
+            }
+        },
+        {
+            round: 2,
+            focus: "R2: Tech 2 Launch & Survival",
+            demand: "T2 Demand Explodes",
+            production: {
+                capacity: "Build 1 Plant in Asia. Run 98% Util.",
+                allocation: "T1: 50% / T2: 50%",
+                outsourcing: "Yes (Overflow)"
+            },
+            rnd: {
+                tech: "Continue Tech 4 R&D",
+                features: "T1: 1, T2: 3",
+                budget: "$200k"
+            },
+            marketing: {
+                usa: { price: 480, promo: 25 },
+                asia: { price: 3500, promo: 45 },
+                europe: { price: 360, promo: 25 }
+            },
+            logistics: "Push T2 to all markets.",
+            tax: "Transfer Pricing: 2.00",
+            finance: "Repay Short-term debt. No Dividends.",
+            analysis: {
+                score: 85,
+                compliments: ["T2 margins stabilize cash flow."],
+                critiques: ["Still heavy debt load."],
+                outcome: "Stabilization phase."
+            }
+        },
+        {
+            round: 3,
+            focus: "R3: Cash Cow & Prep for T4",
+            demand: "Strong T2 Growth",
+            production: {
+                capacity: "Build 1 Plant in Asia (Total 6)",
+                allocation: "T1: 30% / T2: 70%",
+                outsourcing: "No"
+            },
+            rnd: {
+                tech: "Finish Tech 4 R&D (Ready R4)",
+                features: "T1: 1, T2: 4",
+                budget: "$200k"
+            },
+            marketing: {
+                usa: { price: 470, promo: 25 },
+                asia: { price: 3400, promo: 50 },
+                europe: { price: 340, promo: 30 }
+            },
+            logistics: "Maximize T2 sales.",
+            tax: "Transfer Pricing: 2.00",
+            finance: "Start repaying Long-term loan.",
+            analysis: {
+                score: 90,
+                compliments: ["T4 is ready for next round!"],
+                critiques: ["None."],
+                outcome: "Ready for market dominance."
+            }
+        },
+        {
+            round: 4,
+            focus: "R4: Tech 4 Launch (Early Adopter)",
+            demand: "T4 Monopoly in High-End",
+            production: {
+                capacity: "Maintain. Max Efficiency.",
+                allocation: "T2: 40% / T4: 60%",
+                outsourcing: "Yes (T2 Overflow)"
+            },
+            rnd: {
+                tech: "Feature Optimization",
+                features: "T2: 5, T4: 8 (USA Target)",
+                budget: "$150k"
+            },
+            marketing: {
+                usa: { price: 680, promo: 35 },
+                asia: { price: 4800, promo: 60 },
+                europe: { price: 550, promo: 40 }
+            },
+            logistics: "Prioritize T4 to USA/EU.",
+            tax: "Transfer Pricing: 2.00",
+            finance: "Pay Dividends ($0.50).",
+            analysis: {
+                score: 95,
+                compliments: ["You own the T4 market alone."],
+                critiques: ["Competitors are 2 rounds behind."],
+                outcome: "Market Leader."
+            }
+        },
+        {
+            round: 5,
+            focus: "R5: Feature Wars",
+            demand: "T4 Mass Market",
+            production: {
+                capacity: "No new plants.",
+                allocation: "T2: 20% / T4: 80%",
+                outsourcing: "No"
+            },
+            rnd: {
+                tech: "Maintenance",
+                features: "T4: 10 (Max)",
+                budget: "$100k"
+            },
+            marketing: {
+                usa: { price: 650, promo: 30 },
+                asia: { price: 4500, promo: 80 },
+                europe: { price: 520, promo: 50 }
+            },
+            logistics: "Global T4 distribution.",
+            tax: "Transfer Pricing: 2.00",
+            finance: "High Dividend ($1.00).",
+            analysis: {
+                score: 98,
+                compliments: ["Massive margins on T4."],
+                critiques: [],
+                outcome: "Profit machine."
+            }
+        },
+        {
+            round: 6,
+            focus: "R6: Profit Harvest",
+            demand: "Peak T4",
+            production: {
+                capacity: "Convert lines to T4.",
+                allocation: "T4: 100%",
+                outsourcing: "No"
+            },
+            rnd: {
+                tech: "Stop R&D",
+                features: "T4: 10",
+                budget: "$0"
+            },
+            marketing: {
+                usa: { price: 750, promo: 30 },
+                asia: { price: 5500, promo: 80 },
+                europe: { price: 650, promo: 40 }
+            },
+            logistics: "Prioritize T4.",
+            tax: "Transfer Pricing: 2.00",
+            finance: "Massive Dividend ($2.00).",
+            analysis: {
+                score: 99,
+                compliments: ["Perfect execution."],
+                critiques: [],
+                outcome: "Unbeatable."
+            }
+        },
+        {
+            round: 7,
+            focus: "R7: Endgame",
+            demand: "Last Round",
+            production: {
+                capacity: "Match Demand exactly.",
+                allocation: "T4: 100%",
+                outsourcing: "No"
+            },
+            rnd: {
+                tech: "None",
+                features: "Max",
+                budget: "$0"
+            },
+            marketing: {
+                usa: { price: 700, promo: 10 },
+                asia: { price: 5000, promo: 10 },
+                europe: { price: 600, promo: 10 }
+            },
+            logistics: "Clear inventory.",
+            tax: "Irrelevant.",
+            finance: "Pay out ALL cash.",
+            analysis: {
+                score: 100,
+                compliments: ["Victory."],
+                critiques: [],
+                outcome: "Winner."
+            }
+        }
+    ];
+
+    return (
+        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div className="bg-rose-50 rounded-xl p-8 border border-rose-100">
+                <h2 className="text-2xl font-bold text-rose-900 mb-4">What-If Analysis Engine</h2>
+                <p className="text-rose-800 text-lg leading-relaxed">
+                    Based on your input (<strong>Tech 2 Purchase + Early Tech 4 R&D</strong>), here is the <strong>7-Round Forecast</strong>.
+                </p>
+                <div className="mt-6 p-4 bg-white/60 rounded-lg border border-rose-200 text-sm text-rose-700">
+                    <strong>Strategy Note:</strong> The critical phase is <strong>Round 1-2</strong>. You must survive the debt load. By <strong>Round 4</strong>, your early Tech 4 launch gives you a monopoly.
+                </div>
+            </div>
+
+            <div className="space-y-6">
+                {userScenarios.map((scenario) => (
+                    <DetailedRoundCard key={scenario.round} data={scenario} isCritique={true} />
+                ))}
+            </div>
         </div>
     );
 }
@@ -535,9 +774,9 @@ function Bar({ label, height, color, value }: any) {
     );
 }
 
-function DetailedRoundCard({ data }: any) {
+function DetailedRoundCard({ data, isCritique = false }: any) {
     return (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div className={`bg-white rounded-xl shadow-sm border ${isCritique ? 'border-rose-200 ring-4 ring-rose-50' : 'border-gray-200'} overflow-hidden transition-all`}>
             <div className="bg-gray-50 px-8 py-5 border-b border-gray-200 flex justify-between items-center">
                 <div className="flex items-center gap-4">
                     <span className="bg-purple-600 text-white text-sm font-bold px-3 py-1.5 rounded uppercase">Round {data.round}</span>
@@ -613,6 +852,55 @@ function DetailedRoundCard({ data }: any) {
                     </div>
                 </div>
             </div>
+
+            {/* Critique Overlay */}
+            {data.analysis && (
+                <div className="bg-gray-900 text-white p-8 border-t border-gray-800">
+                    <div className="flex items-center justify-between mb-6">
+                        <h4 className="text-xl font-bold flex items-center gap-2">
+                            <BrainCircuit className="w-6 h-6 text-rose-400" />
+                            Strategic Audit
+                        </h4>
+                        <div className={`px-4 py-2 rounded-lg font-bold text-xl ${data.analysis.score > 80 ? 'bg-green-500' : data.analysis.score > 50 ? 'bg-yellow-500 text-black' : 'bg-red-500'}`}>
+                            Score: {data.analysis.score}/100
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div>
+                            <h5 className="font-bold text-green-400 mb-3 flex items-center gap-2">
+                                <TrendingUp className="w-4 h-4" /> Compliments
+                            </h5>
+                            <ul className="space-y-2">
+                                {data.analysis.compliments.map((item: string, i: number) => (
+                                    <li key={i} className="flex items-start gap-2 text-sm text-gray-300">
+                                        <span className="text-green-500 mt-1">✓</span> {item}
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                        <div>
+                            <h5 className="font-bold text-red-400 mb-3 flex items-center gap-2">
+                                <Target className="w-4 h-4" /> Critical Risks
+                            </h5>
+                            <ul className="space-y-2">
+                                {data.analysis.critiques.map((item: string, i: number) => (
+                                    <li key={i} className="flex items-start gap-2 text-sm text-gray-300">
+                                        <span className="text-red-500 mt-1">⚠</span> {item}
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div className="mt-8 pt-6 border-t border-gray-800">
+                        <h5 className="font-bold text-gray-400 mb-2 text-sm uppercase">Projected Outcome</h5>
+                        <p className="text-lg font-medium text-white">
+                            {data.analysis.outcome}
+                        </p>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
