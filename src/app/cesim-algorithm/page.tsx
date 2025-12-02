@@ -112,9 +112,9 @@ function WhatIfContent() {
                 demand: { usa: 7500, asia: 10600, europe: 12900 },
                 growth: { usa: 20, asia: 30, europe: 10 },
                 share: {
-                    usa: { "Tech 1": 15, "Tech 2": 5 },
-                    asia: { "Tech 1": 20, "Tech 2": 8 },
-                    europe: { "Tech 1": 12, "Tech 2": 4 }
+                    usa: { "Tech 1": 10, "Tech 2": 5 },
+                    asia: { "Tech 1": 15, "Tech 2": 5 },
+                    europe: { "Tech 1": 10, "Tech 2": 3 }
                 }
             },
             analysis: {
@@ -127,6 +127,11 @@ function WhatIfContent() {
                 title: "Killer Threat: Pink Team Strategy",
                 description: "If Pink Team keeps pricing T1 < $280 with low marketing, our high-marketing strategy will bleed cash if we try to match their price.",
                 implication: "We CANNOT lower price anymore. We must differentiate (Features/Promo) or cede the low-end."
+            },
+            competitive_advantage: {
+                usa: "Feature Leader (Inelastic Demand)",
+                asia: "Local Production (0 Tariffs)",
+                europe: "Niche Player (High Margin)"
             }
         },
         {
@@ -164,9 +169,9 @@ function WhatIfContent() {
                 demand: { usa: 9000, asia: 13800, europe: 14200 },
                 growth: { usa: 20, asia: 30, europe: 10 },
                 share: {
-                    usa: { "Tech 1": 12, "Tech 2": 15 },
-                    asia: { "Tech 1": 18, "Tech 2": 20 },
-                    europe: { "Tech 1": 10, "Tech 2": 12 }
+                    usa: { "Tech 1": 8, "Tech 2": 12 },
+                    asia: { "Tech 1": 12, "Tech 2": 15 },
+                    europe: { "Tech 1": 8, "Tech 2": 10 }
                 }
             },
             analysis: {
@@ -179,6 +184,11 @@ function WhatIfContent() {
                 title: "Killer Threat: Early T2 Dump",
                 description: "Competitors may launch T2 early with low prices to grab market share before we scale.",
                 implication: "Maintain premium pricing for T2. Let them fight for the low-margin scraps."
+            },
+            competitive_advantage: {
+                usa: "Feature Leader (Inelastic Demand)",
+                asia: "Local Production (0 Tariffs)",
+                europe: "Niche Player (High Margin)"
             }
         },
         {
@@ -216,9 +226,9 @@ function WhatIfContent() {
                 demand: { usa: 10840, asia: 18050, europe: 15650 },
                 growth: { usa: 20, asia: 30, europe: 10 },
                 share: {
-                    usa: { "Tech 1": 8, "Tech 2": 25 },
-                    asia: { "Tech 1": 15, "Tech 2": 30 },
-                    europe: { "Tech 1": 6, "Tech 2": 20 }
+                    usa: { "Tech 1": 5, "Tech 2": 18 },
+                    asia: { "Tech 1": 10, "Tech 2": 20 },
+                    europe: { "Tech 1": 4, "Tech 2": 15 }
                 }
             },
             analysis: {
@@ -234,6 +244,11 @@ function WhatIfContent() {
                 title: "Killer Threat: Market Saturation",
                 description: "If 5+ teams dump T2 inventory simultaneously, prices will crash below $300.",
                 implication: "Shift focus to T4 R&D immediately. Do not get stuck with T2 inventory."
+            },
+            competitive_advantage: {
+                usa: "Feature Leader (Inelastic Demand)",
+                asia: "Local Production (0 Tariffs)",
+                europe: "Niche Player (High Margin)"
             }
         },
         {
@@ -655,15 +670,20 @@ function ActualRoundContent() {
                 demand: { usa: 7500, asia: 10600, europe: 12900 },
                 growth: { usa: 20, asia: 30, europe: 10 },
                 share: {
-                    usa: { "Tech 1": 15 },
-                    asia: { "Tech 1": 20 },
-                    europe: { "Tech 1": 12 }
+                    usa: { "Tech 1": 10 },
+                    asia: { "Tech 1": 15 },
+                    europe: { "Tech 1": 10 }
                 }
             },
             competitor_intel: {
                 title: "Killer Threat: Pink Team Strategy",
                 description: "If Pink Team keeps pricing T1 < $280 with low marketing, our high-marketing strategy will bleed cash if we try to match their price.",
                 implication: "We CANNOT lower price anymore. We must differentiate (Features/Promo) or cede the low-end."
+            },
+            competitive_advantage: {
+                usa: "Feature Leader (Inelastic Demand)",
+                asia: "Local Production (0 Tariffs)",
+                europe: "Niche Player (High Margin)"
             }
         },
         {
@@ -701,15 +721,20 @@ function ActualRoundContent() {
                 demand: { usa: 9000, asia: 13800, europe: 14200 },
                 growth: { usa: 20, asia: 30, europe: 10 },
                 share: {
-                    usa: { "Tech 1": 12, "Tech 2": 15 },
-                    asia: { "Tech 1": 18, "Tech 2": 20 },
-                    europe: { "Tech 1": 10, "Tech 2": 12 }
+                    usa: { "Tech 1": 8, "Tech 2": 12 },
+                    asia: { "Tech 1": 12, "Tech 2": 15 },
+                    europe: { "Tech 1": 8, "Tech 2": 10 }
                 }
             },
             competitor_intel: {
                 title: "Killer Threat: Early T2 Dump",
                 description: "Competitors may launch T2 early with low prices to grab market share before we scale.",
                 implication: "Maintain premium pricing for T2. Let them fight for the low-margin scraps."
+            },
+            competitive_advantage: {
+                usa: "Feature Leader (Inelastic Demand)",
+                asia: "Local Production (0 Tariffs)",
+                europe: "Niche Player (High Margin)"
             }
         },
         {
@@ -747,9 +772,9 @@ function ActualRoundContent() {
                 demand: { usa: 10840, asia: 18050, europe: 15650 },
                 growth: { usa: 20, asia: 30, europe: 10 },
                 share: {
-                    usa: { "Tech 2": 20, "Tech 3": 5 },
-                    asia: { "Tech 2": 25, "Tech 3": 8 },
-                    europe: { "Tech 2": 18, "Tech 3": 4 }
+                    usa: { "Tech 2": 15, "Tech 3": 5 },
+                    asia: { "Tech 2": 18, "Tech 3": 8 },
+                    europe: { "Tech 2": 12, "Tech 3": 4 }
                 }
             },
             analysis: {
@@ -765,6 +790,11 @@ function ActualRoundContent() {
                 title: "Killer Threat: Market Saturation",
                 description: "If 5+ teams dump T2 inventory simultaneously, prices will crash below $300.",
                 implication: "Shift focus to T4 R&D immediately. Do not get stuck with T2 inventory."
+            },
+            competitive_advantage: {
+                usa: "Feature Leader (Inelastic Demand)",
+                asia: "Local Production (0 Tariffs)",
+                europe: "Niche Player (High Margin)"
             }
         },
         {
@@ -1317,6 +1347,29 @@ function DetailedRoundCard({ data, isCritique = false }: any) {
                     </div>
                 )}
             </div>
+
+            {/* Competitive Advantage (New) */}
+            {data.competitive_advantage && (
+                <div className="mt-6 pt-4 border-t border-gray-100 px-8">
+                    <h4 className="text-sm font-bold text-gray-400 uppercase flex items-center gap-2 mb-3">
+                        <Lightbulb className="w-4 h-4" /> Competitive Advantage (Why Us?)
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="bg-emerald-50 border border-emerald-100 p-3 rounded-lg">
+                            <div className="text-xs font-bold text-emerald-600 uppercase mb-1">USA</div>
+                            <div className="text-sm text-emerald-900 font-medium">{data.competitive_advantage.usa}</div>
+                        </div>
+                        <div className="bg-emerald-50 border border-emerald-100 p-3 rounded-lg">
+                            <div className="text-xs font-bold text-emerald-600 uppercase mb-1">Asia</div>
+                            <div className="text-sm text-emerald-900 font-medium">{data.competitive_advantage.asia}</div>
+                        </div>
+                        <div className="bg-emerald-50 border border-emerald-100 p-3 rounded-lg">
+                            <div className="text-xs font-bold text-emerald-600 uppercase mb-1">Europe</div>
+                            <div className="text-sm text-emerald-900 font-medium">{data.competitive_advantage.europe}</div>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* Critique Overlay */}
             {data.analysis && (
