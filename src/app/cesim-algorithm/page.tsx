@@ -211,17 +211,17 @@ function ActualRoundContent() {
     const rounds = [
         {
             round: 1,
-            focus: "Foundation & Asia Capacity",
+            focus: "Foundation & Internal R&D",
             demand: "Global Growth: ~20%",
             production: {
                 capacity: "Build 2 Plants in Asia (Total 4)",
-                allocation: "T1: 100% (No T2 yet)",
-                outsourcing: "No"
+                allocation: "T1: 100% Internal (Max Learning Curve)",
+                outsourcing: "No (Too expensive)"
             },
             rnd: {
-                tech: "License Tech 2 immediately",
+                tech: "Internal R&D Tech 2 (Ready Round 2)",
                 features: "T1: 1 feature (Cost focus)",
-                budget: "$350k (Aggressive)"
+                budget: "$400k (High - Internal R&D)"
             },
             marketing: {
                 usa: { price: 280, promo: 23 },
@@ -229,22 +229,22 @@ function ActualRoundContent() {
                 europe: { price: 150, promo: 20 }
             },
             logistics: "Prioritize Asia local sales. Avoid US->Asia exports.",
-            tax: "Transfer Pricing: 1.40 (Max profit in Asia)",
+            tax: "Transfer Pricing: 2.00 (Max Profit Shift to Asia)",
             finance: "Take Long-term Loan ($500k) for plants. No Dividends."
         },
         {
             round: 2,
-            focus: "Tech 2 Launch & Premium Pricing",
+            focus: "Tech 2 Launch & Tech 3 R&D",
             demand: "Tech 2 Demand explodes (Early Adopters)",
             production: {
-                capacity: "Build 1 Plant in Asia. Run 95% Util.",
-                allocation: "T1: 60%, T2: 40%",
-                outsourcing: "Yes (if demand > capacity)"
+                capacity: "Build 1 Plant in Asia. Run 98% Util.",
+                allocation: "T1: 60%, T2: 40% (All Internal)",
+                outsourcing: "Yes (Only for overflow)"
             },
             rnd: {
-                tech: "In-house Tech 2 improvements",
+                tech: "Internal R&D Tech 3 (Ready Round 3)",
                 features: "T1: 1, T2: 3-4 (Differentiation)",
-                budget: "$280k"
+                budget: "$350k"
             },
             marketing: {
                 usa: { price: 470, promo: 25 },
@@ -252,22 +252,22 @@ function ActualRoundContent() {
                 europe: { price: 350, promo: 25 }
             },
             logistics: "Prioritize T2 delivery to all regions.",
-            tax: "Transfer Pricing: 1.40",
+            tax: "Transfer Pricing: 2.00",
             finance: "Repay short-term debt. Small Dividend ($0.10)."
         },
         {
             round: 3,
-            focus: "Asia Market Share Grab",
+            focus: "Tech 3 Launch & Tech 4 R&D",
             demand: "Asia T2 growth > 40%",
             production: {
                 capacity: "Build 1 Plant in Asia (Total 6)",
-                allocation: "T1: 40%, T2: 60%",
+                allocation: "T1: 30%, T2: 50%, T3: 20%",
                 outsourcing: "No (Capacity should catch up)"
             },
             rnd: {
-                tech: "Maintenance only",
-                features: "T1: 1, T2: 4",
-                budget: "$150k"
+                tech: "Internal R&D Tech 4 (Ready Round 4)",
+                features: "T1: 1, T2: 4, T3: 5",
+                budget: "$400k"
             },
             marketing: {
                 usa: { price: 450, promo: 25 },
@@ -275,45 +275,45 @@ function ActualRoundContent() {
                 europe: { price: 320, promo: 30 }
             },
             logistics: "Asia -> Europe -> USA",
-            tax: "Transfer Pricing: 1.40",
+            tax: "Transfer Pricing: 2.00",
             finance: "High Dividend ($0.50). Buyback shares if cash > $2M."
         },
         {
             round: 4,
-            focus: "Tech 3 Launch (Asia First)",
-            demand: "Tech 3 starts in Asia (35% coverage)",
+            focus: "Tech 4 Launch (Global)",
+            demand: "Tech 4 starts in Asia (35% coverage)",
             production: {
                 capacity: "Maintain. Maximize efficiency.",
-                allocation: "T1: 20%, T2: 50%, T3: 30%",
-                outsourcing: "Yes (for T1 overflow)"
+                allocation: "T2: 40%, T3: 40%, T4: 20%",
+                outsourcing: "Yes (for T2 overflow)"
             },
             rnd: {
-                tech: "Start Tech 4 Investment",
-                features: "T3: 6-8 (Premium)",
-                budget: "$500k (Tech 4 prep)"
+                tech: "Feature Optimization",
+                features: "T3: 6, T4: 8 (USA Target)",
+                budget: "$200k"
             },
             marketing: {
-                usa: { price: 420, promo: 25 },
+                usa: { price: 650, promo: 30 },
                 asia: { price: 4500, promo: 80 },
-                europe: { price: 300, promo: 35 }
+                europe: { price: 500, promo: 35 }
             },
-            logistics: "Prioritize T3 to Asia.",
-            tax: "Transfer Pricing: 1.40",
-            finance: "Dividend: $0.80. Cash accumulation for T4."
+            logistics: "Prioritize T4 to USA (Feature Lovers).",
+            tax: "Transfer Pricing: 2.00",
+            finance: "Dividend: $0.80. Cash accumulation."
         },
         {
             round: 5,
-            focus: "Tech 3 Expansion & Tech 4 Prep",
+            focus: "Feature Wars",
             demand: "Tech 3 hits USA/EU. T4 Early Adopters in EU.",
             production: {
                 capacity: "No new plants (Risk of overcapacity later)",
-                allocation: "T1: 10%, T2: 40%, T3: 50%",
+                allocation: "T2: 20%, T3: 40%, T4: 40%",
                 outsourcing: "No"
             },
             rnd: {
-                tech: "Finalize Tech 4",
-                features: "T3: 8, T4: 10 (Max)",
-                budget: "$800k (Heavy)"
+                tech: "Maintenance",
+                features: "T3: 8, T4: 10 (Max for USA)",
+                budget: "$150k"
             },
             marketing: {
                 usa: { price: 600, promo: 30 },
@@ -321,16 +321,16 @@ function ActualRoundContent() {
                 europe: { price: 550, promo: 50 }
             },
             logistics: "Global distribution optimization.",
-            tax: "Transfer Pricing: 1.40",
+            tax: "Transfer Pricing: 2.00",
             finance: "Dividend: $1.00."
         },
         {
             round: 6,
-            focus: "Tech 4 Global Launch",
+            focus: "Profit Harvest",
             demand: "Tech 4 Global Rollout. T1 dead.",
             production: {
                 capacity: "Convert T1 lines to T4.",
-                allocation: "T2: 20%, T3: 40%, T4: 40%",
+                allocation: "T3: 30%, T4: 70%",
                 outsourcing: "No"
             },
             rnd: {
@@ -344,7 +344,7 @@ function ActualRoundContent() {
                 europe: { price: 650, promo: 40 }
             },
             logistics: "Prioritize T4 (Highest Margin).",
-            tax: "Transfer Pricing: 1.40",
+            tax: "Transfer Pricing: 2.00",
             finance: "Dividend: $2.00 (Massive Payout)."
         },
         {

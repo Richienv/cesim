@@ -26,23 +26,23 @@ export default function CaseDescriptionPage() {
                 {/* Top Header */}
                 <header className="bg-white border-b border-gray-200 sticky top-0 z-40 px-8 py-4 flex items-center justify-between">
                     <div>
-                        <h1 className="text-2xl font-bold text-gray-900">Case Description</h1>
-                        <p className="text-sm text-gray-500">Global Mobile Phone Market Simulation (Mobilé Inc.)</p>
+                        <h1 className="text-4xl font-bold text-gray-900 mb-2">Case Description</h1>
+                        <p className="text-lg text-gray-500">Global Mobile Phone Market Simulation (Mobilé Inc.)</p>
                     </div>
                 </header>
 
-                <div className="p-8 max-w-5xl mx-auto space-y-8">
+                <div className="p-8 md:p-12 max-w-[1920px] mx-auto space-y-12">
 
                     {/* Introduction */}
                     <Section
                         title="Company Overview"
-                        icon={<BookOpen className="w-6 h-6 text-blue-600" />}
+                        icon={<BookOpen className="w-8 h-8 text-blue-600" />}
                         color="blue"
                     >
-                        <p className="text-gray-600 leading-relaxed mb-4">
+                        <p className="text-gray-600 text-xl leading-relaxed mb-6">
                             <strong>Mobilé Inc.</strong> is a major mobile phone manufacturer. Following a DOJ investigation into monopoly practices (price fixing, delaying technology), the previous board was dismissed. You have been hired as new management to compete in a restructured, competitive market.
                         </p>
-                        <p className="text-gray-600 leading-relaxed">
+                        <p className="text-gray-600 text-xl leading-relaxed">
                             The company currently has strong profits and cash flow (~$1.2B sales), but faces intense competition and rapid technological changes. Core operations include R&D, Production, and Sales.
                         </p>
                     </Section>
@@ -51,33 +51,33 @@ export default function CaseDescriptionPage() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <Section
                             title="Industry Context"
-                            icon={<History className="w-6 h-6 text-purple-600" />}
+                            icon={<History className="w-8 h-8 text-purple-600" />}
                             color="purple"
                         >
-                            <p className="text-gray-600 text-sm mb-3">
+                            <p className="text-gray-600 text-lg mb-6 leading-relaxed">
                                 From the first NMT networks (1981) to GSM (1991) and 3G/4G, the industry is driven by data traffic growth. Key success factors are <strong>attractive design</strong> and <strong>customer-oriented features</strong>.
                             </p>
-                            <div className="bg-purple-50 p-4 rounded-lg text-sm text-purple-800">
+                            <div className="bg-purple-50 p-6 rounded-xl text-lg text-purple-900 border border-purple-100">
                                 <strong>Future Challenge:</strong> 5G and rapid tech evolution require continuous R&D investment. Partnerships and outsourcing are essential strategies.
                             </div>
                         </Section>
 
                         <Section
                             title="Global Operations"
-                            icon={<Globe className="w-6 h-6 text-green-600" />}
+                            icon={<Globe className="w-8 h-8 text-green-600" />}
                             color="green"
                         >
-                            <ul className="space-y-2 text-sm text-gray-600">
-                                <li className="flex items-start gap-2">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-green-500 mt-1.5"></span>
+                            <ul className="space-y-4 text-lg text-gray-600 leading-relaxed">
+                                <li className="flex items-start gap-4">
+                                    <span className="w-2.5 h-2.5 rounded-full bg-green-500 mt-2.5 shrink-0"></span>
                                     <span><strong>Markets:</strong> USA, Asia, Europe.</span>
                                 </li>
-                                <li className="flex items-start gap-2">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-green-500 mt-1.5"></span>
+                                <li className="flex items-start gap-4">
+                                    <span className="w-2.5 h-2.5 rounded-full bg-green-500 mt-2.5 shrink-0"></span>
                                     <span><strong>Production:</strong> Atlanta (USA) and Asia. No production in Europe due to high labor costs.</span>
                                 </li>
-                                <li className="flex items-start gap-2">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-green-500 mt-1.5"></span>
+                                <li className="flex items-start gap-4">
+                                    <span className="w-2.5 h-2.5 rounded-full bg-green-500 mt-2.5 shrink-0"></span>
                                     <span><strong>Strategy:</strong> Active use of outsourcing for flexibility.</span>
                                 </li>
                             </ul>
@@ -88,14 +88,14 @@ export default function CaseDescriptionPage() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <Section
                             title="Production & Logistics"
-                            icon={<Factory className="w-6 h-6 text-orange-600" />}
+                            icon={<Factory className="w-8 h-8 text-orange-600" />}
                             color="orange"
                         >
-                            <ul className="space-y-3 text-sm text-gray-600">
+                            <ul className="space-y-5 text-lg text-gray-600 leading-relaxed">
                                 <li><strong>Learning Curve:</strong> Internal production costs drop as you gain experience. Outsourcing does not benefit from this but offers flexibility.</li>
                                 <li><strong>JIT Production:</strong> No finished goods inventory.</li>
                                 <li><strong>Forecasting Risk:</strong>
-                                    <ul className="pl-4 mt-1 list-disc text-gray-500">
+                                    <ul className="pl-6 mt-2 list-disc text-gray-500 space-y-1">
                                         <li>Over-estimate: Production is cut, but 5-10% penalty cost applies.</li>
                                         <li>Under-estimate: Lost sales due to inability to increase production.</li>
                                     </ul>
@@ -106,24 +106,27 @@ export default function CaseDescriptionPage() {
 
                         <Section
                             title="R&D and Technology"
-                            icon={<Cpu className="w-6 h-6 text-indigo-600" />}
+                            icon={<Cpu className="w-8 h-8 text-indigo-600" />}
                             color="indigo"
                         >
-                            <p className="text-sm text-gray-600 mb-3">
+                            <p className="text-lg text-gray-600 mb-6">
                                 You start with <strong>Tech 1</strong>. Developing Tech 2, 3, 4 is critical.
                             </p>
-                            <div className="grid grid-cols-2 gap-4 text-sm">
-                                <div className="bg-gray-50 p-3 rounded border border-gray-100">
-                                    <strong className="block text-gray-900 mb-1">Internal R&D</strong>
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 text-lg">
+                                <div className="bg-gray-50 p-6 rounded-xl border border-gray-100">
+                                    <strong className="block text-gray-900 mb-2 text-xl">Internal R&D</strong>
                                     <span className="text-gray-500">Lower long-term cost. Available <strong>next round</strong>.</span>
                                 </div>
-                                <div className="bg-gray-50 p-3 rounded border border-gray-100">
-                                    <strong className="block text-gray-900 mb-1">Licensing</strong>
-                                    <span className="text-gray-500">Higher cost (~10% sales). Available <strong>immediately</strong>.</span>
+                                <div className="bg-gray-50 p-6 rounded-xl border border-gray-100">
+                                    <strong className="block text-gray-900 mb-2 text-xl">Licensing</strong>
+                                    <span className="text-gray-500">One-time fee (decreases over time). Available <strong>immediately</strong>.</span>
                                 </div>
                             </div>
-                            <p className="text-xs text-gray-400 mt-3">
-                                * R&D is an operating expense, not capital expenditure.
+                            <p className="text-base text-gray-500 mt-4">
+                                <strong>Features:</strong> Each tech supports <strong>1 to 10</strong> features. US/Europe consumers value these more than Asia.
+                            </p>
+                            <p className="text-base text-gray-400 mt-2 italic">
+                                * R&D is an operating expense, not capital expenditure. Typical industry spend is ~10% of sales.
                             </p>
                         </Section>
                     </div>
@@ -131,10 +134,10 @@ export default function CaseDescriptionPage() {
                     {/* Marketing & Markets */}
                     <Section
                         title="Market Characteristics"
-                        icon={<Megaphone className="w-6 h-6 text-pink-600" />}
+                        icon={<Megaphone className="w-8 h-8 text-pink-600" />}
                         color="pink"
                     >
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                             <MarketCard
                                 region="USA"
                                 desc="Home market. Tech follower (lags Asia/Europe). Consumers love features. Growth 5-10% (up to 20% with new tech)."
@@ -148,7 +151,7 @@ export default function CaseDescriptionPage() {
                                 desc="Highest growth potential (20%). Polarized market (high-end vs low-end). Price sensitive. Slower average tech adoption."
                             />
                         </div>
-                        <div className="mt-4 text-sm text-gray-600 bg-pink-50 p-3 rounded-lg">
+                        <div className="mt-8 text-lg text-gray-600 bg-pink-50 p-6 rounded-xl border border-pink-100">
                             <strong>Marketing Spend:</strong> Typically 3-5% of sales. USA is most sensitive to advertising.
                         </div>
                     </Section>
@@ -157,10 +160,10 @@ export default function CaseDescriptionPage() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <Section
                             title="Finance"
-                            icon={<DollarSign className="w-6 h-6 text-emerald-600" />}
+                            icon={<DollarSign className="w-8 h-8 text-emerald-600" />}
                             color="emerald"
                         >
-                            <ul className="space-y-2 text-sm text-gray-600">
+                            <ul className="space-y-4 text-lg text-gray-600 leading-relaxed">
                                 <li><strong>Goal:</strong> Maximize Shareholder Return (Dividends + Share Price Appreciation).</li>
                                 <li><strong>Funding:</strong> Sales, Equity (Shares), Debt.</li>
                                 <li><strong>Loans:</strong> Long-term (cheaper) vs Short-term (expensive, emergency use).</li>
@@ -170,10 +173,10 @@ export default function CaseDescriptionPage() {
 
                         <Section
                             title="Tax & Transfer Pricing"
-                            icon={<Landmark className="w-6 h-6 text-slate-600" />}
+                            icon={<Landmark className="w-8 h-8 text-slate-600" />}
                             color="slate"
                         >
-                            <ul className="space-y-2 text-sm text-gray-600">
+                            <ul className="space-y-4 text-lg text-gray-600 leading-relaxed">
                                 <li><strong>R&D Allocation:</strong> Costs are split between regions based on the number of factories (e.g., 10 US / 2 Asia factories = 83% US / 17% Asia cost allocation).</li>
                                 <li><strong>Transfer Pricing:</strong> Can set export prices between <strong>1.0x and 2.0x</strong> variable production cost.</li>
                                 <li><strong>Strategy:</strong> Use transfer pricing to shift profits to lower-tax regions or cover losses.</li>
@@ -184,15 +187,15 @@ export default function CaseDescriptionPage() {
                     {/* Performance */}
                     <Section
                         title="Performance Metrics"
-                        icon={<BarChart3 className="w-6 h-6 text-red-600" />}
+                        icon={<BarChart3 className="w-8 h-8 text-red-600" />}
                         color="red"
                     >
-                        <p className="text-gray-600 mb-4">
+                        <p className="text-gray-600 mb-6 text-lg">
                             The Board measures success via <strong>Total Shareholder Return (TSR)</strong>.
                         </p>
-                        <div className="flex flex-wrap gap-2">
+                        <div className="flex flex-wrap gap-4">
                             {['ROE', 'Net Profit', 'EPS', 'Market Share', 'Sales Growth'].map(metric => (
-                                <span key={metric} className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm font-medium">
+                                <span key={metric} className="px-5 py-2.5 bg-gray-100 text-gray-700 rounded-full text-lg font-medium">
                                     {metric}
                                 </span>
                             ))}
@@ -208,13 +211,13 @@ export default function CaseDescriptionPage() {
 function Section({ title, icon, children, color }: { title: string, icon: React.ReactNode, children: React.ReactNode, color: string }) {
     return (
         <div className={`bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden`}>
-            <div className={`px-6 py-4 border-b border-gray-50 flex items-center gap-3 bg-${color}-50/30`}>
-                <div className={`p-2 bg-${color}-50 rounded-lg`}>
+            <div className={`px-8 py-6 border-b border-gray-50 flex items-center gap-5 bg-${color}-50/30`}>
+                <div className={`p-3 bg-${color}-50 rounded-xl`}>
                     {icon}
                 </div>
-                <h2 className="text-lg font-bold text-gray-900">{title}</h2>
+                <h2 className="text-2xl font-bold text-gray-900">{title}</h2>
             </div>
-            <div className="p-6">
+            <div className="p-8 md:p-10">
                 {children}
             </div>
         </div>
@@ -223,9 +226,9 @@ function Section({ title, icon, children, color }: { title: string, icon: React.
 
 function MarketCard({ region, desc }: { region: string, desc: string }) {
     return (
-        <div className="bg-gray-50 rounded-lg p-4 border border-gray-100">
-            <h3 className="font-bold text-gray-900 mb-2">{region}</h3>
-            <p className="text-sm text-gray-600">{desc}</p>
+        <div className="bg-gray-50 rounded-xl p-8 border border-gray-100 h-full">
+            <h3 className="text-xl font-bold text-gray-900 mb-4">{region}</h3>
+            <p className="text-lg text-gray-600 leading-relaxed">{desc}</p>
         </div>
     );
 }
