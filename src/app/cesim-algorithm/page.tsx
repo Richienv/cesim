@@ -2,18 +2,7 @@
 
 import React from 'react';
 import { Sidebar } from '@/components/Sidebar';
-import {
-    TrendingUp,
-    Target,
-    Zap,
-    Globe,
-    DollarSign,
-    BarChart3,
-    Lightbulb,
-    Rocket,
-    BrainCircuit,
-    AlertTriangle
-} from 'lucide-react';
+import { ArrowRight, BarChart3, TrendingUp, AlertTriangle, CheckCircle2, XCircle, DollarSign, Lightbulb, GitBranch, Target, Zap, Globe, Rocket, BrainCircuit } from "lucide-react";
 
 export default function CesimAlgorithmPage() {
     const [activeTab, setActiveTab] = React.useState('practice');
@@ -132,6 +121,18 @@ function WhatIfContent() {
                 usa: "Feature Leader (Inelastic Demand)",
                 asia: "Local Production (0 Tariffs)",
                 europe: "Niche Player (High Margin)"
+            },
+            scenarios: {
+                best_case: {
+                    probability: "60%",
+                    outcome: "Profit > $2M",
+                    strategy: "Aggressive Expansion"
+                },
+                worst_case: {
+                    probability: "40%",
+                    outcome: "Profit < $500k",
+                    strategy: "Cut Marketing, Focus on Asia"
+                }
             }
         },
         {
@@ -189,6 +190,18 @@ function WhatIfContent() {
                 usa: "Feature Leader (Inelastic Demand)",
                 asia: "Local Production (0 Tariffs)",
                 europe: "Niche Player (High Margin)"
+            },
+            scenarios: {
+                best_case: {
+                    probability: "70%",
+                    outcome: "T2 Dominance (20% Share)",
+                    strategy: "Max Capacity Utilization"
+                },
+                worst_case: {
+                    probability: "30%",
+                    outcome: "Price War (Share < 15%)",
+                    strategy: "Pivot to Niche High-End"
+                }
             }
         },
         {
@@ -235,7 +248,7 @@ function WhatIfContent() {
                 score: 90,
                 compliments: ["T4 is ready!", "Good cash preservation."],
                 critiques: [
-                    "Logistics Inefficiency: Exporting T2 to USA incurs high tariffs ($27/unit).",
+                    "Logistics Inefficiency: Exporting T2 to USA incurs tariffs ($12/unit).",
                     "Forecast Variance Risk: >10% error triggers inventory holding penalties."
                 ],
                 outcome: "Ready for dominance."
@@ -249,6 +262,18 @@ function WhatIfContent() {
                 usa: "Feature Leader (Inelastic Demand)",
                 asia: "Local Production (0 Tariffs)",
                 europe: "Niche Player (High Margin)"
+            },
+            scenarios: {
+                best_case: {
+                    probability: "80%",
+                    outcome: "Cash Cow (Margins > 40%)",
+                    strategy: "Dividend Payout"
+                },
+                worst_case: {
+                    probability: "20%",
+                    outcome: "Inventory Glut",
+                    strategy: "Emergency Price Cut"
+                }
             }
         },
         {
@@ -684,6 +709,18 @@ function ActualRoundContent() {
                 usa: "Feature Leader (Inelastic Demand)",
                 asia: "Local Production (0 Tariffs)",
                 europe: "Niche Player (High Margin)"
+            },
+            scenarios: {
+                best_case: {
+                    probability: "60%",
+                    outcome: "Profit > $2M",
+                    strategy: "Aggressive Expansion"
+                },
+                worst_case: {
+                    probability: "40%",
+                    outcome: "Profit < $500k",
+                    strategy: "Cut Marketing, Focus on Asia"
+                }
             }
         },
         {
@@ -735,6 +772,18 @@ function ActualRoundContent() {
                 usa: "Feature Leader (Inelastic Demand)",
                 asia: "Local Production (0 Tariffs)",
                 europe: "Niche Player (High Margin)"
+            },
+            scenarios: {
+                best_case: {
+                    probability: "70%",
+                    outcome: "T2 Dominance (20% Share)",
+                    strategy: "Max Capacity Utilization"
+                },
+                worst_case: {
+                    probability: "30%",
+                    outcome: "Price War (Share < 15%)",
+                    strategy: "Pivot to Niche High-End"
+                }
             }
         },
         {
@@ -781,7 +830,7 @@ function ActualRoundContent() {
                 score: 90,
                 compliments: ["T4 is ready!", "Good cash preservation."],
                 critiques: [
-                    "Logistics Inefficiency: Exporting T2 to USA incurs high tariffs ($27/unit).",
+                    "Logistics Inefficiency: Exporting T2 to USA incurs tariffs ($12/unit).",
                     "Forecast Variance Risk: >10% error triggers inventory holding penalties."
                 ],
                 outcome: "Ready for dominance."
@@ -795,6 +844,18 @@ function ActualRoundContent() {
                 usa: "Feature Leader (Inelastic Demand)",
                 asia: "Local Production (0 Tariffs)",
                 europe: "Niche Player (High Margin)"
+            },
+            scenarios: {
+                best_case: {
+                    probability: "80%",
+                    outcome: "Cash Cow (Margins > 40%)",
+                    strategy: "Dividend Payout"
+                },
+                worst_case: {
+                    probability: "20%",
+                    outcome: "Inventory Glut",
+                    strategy: "Emergency Price Cut"
+                }
             }
         },
         {
@@ -1366,6 +1427,33 @@ function DetailedRoundCard({ data, isCritique = false }: any) {
                         <div className="bg-emerald-50 border border-emerald-100 p-3 rounded-lg">
                             <div className="text-xs font-bold text-emerald-600 uppercase mb-1">Europe</div>
                             <div className="text-sm text-emerald-900 font-medium">{data.competitive_advantage.europe}</div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Scenario Planning (New) */}
+            {data.scenarios && (
+                <div className="mt-6 pt-4 border-t border-gray-100 px-8">
+                    <h4 className="text-sm font-bold text-gray-400 uppercase flex items-center gap-2 mb-3">
+                        <GitBranch className="w-4 h-4" /> Scenario Planning
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="bg-green-50 border border-green-100 p-3 rounded-lg">
+                            <div className="text-xs font-bold text-green-600 uppercase mb-1 flex justify-between">
+                                <span>Best Case (High Demand)</span>
+                                <span>{data.scenarios.best_case.probability}</span>
+                            </div>
+                            <div className="text-sm text-green-900 font-medium mb-1">{data.scenarios.best_case.outcome}</div>
+                            <div className="text-xs text-green-700">{data.scenarios.best_case.strategy}</div>
+                        </div>
+                        <div className="bg-red-50 border border-red-100 p-3 rounded-lg">
+                            <div className="text-xs font-bold text-red-600 uppercase mb-1 flex justify-between">
+                                <span>Worst Case (Price War)</span>
+                                <span>{data.scenarios.worst_case.probability}</span>
+                            </div>
+                            <div className="text-sm text-red-900 font-medium mb-1">{data.scenarios.worst_case.outcome}</div>
+                            <div className="text-xs text-red-700">{data.scenarios.worst_case.strategy}</div>
                         </div>
                     </div>
                 </div>
