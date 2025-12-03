@@ -42,7 +42,7 @@ export function FinancialsView({ teams }: FinancialsViewProps) {
                             key={tab}
                             onClick={() => setActiveTab(tab)}
                             className={clsx(
-                                "px-4 py-2 text-sm font-medium rounded-md transition-all whitespace-nowrap",
+                                "px-4 py-2 text-base font-medium rounded-md transition-all whitespace-nowrap",
                                 activeTab === tab
                                     ? "bg-white text-gray-900 shadow-sm"
                                     : "text-gray-500 hover:text-gray-700"
@@ -56,11 +56,11 @@ export function FinancialsView({ teams }: FinancialsViewProps) {
                 {/* Region Selector */}
                 {(activeTab === 'Income Statement' || activeTab === 'Balance Sheet' || activeTab === 'Cash Flow') && (
                     <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium text-gray-500">Region:</span>
+                        <span className="text-base font-medium text-gray-500">Region:</span>
                         <select
                             value={activeRegion}
                             onChange={(e) => setActiveRegion(e.target.value as Region)}
-                            className="bg-white border border-gray-200 text-gray-700 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block p-2.5"
+                            className="bg-white border border-gray-200 text-gray-700 text-base rounded-lg focus:ring-red-500 focus:border-red-500 block p-2.5"
                         >
                             {regions.map(r => (
                                 <option key={r} value={r}>{r}</option>

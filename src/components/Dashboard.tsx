@@ -89,7 +89,7 @@ export function Dashboard({ data }: DashboardProps) {
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
                             className={twMerge(
-                                "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors",
+                                "flex items-center gap-2 px-4 py-2 rounded-lg text-base font-medium whitespace-nowrap transition-colors",
                                 isActive
                                     ? "bg-red-50 text-red-600"
                                     : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
@@ -106,7 +106,7 @@ export function Dashboard({ data }: DashboardProps) {
             {activeTab !== "Overview" && (
                 <button
                     onClick={() => setActiveTab("Overview")}
-                    className="flex items-center gap-2 text-gray-500 hover:text-gray-900 transition-colors text-sm"
+                    className="flex items-center gap-2 text-gray-500 hover:text-gray-900 transition-colors text-base"
                 >
                     <ArrowLeft className="w-4 h-4" />
                     Back to Overview
@@ -155,35 +155,35 @@ export function Dashboard({ data }: DashboardProps) {
                                         <div className="flex items-center gap-3 mb-6 relative z-10">
                                             <div>
                                                 <div className="flex items-center gap-2">
-                                                    <h3 className="font-bold text-gray-900 text-lg group-hover:text-blue-600 transition-colors">{team.name}</h3>
+                                                    <h3 className="font-bold text-gray-900 text-xl group-hover:text-blue-600 transition-colors">{team.name}</h3>
                                                 </div>
-                                                <p className="text-xs text-gray-500 mt-1">Market Leader</p>
+                                                <p className="text-sm text-gray-500 mt-1">Market Leader</p>
                                             </div>
                                         </div>
 
                                         <div className="grid grid-cols-2 gap-4 mb-6 border-b border-gray-100 pb-6 relative z-10">
                                             <div>
-                                                <p className="text-xs text-gray-500 mb-1">Total Revenue</p>
-                                                <p className="font-bold text-gray-900 text-lg">${(getMetric(team, "Financials", "Sales revenue") / 1000).toFixed(1)}k</p>
+                                                <p className="text-sm text-gray-500 mb-1">Total Revenue</p>
+                                                <p className="font-bold text-gray-900 text-xl">${(getMetric(team, "Financials", "Sales revenue") / 1000).toFixed(1)}k</p>
                                             </div>
                                             <div>
-                                                <p className="text-xs text-gray-500 mb-1">Total Profit</p>
-                                                <p className="font-bold text-green-600 text-lg">${(getMetric(team, "Financials", "Operating profit before depreciation (EBITDA)") / 1000).toFixed(1)}k</p>
+                                                <p className="text-sm text-gray-500 mb-1">Total Profit</p>
+                                                <p className="font-bold text-green-600 text-xl">${(getMetric(team, "Financials", "Operating profit before depreciation (EBITDA)") / 1000).toFixed(1)}k</p>
                                             </div>
                                         </div>
 
                                         <div className="relative z-10">
-                                            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Top Performing Product</p>
+                                            <p className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">Top Performing Product</p>
                                             <div className="bg-gray-50 rounded-lg p-4 space-y-3">
                                                 <div className="flex justify-between items-center">
-                                                    <span className="text-sm font-medium text-gray-700">{topProduct.tech}</span>
-                                                    <span className="text-xs font-medium px-2 py-1 bg-white rounded border border-gray-200 text-gray-600">{topProduct.region}</span>
+                                                    <span className="text-base font-medium text-gray-700">{topProduct.tech}</span>
+                                                    <span className="text-sm font-medium px-2 py-1 bg-white rounded border border-gray-200 text-gray-600">{topProduct.region}</span>
                                                 </div>
-                                                <div className="flex justify-between items-center text-sm">
+                                                <div className="flex justify-between items-center text-base">
                                                     <span className="text-gray-500">Sales Volume</span>
                                                     <span className="font-semibold text-gray-900">{topProduct.volume.toFixed(0)}k units</span>
                                                 </div>
-                                                <div className="flex justify-between items-center text-sm">
+                                                <div className="flex justify-between items-center text-base">
                                                     <span className="text-gray-500">Marketing</span>
                                                     <span className="font-semibold text-blue-600">${topProduct.promotion.toFixed(0)}k</span>
                                                 </div>
@@ -198,14 +198,14 @@ export function Dashboard({ data }: DashboardProps) {
                         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-6">
                             <div className="flex flex-col gap-6 mb-8">
                                 <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-                                    <h3 className="text-lg font-semibold text-gray-900">Competitive Strategy Analysis</h3>
+                                    <h3 className="text-xl font-semibold text-gray-900">Competitive Strategy Analysis</h3>
 
                                     {/* View Mode Toggle */}
                                     <div className="flex bg-gray-100 p-1 rounded-lg">
                                         <button
                                             onClick={() => setViewMode('tech')}
                                             className={twMerge(
-                                                "px-4 py-1.5 text-sm font-medium rounded-md transition-all",
+                                                "px-4 py-1.5 text-base font-medium rounded-md transition-all",
                                                 viewMode === 'tech'
                                                     ? "bg-white text-gray-900 shadow-sm"
                                                     : "text-gray-500 hover:text-gray-900"
@@ -216,7 +216,7 @@ export function Dashboard({ data }: DashboardProps) {
                                         <button
                                             onClick={() => setViewMode('region')}
                                             className={twMerge(
-                                                "px-4 py-1.5 text-sm font-medium rounded-md transition-all",
+                                                "px-4 py-1.5 text-base font-medium rounded-md transition-all",
                                                 viewMode === 'region'
                                                     ? "bg-white text-gray-900 shadow-sm"
                                                     : "text-gray-500 hover:text-gray-900"
@@ -236,7 +236,7 @@ export function Dashboard({ data }: DashboardProps) {
                                                     key={tech}
                                                     onClick={() => setSelectedTech(tech)}
                                                     className={twMerge(
-                                                        "px-4 py-1.5 text-sm font-medium rounded-md transition-all",
+                                                        "px-4 py-1.5 text-base font-medium rounded-md transition-all",
                                                         selectedTech === tech
                                                             ? "bg-white text-blue-700 shadow-sm"
                                                             : "text-blue-600 hover:text-blue-800"
@@ -253,7 +253,7 @@ export function Dashboard({ data }: DashboardProps) {
                                                     key={region}
                                                     onClick={() => setSelectedRegion(region)}
                                                     className={twMerge(
-                                                        "px-4 py-1.5 text-sm font-medium rounded-md transition-all",
+                                                        "px-4 py-1.5 text-base font-medium rounded-md transition-all",
                                                         selectedRegion === region
                                                             ? "bg-white text-purple-700 shadow-sm"
                                                             : "text-purple-600 hover:text-purple-800"
@@ -308,7 +308,7 @@ export function Dashboard({ data }: DashboardProps) {
 
                                     return (
                                         <div key={item} className="h-[300px]">
-                                            <h4 className="text-sm font-medium text-gray-500 mb-4 text-center">
+                                            <h4 className="text-base font-medium text-gray-500 mb-4 text-center">
                                                 {viewMode === 'tech' ? `${item} (${currency})` : `${item} (${currency})`}
                                             </h4>
                                             <ResponsiveContainer width="100%" height="100%">
@@ -373,7 +373,7 @@ export function Dashboard({ data }: DashboardProps) {
 
                                         return (
                                             <div key={item} className="h-[300px]">
-                                                <h4 className="text-sm font-medium text-gray-500 mb-4 text-center">
+                                                <h4 className="text-base font-medium text-gray-500 mb-4 text-center">
                                                     {viewMode === 'tech' ? `${item} (Promotion)` : `${item} (Promotion)`}
                                                 </h4>
                                                 <ResponsiveContainer width="100%" height="100%">
@@ -441,7 +441,7 @@ export function Dashboard({ data }: DashboardProps) {
 
                                         return (
                                             <div key={item} className="h-[300px]">
-                                                <h4 className="text-sm font-medium text-gray-500 mb-4 text-center">
+                                                <h4 className="text-base font-medium text-gray-500 mb-4 text-center">
                                                     {viewMode === 'tech' ? `${item} (Units)` : `${item} (Units)`}
                                                 </h4>
                                                 <ResponsiveContainer width="100%" height="100%">
@@ -476,7 +476,7 @@ export function Dashboard({ data }: DashboardProps) {
 
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                             <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                                <h3 className="text-lg font-semibold text-gray-900 mb-6">Revenue by Team</h3>
+                                <h3 className="text-xl font-semibold text-gray-900 mb-6">Revenue by Team</h3>
                                 <div className="h-[300px]">
                                     <ResponsiveContainer width="100%" height="100%">
                                         <BarChart data={teamsByRevenue.map(t => ({ name: t.name, revenue: getMetric(t, "Financials", "Sales revenue") }))}>
@@ -491,7 +491,7 @@ export function Dashboard({ data }: DashboardProps) {
                             </div>
 
                             <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                                <h3 className="text-lg font-semibold text-gray-900 mb-6">Profitability by Team</h3>
+                                <h3 className="text-xl font-semibold text-gray-900 mb-6">Profitability by Team</h3>
                                 <div className="h-[300px]">
                                     <ResponsiveContainer width="100%" height="100%">
                                         <BarChart data={barData}>
@@ -529,15 +529,15 @@ function MetricCard({ title, value, icon, trend, subtitle }: { title: string, va
                     {icon}
                 </div>
                 {trend && (
-                    <span className="text-xs font-medium text-green-600 bg-green-50 px-2 py-1 rounded-full">
+                    <span className="text-sm font-medium text-green-600 bg-green-50 px-2 py-1 rounded-full">
                         {trend}
                     </span>
                 )}
             </div>
             <div>
-                <p className="text-sm text-gray-500 font-medium">{title}</p>
-                <h4 className="text-2xl font-bold text-gray-900 mt-1">{value}</h4>
-                {subtitle && <p className="text-xs text-gray-400 mt-1">{subtitle}</p>}
+                <p className="text-base text-gray-500 font-medium">{title}</p>
+                <h4 className="text-3xl font-bold text-gray-900 mt-1">{value}</h4>
+                {subtitle && <p className="text-sm text-gray-400 mt-1">{subtitle}</p>}
             </div>
         </div>
     );

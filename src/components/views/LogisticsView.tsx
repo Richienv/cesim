@@ -40,14 +40,14 @@ export function LogisticsView({ teams }: LogisticsViewProps) {
         <div className="space-y-6">
             <div className="flex items-center justify-between gap-4">
                 <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-gray-500">Region:</span>
+                    <span className="text-base font-medium text-gray-500">Region:</span>
                     <div className="flex p-1 bg-gray-100 rounded-lg w-fit">
                         {regions.map(r => (
                             <button
                                 key={r}
                                 onClick={() => setActiveRegion(r)}
                                 className={clsx(
-                                    "px-4 py-2 text-sm font-medium rounded-md transition-all",
+                                    "px-4 py-2 text-base font-medium rounded-md transition-all",
                                     activeRegion === r
                                         ? "bg-white text-gray-900 shadow-sm"
                                         : "text-gray-500 hover:text-gray-700"
@@ -60,11 +60,11 @@ export function LogisticsView({ teams }: LogisticsViewProps) {
                 </div>
 
                 <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-gray-500">Tech:</span>
+                    <span className="text-base font-medium text-gray-500">Tech:</span>
                     <select
                         value={activeTech}
                         onChange={(e) => setActiveTech(e.target.value)}
-                        className="bg-white border border-gray-200 text-gray-700 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block p-2.5"
+                        className="bg-white border border-gray-200 text-gray-700 text-base rounded-lg focus:ring-red-500 focus:border-red-500 block p-2.5"
                     >
                         {techs.map(t => (
                             <option key={t} value={t}>{t}</option>
@@ -73,7 +73,7 @@ export function LogisticsView({ teams }: LogisticsViewProps) {
                 </div>
             </div>
 
-            <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 text-sm text-blue-800">
+            <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 text-base text-blue-800">
                 <p className="font-semibold mb-1">How to read this table:</p>
                 <p>This shows the supply chain flow for each technology in the selected region.
                     <strong> Total Supply</strong> is the sum of In-house, Contract, and Imported products.

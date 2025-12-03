@@ -2,24 +2,33 @@
 
 import React from 'react';
 import { Sidebar } from '@/components/Sidebar';
-import { ArrowRight, BarChart3, TrendingUp, AlertTriangle, CheckCircle2, XCircle, DollarSign, Lightbulb, GitBranch, Target, Zap, Globe, Rocket, BrainCircuit } from "lucide-react";
+import { ArrowRight, BarChart3, TrendingUp, AlertTriangle, CheckCircle2, XCircle, DollarSign, Lightbulb, GitBranch, Target, Zap, Globe, Rocket, BrainCircuit, Menu } from "lucide-react";
 
 export default function CesimAlgorithmPage() {
     const [activeTab, setActiveTab] = React.useState('practice');
+    const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
 
     return (
         <div className="min-h-screen bg-gray-50">
-            <Sidebar />
+            <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
 
             <main className="md:pl-64 transition-all duration-300">
                 {/* Top Header */}
-                <header className="bg-white border-b border-gray-200 sticky top-0 z-40 px-8 py-4 flex items-center justify-between">
-                    <div>
-                        <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                            <BrainCircuit className="text-purple-600" />
-                            The Winning Algorithm
-                        </h1>
-                        <p className="text-sm text-gray-500">Strategic Roadmap & Analysis</p>
+                <header className="bg-white border-b border-gray-200 sticky top-0 z-40 px-4 md:px-8 py-4 flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                        <button
+                            onClick={() => setIsSidebarOpen(true)}
+                            className="md:hidden p-2 text-gray-500 hover:bg-gray-100 rounded-lg"
+                        >
+                            <Menu size={24} />
+                        </button>
+                        <div>
+                            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 flex items-center gap-2">
+                                <BrainCircuit className="text-purple-600" />
+                                The Winning Algorithm
+                            </h1>
+                            <p className="text-sm md:text-base text-gray-500">Strategic Roadmap & Analysis</p>
+                        </div>
                     </div>
                 </header>
 
@@ -32,19 +41,19 @@ export default function CesimAlgorithmPage() {
                     <div className="flex space-x-1 bg-gray-200 p-1 rounded-xl w-fit">
                         <button
                             onClick={() => setActiveTab('practice')}
-                            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === 'practice' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-900'}`}
+                            className={`px-4 py-2 rounded-lg text-base font-medium transition-all ${activeTab === 'practice' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-900'}`}
                         >
                             Practice Round Analysis
                         </button>
                         <button
                             onClick={() => setActiveTab('actual')}
-                            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === 'actual' ? 'bg-white text-purple-600 shadow-sm' : 'text-gray-500 hover:text-gray-900'}`}
+                            className={`px-4 py-2 rounded-lg text-base font-medium transition-all ${activeTab === 'actual' ? 'bg-white text-purple-600 shadow-sm' : 'text-gray-500 hover:text-gray-900'}`}
                         >
                             7-Round Forecast (Actual)
                         </button>
                         <button
                             onClick={() => setActiveTab('whatif')}
-                            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === 'whatif' ? 'bg-white text-rose-600 shadow-sm' : 'text-gray-500 hover:text-gray-900'}`}
+                            className={`px-4 py-2 rounded-lg text-base font-medium transition-all ${activeTab === 'whatif' ? 'bg-white text-rose-600 shadow-sm' : 'text-gray-500 hover:text-gray-900'}`}
                         >
                             What-If Analysis (Critique)
                         </button>
@@ -499,11 +508,11 @@ function WhatIfContent() {
     return (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
             <div className="bg-rose-50 rounded-xl p-8 border border-rose-100">
-                <h2 className="text-2xl font-bold text-rose-900 mb-4">What-If Analysis Engine</h2>
-                <p className="text-rose-800 text-lg leading-relaxed">
+                <h2 className="text-3xl font-bold text-rose-900 mb-4">What-If Analysis Engine</h2>
+                <p className="text-rose-800 text-xl leading-relaxed">
                     Based on your input (<strong>Tech 2 Purchase + Early Tech 4 R&D</strong>), here is the <strong>7-Round Forecast</strong>.
                 </p>
-                <div className="mt-6 p-4 bg-white/60 rounded-lg border border-rose-200 text-sm text-rose-700">
+                <div className="mt-6 p-4 bg-white/60 rounded-lg border border-rose-200 text-base text-rose-700">
                     <strong>Strategy Note:</strong> The critical phase is <strong>Round 1-2</strong>. You must survive the debt load. By <strong>Round 4</strong>, your early Tech 4 launch gives you a monopoly.
                 </div>
             </div>
@@ -527,8 +536,8 @@ function PracticeRoundContent() {
                         <Rocket className="w-8 h-8 text-white" />
                     </div>
                     <div>
-                        <h2 className="text-2xl font-bold mb-2">The "Pink" Strategy</h2>
-                        <p className="text-purple-100 leading-relaxed text-lg">
+                        <h2 className="text-3xl font-bold mb-2">The "Pink" Strategy</h2>
+                        <p className="text-purple-100 leading-relaxed text-xl">
                             The winning strategy focuses on <strong>aggressive early R&D investment</strong> to unlock technologies fast, coupled with <strong>premium pricing</strong> in Asia/Europe and <strong>rapidly scaling marketing spend</strong> in growth markets.
                         </p>
                     </div>
@@ -633,7 +642,7 @@ function PracticeRoundContent() {
                         <Bar label="R2" height="50%" color="bg-blue-400" value="35k" />
                         <Bar label="R3" height="80%" color="bg-blue-600" value="54k" />
                     </div>
-                    <p className="text-center text-sm text-gray-500 mt-4">Asia Marketing Spend Growth</p>
+                    <p className="text-center text-base text-gray-500 mt-4">Asia Marketing Spend Growth</p>
                 </div>
 
                 <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
@@ -643,16 +652,16 @@ function PracticeRoundContent() {
                     </h3>
                     <ul className="space-y-4">
                         <li className="flex gap-3">
-                            <span className="w-6 h-6 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-xs font-bold shrink-0">1</span>
-                            <p className="text-sm text-gray-600"><strong>Don't underprice Asia.</strong> The winner maintained high prices (2000+ RMB) despite volume growth.</p>
+                            <span className="w-6 h-6 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-sm font-bold shrink-0">1</span>
+                            <p className="text-base text-gray-600"><strong>Don't underprice Asia.</strong> The winner maintained high prices (2000+ RMB) despite volume growth.</p>
                         </li>
                         <li className="flex gap-3">
-                            <span className="w-6 h-6 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-xs font-bold shrink-0">2</span>
-                            <p className="text-sm text-gray-600"><strong>Tech 2 is a cash cow.</strong> Launch it early (R2) with a significant premium (~60% higher than T1).</p>
+                            <span className="w-6 h-6 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-sm font-bold shrink-0">2</span>
+                            <p className="text-base text-gray-600"><strong>Tech 2 is a cash cow.</strong> Launch it early (R2) with a significant premium (~60% higher than T1).</p>
                         </li>
                         <li className="flex gap-3">
-                            <span className="w-6 h-6 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-xs font-bold shrink-0">3</span>
-                            <p className="text-sm text-gray-600"><strong>R&D is an investment, not a cost.</strong> The winner spent 3x more than average in Round 1 to secure the lead.</p>
+                            <span className="w-6 h-6 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-sm font-bold shrink-0">3</span>
+                            <p className="text-base text-gray-600"><strong>R&D is an investment, not a cost.</strong> The winner spent 3x more than average in Round 1 to secure the lead.</p>
                         </li>
                     </ul>
                 </div>
@@ -1089,17 +1098,17 @@ function ActualRoundContent() {
             {/* Strategy Overview */}
             <div className="bg-white rounded-xl p-8 md:p-10 shadow-sm border border-gray-100">
                 <h2 className="text-3xl font-bold text-gray-900 mb-6">7-Round Detailed Strategy</h2>
-                <p className="text-gray-600 text-lg leading-relaxed mb-8">
+                <p className="text-gray-600 text-xl leading-relaxed mb-8">
                     This playbook provides specific, variable-aware targets for every department. The core strategy relies on <strong>Asia-based production</strong> to minimize tariffs and tax, while aggressively moving up the technology ladder to capture high-margin early adopters.
                 </p>
 
                 {/* Financial Logic Section */}
                 <div className="bg-slate-50 p-8 rounded-xl border border-slate-200 mb-10">
-                    <h3 className="text-xl font-bold text-slate-900 mb-4 flex items-center gap-3">
+                    <h3 className="text-2xl font-bold text-slate-900 mb-4 flex items-center gap-3">
                         <DollarSign className="w-5 h-5" />
                         Financial Logic: Why Asia First?
                     </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-base">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-lg">
                         <div>
                             <p className="font-bold text-slate-700">1. Tax Arbitrage</p>
                             <p className="text-slate-600">Asia Tax: <strong>15%</strong> vs USA: <strong>35%</strong>. Shifting profit to Asia saves 20% on every dollar earned.</p>
@@ -1132,19 +1141,19 @@ function ActualRoundContent() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div className="p-4 bg-red-50 rounded-lg border border-red-100">
                         <h4 className="font-bold text-red-900 mb-2">The Zero R&D Trap</h4>
-                        <p className="text-sm text-red-800 mb-2">
+                        <p className="text-base text-red-800 mb-2">
                             Teams that spent <strong>$0 on R&D</strong> in Round 1 ended with <strong>$0 Profit</strong>.
                         </p>
                         <div className="h-20 flex items-end gap-1 mt-2">
                             <Bar label="Winner" height="80%" color="bg-green-500" value="$388k" />
                             <Bar label="Loser" height="5%" color="bg-red-500" value="$0" />
                         </div>
-                        <p className="text-xs text-center text-red-600 mt-1">Round 1 R&D Spend</p>
+                        <p className="text-sm text-center text-red-600 mt-1">Round 1 R&D Spend</p>
                     </div>
 
                     <div className="p-4 bg-orange-50 rounded-lg border border-orange-100">
                         <h4 className="font-bold text-orange-900 mb-2">Tech 1 Price Crash</h4>
-                        <p className="text-sm text-orange-800 mb-2">
+                        <p className="text-base text-orange-800 mb-2">
                             Tech 1 prices in Asia crashed from $280 to $150 by Round 3.
                         </p>
                         <div className="h-20 flex items-end gap-1 mt-2">
@@ -1152,12 +1161,12 @@ function ActualRoundContent() {
                             <Bar label="R2" height="60%" color="bg-orange-400" value="$200" />
                             <Bar label="R3" height="40%" color="bg-orange-500" value="$150" />
                         </div>
-                        <p className="text-xs text-center text-orange-600 mt-1">Tech 1 Price Trend</p>
+                        <p className="text-sm text-center text-orange-600 mt-1">Tech 1 Price Trend</p>
                     </div>
 
                     <div className="p-4 bg-blue-50 rounded-lg border border-blue-100">
                         <h4 className="font-bold text-blue-900 mb-2">Marketing Inflation</h4>
-                        <p className="text-sm text-blue-800 mb-2">
+                        <p className="text-base text-blue-800 mb-2">
                             Avg marketing spend in Asia grew <strong>50% per round</strong>.
                         </p>
                         <div className="h-20 flex items-end gap-1 mt-2">
@@ -1165,7 +1174,7 @@ function ActualRoundContent() {
                             <Bar label="R2" height="60%" color="bg-blue-400" value="$34k" />
                             <Bar label="R3" height="90%" color="bg-blue-500" value="$37k" />
                         </div>
-                        <p className="text-xs text-center text-blue-600 mt-1">Asia Marketing Avg</p>
+                        <p className="text-sm text-center text-blue-600 mt-1">Asia Marketing Avg</p>
                     </div>
                 </div>
             </div>
@@ -1179,19 +1188,19 @@ function ActualRoundContent() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div className="p-4 bg-red-50 rounded-lg border border-red-100">
                         <h4 className="font-bold text-red-900 mb-2">Tariff Trap</h4>
-                        <p className="text-sm text-red-800">
+                        <p className="text-base text-red-800">
                             Competitors exporting from USA to Asia will bleed cash due to the $27/unit penalty. <strong>Exploit this</strong> by undercutting them with local Asia production.
                         </p>
                     </div>
                     <div className="p-4 bg-orange-50 rounded-lg border border-orange-100">
                         <h4 className="font-bold text-orange-900 mb-2">R&D Lag</h4>
-                        <p className="text-sm text-orange-800">
+                        <p className="text-base text-orange-800">
                             Teams starting Tech 4 R&D in Round 5 will be too late. Your Round 4 start ensures you own the "Early Adopter" segment in Round 6.
                         </p>
                     </div>
                     <div className="p-4 bg-green-50 rounded-lg border border-green-100">
                         <h4 className="font-bold text-green-900 mb-2">Feature Bloat</h4>
-                        <p className="text-sm text-green-800">
+                        <p className="text-base text-green-800">
                             Don't over-feature Tech 1. Competitors adding 5+ features to T1 are wasting margin. Keep T1 lean (1-2 features).
                         </p>
                     </div>
@@ -1207,12 +1216,12 @@ function StrategyCard({ title, icon, color, metric, value, desc }: any) {
             <div className="flex items-center justify-between mb-4">
                 <div className={`p-2 bg-${color}-50 rounded-lg`}>{icon}</div>
                 <div className="text-right">
-                    <p className="text-xs text-gray-500 uppercase font-bold">{metric}</p>
-                    <p className={`text-xl font-bold text-${color}-600`}>{value}</p>
+                    <p className="text-sm text-gray-500 uppercase font-bold">{metric}</p>
+                    <p className={`text-2xl font-bold text-${color}-600`}>{value}</p>
                 </div>
             </div>
             <h3 className="font-bold text-gray-900 mb-2">{title}</h3>
-            <p className="text-sm text-gray-600 leading-relaxed">{desc}</p>
+            <p className="text-base text-gray-600 leading-relaxed">{desc}</p>
         </div>
     );
 }
@@ -1222,14 +1231,14 @@ function TimelineItem({ round, title, data }: any) {
         <div className="relative pl-8">
             <span className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-purple-600 border-4 border-white shadow-sm"></span>
             <div className="mb-1 flex items-center gap-2">
-                <span className="text-xs font-bold text-purple-600 bg-purple-50 px-2 py-1 rounded uppercase tracking-wider">{round}</span>
+                <span className="text-sm font-bold text-purple-600 bg-purple-50 px-2 py-1 rounded uppercase tracking-wider">{round}</span>
                 <h4 className="font-bold text-gray-900">{title}</h4>
             </div>
             <div className="bg-gray-50 rounded-lg p-4 mt-3 grid grid-cols-2 md:grid-cols-3 gap-4">
                 {Object.entries(data).map(([key, val]: any) => (
                     <div key={key}>
-                        <p className="text-xs text-gray-500 mb-1">{key}</p>
-                        <p className="text-sm font-medium text-gray-900">{val}</p>
+                        <p className="text-sm text-gray-500 mb-1">{key}</p>
+                        <p className="text-base font-medium text-gray-900">{val}</p>
                     </div>
                 ))}
             </div>
@@ -1240,9 +1249,9 @@ function TimelineItem({ round, title, data }: any) {
 function Bar({ label, height, color, value }: any) {
     return (
         <div className="flex flex-col items-center justify-end h-full w-full group">
-            <div className="mb-2 text-xs font-bold text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity">{value}</div>
+            <div className="mb-2 text-sm font-bold text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity">{value}</div>
             <div className={`w-full rounded-t-lg ${color} transition-all duration-500 hover:opacity-80`} style={{ height }}></div>
-            <div className="mt-2 text-xs text-gray-500 font-medium">{label}</div>
+            <div className="mt-2 text-sm text-gray-500 font-medium">{label}</div>
         </div>
     );
 }
@@ -1252,19 +1261,19 @@ function DetailedRoundCard({ data, isCritique = false }: any) {
         <div className={`bg-white rounded-xl shadow-sm border ${isCritique ? 'border-rose-200 ring-4 ring-rose-50' : 'border-gray-200'} overflow-hidden transition-all`}>
             <div className="bg-gray-50 px-8 py-5 border-b border-gray-200 flex justify-between items-center">
                 <div className="flex items-center gap-4">
-                    <span className="bg-purple-600 text-white text-sm font-bold px-3 py-1.5 rounded uppercase">Round {data.round}</span>
-                    <h3 className="text-xl font-bold text-gray-900">{data.focus}</h3>
+                    <span className="bg-purple-600 text-white text-base font-bold px-3 py-1.5 rounded uppercase">Round {data.round}</span>
+                    <h3 className="text-2xl font-bold text-gray-900">{data.focus}</h3>
                 </div>
-                <span className="text-sm font-medium text-gray-500 bg-white px-3 py-1.5 rounded border border-gray-200">{data.demand}</span>
+                <span className="text-base font-medium text-gray-500 bg-white px-3 py-1.5 rounded border border-gray-200">{data.demand}</span>
             </div>
 
             <div className="p-8 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
                 {/* Production */}
                 <div className="space-y-3">
-                    <h4 className="text-sm font-bold text-gray-400 uppercase flex items-center gap-2">
+                    <h4 className="text-base font-bold text-gray-400 uppercase flex items-center gap-2">
                         <Target className="w-4 h-4" /> Production
                     </h4>
-                    <div className="bg-gray-50 p-4 rounded-lg text-base space-y-2">
+                    <div className="bg-gray-50 p-4 rounded-lg text-lg space-y-2">
                         <p><span className="font-semibold">Capacity:</span> {data.production.capacity}</p>
                         <p><span className="font-semibold">Allocation:</span> {data.production.allocation}</p>
                         <p><span className="font-semibold">Outsource:</span> {data.production.outsourcing}</p>
@@ -1273,10 +1282,10 @@ function DetailedRoundCard({ data, isCritique = false }: any) {
 
                 {/* R&D */}
                 <div className="space-y-3">
-                    <h4 className="text-sm font-bold text-gray-400 uppercase flex items-center gap-2">
+                    <h4 className="text-base font-bold text-gray-400 uppercase flex items-center gap-2">
                         <Zap className="w-4 h-4" /> R&D
                     </h4>
-                    <div className="bg-yellow-50 p-4 rounded-lg text-base space-y-2 text-yellow-900">
+                    <div className="bg-yellow-50 p-4 rounded-lg text-lg space-y-2 text-yellow-900">
                         <p><span className="font-semibold">Tech:</span> {data.rnd.tech}</p>
                         <p><span className="font-semibold">Features:</span> {data.rnd.features}</p>
                         <p><span className="font-semibold">Budget:</span> {data.rnd.budget}</p>
@@ -1285,10 +1294,10 @@ function DetailedRoundCard({ data, isCritique = false }: any) {
 
                 {/* Marketing */}
                 <div className="space-y-3">
-                    <h4 className="text-sm font-bold text-gray-400 uppercase flex items-center gap-2">
+                    <h4 className="text-base font-bold text-gray-400 uppercase flex items-center gap-2">
                         <Globe className="w-4 h-4" /> Marketing (Price / Promo)
                     </h4>
-                    <div className="bg-blue-50 p-4 rounded-lg text-base space-y-2 text-blue-900">
+                    <div className="bg-blue-50 p-4 rounded-lg text-lg space-y-2 text-blue-900">
                         {['usa', 'asia', 'europe'].map((region) => {
                             const regionData = data.marketing[region];
                             const regionName = region.toUpperCase();
@@ -1296,9 +1305,9 @@ function DetailedRoundCard({ data, isCritique = false }: any) {
                             if (Array.isArray(regionData)) {
                                 return (
                                     <div key={region} className="border-b border-blue-200 pb-2 mb-2 last:border-0 last:pb-0 last:mb-0">
-                                        <div className="font-bold text-xs uppercase text-blue-500 mb-1">{regionName}</div>
+                                        <div className="font-bold text-sm uppercase text-blue-500 mb-1">{regionName}</div>
                                         {regionData.map((item: any, i: number) => (
-                                            <div key={i} className="flex justify-between text-sm mb-1 last:mb-0">
+                                            <div key={i} className="flex justify-between text-base mb-1 last:mb-0">
                                                 <span className="text-blue-700 font-medium">{item.tech}</span>
                                                 <span className="font-mono text-blue-900 font-bold">${item.price} / {item.promo}k</span>
                                             </div>
@@ -1318,10 +1327,10 @@ function DetailedRoundCard({ data, isCritique = false }: any) {
 
                 {/* Logistics & Tax */}
                 <div className="space-y-3">
-                    <h4 className="text-sm font-bold text-gray-400 uppercase flex items-center gap-2">
+                    <h4 className="text-base font-bold text-gray-400 uppercase flex items-center gap-2">
                         <TrendingUp className="w-4 h-4" /> Logistics & Tax
                     </h4>
-                    <div className="bg-gray-50 p-4 rounded-lg text-base space-y-2">
+                    <div className="bg-gray-50 p-4 rounded-lg text-lg space-y-2">
                         <p><span className="font-semibold">Logistics:</span> {data.logistics}</p>
                         <p><span className="font-semibold">Tax:</span> {data.tax}</p>
                     </div>
@@ -1329,10 +1338,10 @@ function DetailedRoundCard({ data, isCritique = false }: any) {
 
                 {/* Finance */}
                 <div className="space-y-3">
-                    <h4 className="text-sm font-bold text-gray-400 uppercase flex items-center gap-2">
+                    <h4 className="text-base font-bold text-gray-400 uppercase flex items-center gap-2">
                         <DollarSign className="w-4 h-4" /> Finance
                     </h4>
-                    <div className="bg-green-50 p-4 rounded-lg text-base space-y-2 text-green-900">
+                    <div className="bg-green-50 p-4 rounded-lg text-lg space-y-2 text-green-900">
                         <p>{data.finance}</p>
                     </div>
                 </div>
@@ -1341,10 +1350,10 @@ function DetailedRoundCard({ data, isCritique = false }: any) {
                 {data.forecast && (
                     <div className="md:col-span-2 xl:col-span-3 space-y-4 pt-6 border-t border-gray-100">
                         <div className="flex items-center justify-between">
-                            <h4 className="text-sm font-bold text-gray-400 uppercase flex items-center gap-2">
+                            <h4 className="text-base font-bold text-gray-400 uppercase flex items-center gap-2">
                                 <BarChart3 className="w-4 h-4" /> Market Forecast
                             </h4>
-                            <span className="text-xs font-medium text-gray-400 bg-gray-50 px-2 py-1 rounded">
+                            <span className="text-sm font-medium text-gray-400 bg-gray-50 px-2 py-1 rounded">
                                 *Sales = Total Demand × Market Share
                             </span>
                         </div>
@@ -1364,10 +1373,10 @@ function DetailedRoundCard({ data, isCritique = false }: any) {
                                         <div className="bg-gray-50 px-4 py-3 border-b border-gray-100 flex justify-between items-center">
                                             <span className="font-bold text-gray-900 uppercase">{region}</span>
                                             <div className="text-right">
-                                                <div className="text-xs text-gray-500 uppercase font-bold">Total Demand</div>
+                                                <div className="text-sm text-gray-500 uppercase font-bold">Total Demand</div>
                                                 <div className="font-mono font-bold text-gray-900">
                                                     {(demand / 1000).toFixed(1)}M
-                                                    <span className={`ml-1 text-xs ${growth >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                                                    <span className={`ml-1 text-sm ${growth >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                                                         {growth > 0 ? '+' : ''}{growth}%
                                                     </span>
                                                 </div>
@@ -1378,12 +1387,12 @@ function DetailedRoundCard({ data, isCritique = false }: any) {
                                         <div className="p-4 space-y-4">
                                             {/* Market Share Breakdown */}
                                             <div className="space-y-2">
-                                                <div className="flex justify-between text-xs font-bold text-gray-400 uppercase">
+                                                <div className="flex justify-between text-sm font-bold text-gray-400 uppercase">
                                                     <span>Our Share</span>
                                                     <span>{totalShare}% Total</span>
                                                 </div>
                                                 {Object.entries(shares).map(([tech, share]: any) => (
-                                                    <div key={tech} className="flex items-center justify-between text-sm">
+                                                    <div key={tech} className="flex items-center justify-between text-base">
                                                         <span className="text-gray-600 font-medium">{tech}</span>
                                                         <div className="flex items-center gap-2">
                                                             <div className="w-24 h-2 bg-gray-100 rounded-full overflow-hidden">
@@ -1397,8 +1406,8 @@ function DetailedRoundCard({ data, isCritique = false }: any) {
 
                                             {/* Calculated Sales */}
                                             <div className="pt-3 border-t border-gray-100 flex justify-between items-center bg-blue-50/50 -mx-4 -mb-4 px-4 py-3">
-                                                <span className="text-xs font-bold text-blue-800 uppercase">Est. Sales Volume</span>
-                                                <span className="font-mono font-bold text-blue-700 text-lg">{projectedSales.toLocaleString()}k</span>
+                                                <span className="text-sm font-bold text-blue-800 uppercase">Est. Sales Volume</span>
+                                                <span className="font-mono font-bold text-blue-700 text-xl">{projectedSales.toLocaleString()}k</span>
                                             </div>
                                         </div>
                                     </div>
@@ -1412,21 +1421,21 @@ function DetailedRoundCard({ data, isCritique = false }: any) {
             {/* Competitive Advantage (New) */}
             {data.competitive_advantage && (
                 <div className="mt-6 pt-4 border-t border-gray-100 px-8">
-                    <h4 className="text-sm font-bold text-gray-400 uppercase flex items-center gap-2 mb-3">
+                    <h4 className="text-base font-bold text-gray-400 uppercase flex items-center gap-2 mb-3">
                         <Lightbulb className="w-4 h-4" /> Competitive Advantage (Why Us?)
                     </h4>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div className="bg-emerald-50 border border-emerald-100 p-3 rounded-lg">
-                            <div className="text-xs font-bold text-emerald-600 uppercase mb-1">USA</div>
-                            <div className="text-sm text-emerald-900 font-medium">{data.competitive_advantage.usa}</div>
+                            <div className="text-sm font-bold text-emerald-600 uppercase mb-1">USA</div>
+                            <div className="text-base text-emerald-900 font-medium">{data.competitive_advantage.usa}</div>
                         </div>
                         <div className="bg-emerald-50 border border-emerald-100 p-3 rounded-lg">
-                            <div className="text-xs font-bold text-emerald-600 uppercase mb-1">Asia</div>
-                            <div className="text-sm text-emerald-900 font-medium">{data.competitive_advantage.asia}</div>
+                            <div className="text-sm font-bold text-emerald-600 uppercase mb-1">Asia</div>
+                            <div className="text-base text-emerald-900 font-medium">{data.competitive_advantage.asia}</div>
                         </div>
                         <div className="bg-emerald-50 border border-emerald-100 p-3 rounded-lg">
-                            <div className="text-xs font-bold text-emerald-600 uppercase mb-1">Europe</div>
-                            <div className="text-sm text-emerald-900 font-medium">{data.competitive_advantage.europe}</div>
+                            <div className="text-sm font-bold text-emerald-600 uppercase mb-1">Europe</div>
+                            <div className="text-base text-emerald-900 font-medium">{data.competitive_advantage.europe}</div>
                         </div>
                     </div>
                 </div>
@@ -1435,25 +1444,25 @@ function DetailedRoundCard({ data, isCritique = false }: any) {
             {/* Scenario Planning (New) */}
             {data.scenarios && (
                 <div className="mt-6 pt-4 border-t border-gray-100 px-8">
-                    <h4 className="text-sm font-bold text-gray-400 uppercase flex items-center gap-2 mb-3">
+                    <h4 className="text-base font-bold text-gray-400 uppercase flex items-center gap-2 mb-3">
                         <GitBranch className="w-4 h-4" /> Scenario Planning
                     </h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="bg-green-50 border border-green-100 p-3 rounded-lg">
-                            <div className="text-xs font-bold text-green-600 uppercase mb-1 flex justify-between">
+                            <div className="text-sm font-bold text-green-600 uppercase mb-1 flex justify-between">
                                 <span>Best Case (High Demand)</span>
                                 <span>{data.scenarios.best_case.probability}</span>
                             </div>
-                            <div className="text-sm text-green-900 font-medium mb-1">{data.scenarios.best_case.outcome}</div>
-                            <div className="text-xs text-green-700">{data.scenarios.best_case.strategy}</div>
+                            <div className="text-base text-green-900 font-medium mb-1">{data.scenarios.best_case.outcome}</div>
+                            <div className="text-sm text-green-700">{data.scenarios.best_case.strategy}</div>
                         </div>
                         <div className="bg-red-50 border border-red-100 p-3 rounded-lg">
-                            <div className="text-xs font-bold text-red-600 uppercase mb-1 flex justify-between">
+                            <div className="text-sm font-bold text-red-600 uppercase mb-1 flex justify-between">
                                 <span>Worst Case (Price War)</span>
                                 <span>{data.scenarios.worst_case.probability}</span>
                             </div>
-                            <div className="text-sm text-red-900 font-medium mb-1">{data.scenarios.worst_case.outcome}</div>
-                            <div className="text-xs text-red-700">{data.scenarios.worst_case.strategy}</div>
+                            <div className="text-base text-red-900 font-medium mb-1">{data.scenarios.worst_case.outcome}</div>
+                            <div className="text-sm text-red-700">{data.scenarios.worst_case.strategy}</div>
                         </div>
                     </div>
                 </div>
@@ -1463,11 +1472,11 @@ function DetailedRoundCard({ data, isCritique = false }: any) {
             {data.analysis && (
                 <div className="bg-gray-900 text-white p-8 border-t border-gray-800">
                     <div className="flex items-center justify-between mb-6">
-                        <h4 className="text-xl font-bold flex items-center gap-2">
+                        <h4 className="text-2xl font-bold flex items-center gap-2">
                             <BrainCircuit className="w-6 h-6 text-rose-400" />
                             Strategic Audit
                         </h4>
-                        <div className={`px-4 py-2 rounded-lg font-bold text-xl ${data.analysis.score > 80 ? 'bg-green-500' : data.analysis.score > 50 ? 'bg-yellow-500 text-black' : 'bg-red-500'}`}>
+                        <div className={`px-4 py-2 rounded-lg font-bold text-2xl ${data.analysis.score > 80 ? 'bg-green-500' : data.analysis.score > 50 ? 'bg-yellow-500 text-black' : 'bg-red-500'}`}>
                             Score: {data.analysis.score}/100
                         </div>
                     </div>
@@ -1479,7 +1488,7 @@ function DetailedRoundCard({ data, isCritique = false }: any) {
                             </h5>
                             <ul className="space-y-2">
                                 {data.analysis.compliments.map((item: string, i: number) => (
-                                    <li key={i} className="flex items-start gap-2 text-sm text-gray-300">
+                                    <li key={i} className="flex items-start gap-2 text-base text-gray-300">
                                         <span className="text-green-500 mt-1">✓</span> {item}
                                     </li>
                                 ))}
@@ -1491,7 +1500,7 @@ function DetailedRoundCard({ data, isCritique = false }: any) {
                             </h5>
                             <ul className="space-y-2">
                                 {data.analysis.critiques.map((item: string, i: number) => (
-                                    <li key={i} className="flex items-start gap-2 text-sm text-gray-300">
+                                    <li key={i} className="flex items-start gap-2 text-base text-gray-300">
                                         <span className="text-red-500 mt-1">⚠</span> {item}
                                     </li>
                                 ))}
@@ -1502,15 +1511,15 @@ function DetailedRoundCard({ data, isCritique = false }: any) {
                     {/* Competitor Intelligence (New) */}
                     {data.competitor_intel && (
                         <div className="mt-8 pt-6 border-t border-gray-800">
-                            <h5 className="font-bold text-rose-400 mb-3 flex items-center gap-2 uppercase text-sm tracking-wider">
+                            <h5 className="font-bold text-rose-400 mb-3 flex items-center gap-2 uppercase text-base tracking-wider">
                                 <AlertTriangle className="w-4 h-4" /> Competitor Intelligence (Killer Threats)
                             </h5>
                             <div className="bg-rose-900/20 border border-rose-900/50 rounded-lg p-4">
                                 <h6 className="font-bold text-rose-200 mb-2">{data.competitor_intel.title}</h6>
-                                <p className="text-sm text-gray-300 mb-3 leading-relaxed">
+                                <p className="text-base text-gray-300 mb-3 leading-relaxed">
                                     {data.competitor_intel.description}
                                 </p>
-                                <div className="flex items-start gap-2 text-xs font-bold text-rose-400 uppercase">
+                                <div className="flex items-start gap-2 text-sm font-bold text-rose-400 uppercase">
                                     <span className="shrink-0">⚠ Implication:</span>
                                     <span>{data.competitor_intel.implication}</span>
                                 </div>
@@ -1519,8 +1528,8 @@ function DetailedRoundCard({ data, isCritique = false }: any) {
                     )}
 
                     <div className="mt-8 pt-6 border-t border-gray-800">
-                        <h5 className="font-bold text-gray-400 mb-2 text-sm uppercase">Projected Outcome</h5>
-                        <p className="text-lg font-medium text-white">
+                        <h5 className="font-bold text-gray-400 mb-2 text-base uppercase">Projected Outcome</h5>
+                        <p className="text-xl font-medium text-white">
                             {data.analysis.outcome}
                         </p>
                     </div>

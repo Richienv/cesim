@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Sidebar } from '@/components/Sidebar';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar, ComposedChart, Scatter, LabelList } from 'recharts';
-import { AlertCircle, TrendingUp, DollarSign, Factory, Globe, ChevronDown, BarChart3, ArrowRightLeft, Truck, PieChart, Settings } from 'lucide-react';
+import { AlertCircle, TrendingUp, DollarSign, Factory, Globe, ChevronDown, BarChart3, ArrowRightLeft, Truck, PieChart, Settings, Menu, Activity } from 'lucide-react';
 import { clsx } from 'clsx';
 
 // Types for our JSON data
@@ -234,6 +234,7 @@ export default function SimulationPage() {
     const [marketParams, setMarketParams] = useState<MarketParameters | null>(null);
     const [networkCoverage, setNetworkCoverage] = useState<NetworkCoverage | null>(null);
     const [loading, setLoading] = useState(true);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     // Team Management
     const [selectedTeam, setSelectedTeam] = useState(TEAMS[0].id);
@@ -719,27 +720,35 @@ export default function SimulationPage() {
 
     return (
         <div className="min-h-screen bg-gray-50">
-            <Sidebar />
+            <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
             <main className="md:pl-64 transition-all duration-300">
                 {/* Header */}
                 <header className="bg-white/80 backdrop-blur-md border-b border-gray-100 sticky top-0 z-40">
                     <div className="px-8 py-4 flex items-center justify-between">
-                        <div>
-                            <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Simulation & Forecasting</h1>
-                            <div className="flex items-center gap-2 mt-1">
-                                <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                                <p className="text-sm font-medium text-gray-500 uppercase tracking-wider">{marketParams?.round_info.current_round}</p>
+                        <div className="flex items-center gap-4">
+                            <button
+                                onClick={() => setIsSidebarOpen(true)}
+                                className="md:hidden p-2 text-gray-500 hover:bg-gray-100 rounded-lg"
+                            >
+                                <Menu size={24} />
+                            </button>
+                            <div>
+                                <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Simulation & Forecasting</h1>
+                                <div className="flex items-center gap-2 mt-1">
+                                    <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                                    <p className="text-base font-medium text-gray-500 uppercase tracking-wider">{marketParams?.round_info.current_round}</p>
+                                </div>
                             </div>
                         </div>
                         {/* Team Selector */}
                         <div className="flex items-center gap-4">
                             <div className="flex items-center gap-2 bg-gray-50 px-3 py-1.5 rounded-full border border-gray-100">
-                                <span className="text-sm font-medium text-gray-400 uppercase tracking-wider">Team</span>
+                                <span className="text-base font-medium text-gray-400 uppercase tracking-wider">Team</span>
                                 <div className="relative">
                                     <select
                                         value={selectedTeam}
                                         onChange={(e) => setSelectedTeam(e.target.value)}
-                                        className="appearance-none bg-transparent text-gray-700 text-base font-semibold pr-6 focus:outline-none cursor-pointer"
+                                        className="appearance-none bg-transparent text-gray-700 text-lg font-semibold pr-6 focus:outline-none cursor-pointer"
                                     >
                                         {TEAMS.map(team => (
                                             <option key={team.id} value={team.id}>{team.name}</option>
@@ -762,7 +771,7 @@ export default function SimulationPage() {
                                 key={section.id}
                                 onClick={() => setActiveSection(section.id)}
                                 className={clsx(
-                                    "pb-3 text-base font-medium transition-all relative",
+                                    "pb-3 text-lg font-medium transition-all relative",
                                     activeSection === section.id
                                         ? "text-red-600"
                                         : "text-gray-500 hover:text-gray-800"
@@ -789,8 +798,8 @@ export default function SimulationPage() {
                                 <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                                     <div className="px-8 py-6 border-b border-gray-50 flex justify-between items-center">
                                         <div>
-                                            <h2 className="font-bold text-gray-900 text-xl">Total Market Demand</h2>
-                                            <p className="text-sm text-gray-400 mt-1">Forecast growth for the upcoming round</p>
+                                            <h2 className="font-bold text-gray-900 text-2xl">Total Market Demand</h2>
+                                            <p className="text-base text-gray-400 mt-1">Forecast growth for the upcoming round</p>
                                         </div>
                                         <div className="p-2 bg-gray-50 rounded-lg">
                                             <TrendingUp className="w-5 h-5 text-gray-400" />
@@ -801,19 +810,19 @@ export default function SimulationPage() {
                                             {(['usa', 'asia', 'europe'] as const).map(region => (
                                                 <div key={region} className="bg-gray-50 rounded-xl p-4 border border-gray-100 hover:border-red-100 transition-colors">
                                                     <div className="flex justify-between items-start mb-3">
-                                                        <span className="text-sm font-bold text-gray-500 uppercase tracking-wider">{region}</span>
-                                                        <div className="text-sm font-medium text-red-600 bg-red-50 px-2 py-0.5 rounded-full">
+                                                        <span className="text-base font-bold text-gray-500 uppercase tracking-wider">{region}</span>
+                                                        <div className="text-base font-medium text-red-600 bg-red-50 px-2 py-0.5 rounded-full">
                                                             {((getProjectedDemand(region) - INITIAL_DEMAND[region]) / INITIAL_DEMAND[region] * 100).toFixed(1)}%
                                                         </div>
                                                     </div>
 
                                                     <div className="space-y-4">
                                                         <div>
-                                                            <div className="text-sm text-gray-400 mb-1">Growth Assumption</div>
+                                                            <div className="text-base text-gray-400 mb-1">Growth Assumption</div>
                                                             <div className="relative">
                                                                 <input
                                                                     type="number"
-                                                                    className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xl font-bold text-gray-900 focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20 transition-all placeholder-gray-300"
+                                                                    className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-2xl font-bold text-gray-900 focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20 transition-all placeholder-gray-300"
                                                                     placeholder="0"
                                                                     value={currentTeamState.growth[region]}
                                                                     onChange={(e) => handleGrowthChange(region, e.target.value)}
@@ -824,12 +833,12 @@ export default function SimulationPage() {
 
                                                         <div className="grid grid-cols-2 gap-2 pt-2 border-t border-gray-200/50">
                                                             <div>
-                                                                <div className="text-xs text-gray-400 uppercase tracking-wider mb-0.5">Prev.</div>
-                                                                <div className="text-base font-semibold text-gray-600">{INITIAL_DEMAND[region].toLocaleString()}</div>
+                                                                <div className="text-sm text-gray-400 uppercase tracking-wider mb-0.5">Prev.</div>
+                                                                <div className="text-lg font-semibold text-gray-600">{INITIAL_DEMAND[region].toLocaleString()}</div>
                                                             </div>
                                                             <div className="text-right">
-                                                                <div className="text-xs text-gray-400 uppercase tracking-wider mb-0.5">Forecast</div>
-                                                                <div className="text-base font-bold text-gray-900">{getProjectedDemand(region).toLocaleString(undefined, { maximumFractionDigits: 0 })}</div>
+                                                                <div className="text-sm text-gray-400 uppercase tracking-wider mb-0.5">Forecast</div>
+                                                                <div className="text-lg font-bold text-gray-900">{getProjectedDemand(region).toLocaleString(undefined, { maximumFractionDigits: 0 })}</div>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -863,24 +872,24 @@ export default function SimulationPage() {
                                 {/* 2. Market Share Forecast */}
                                 <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                                     <div className="px-8 py-6 border-b border-gray-50">
-                                        <h2 className="font-bold text-gray-900 text-xl">Market Share Forecast</h2>
-                                        <p className="text-sm text-gray-400 mt-1">Estimate your share for each product in each region.</p>
+                                        <h2 className="font-bold text-gray-900 text-2xl">Market Share Forecast</h2>
+                                        <p className="text-base text-gray-400 mt-1">Estimate your share for each product in each region.</p>
                                     </div>
                                     <div className="p-8 space-y-8">
                                         {(['usa', 'asia', 'europe'] as const).map(region => (
                                             <div key={region} className="bg-gray-50/50 rounded-xl p-6 border border-gray-100">
                                                 <div className="flex items-center gap-2 mb-4">
                                                     <Globe className="w-4 h-4 text-gray-400" />
-                                                    <h3 className="font-bold text-gray-900 uppercase text-sm tracking-wider">{region}</h3>
+                                                    <h3 className="font-bold text-gray-900 uppercase text-base tracking-wider">{region}</h3>
                                                 </div>
                                                 <div className="space-y-4">
                                                     {(['p1', 'p2'] as const).map((prod, idx) => (
                                                         <div key={prod} className="grid grid-cols-12 gap-4 items-center">
-                                                            <div className="col-span-3 text-base font-medium text-gray-700">Product {idx + 1}</div>
+                                                            <div className="col-span-3 text-lg font-medium text-gray-700">Product {idx + 1}</div>
                                                             <div className="col-span-4">
                                                                 <div className="relative">
                                                                     <select
-                                                                        className="w-full appearance-none bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all"
+                                                                        className="w-full appearance-none bg-white border border-gray-200 rounded-lg px-3 py-2 text-base font-medium text-gray-700 focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all"
                                                                         value={currentTeamState.decisions[region][prod].tech}
                                                                         onChange={(e) => handleDecisionChange(region, prod, 'tech', e.target.value)}
                                                                     >
@@ -893,15 +902,15 @@ export default function SimulationPage() {
                                                                 <div className="relative">
                                                                     <input
                                                                         type="number"
-                                                                        className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm font-medium text-right focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all"
+                                                                        className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-base font-medium text-right focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all"
                                                                         value={currentTeamState.decisions[region][prod].share}
                                                                         onChange={(e) => handleDecisionChange(region, prod, 'share', parseFloat(e.target.value) || 0)}
                                                                     />
-                                                                    <span className="absolute right-8 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none">%</span>
+                                                                    <span className="absolute right-8 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none">%</span>
                                                                 </div>
                                                             </div>
                                                             <div className="col-span-2 text-right">
-                                                                <span className="text-sm font-bold text-gray-900">
+                                                                <span className="text-base font-bold text-gray-900">
                                                                     {getProductVolume(region, currentTeamState.decisions[region][prod].share).toFixed(0)}k
                                                                 </span>
                                                             </div>
@@ -922,16 +931,16 @@ export default function SimulationPage() {
                                         <div className="p-2 bg-red-50 rounded-lg">
                                             <TrendingUp className="w-5 h-5 text-red-600" />
                                         </div>
-                                        <h2 className="text-xl font-bold text-gray-900">Market Prospects</h2>
+                                        <h2 className="text-2xl font-bold text-gray-900">Market Prospects</h2>
                                     </div>
-                                    <div className="space-y-6 text-base">
+                                    <div className="space-y-6 text-lg">
                                         <div className="p-5 bg-white rounded-xl border border-gray-100 shadow-sm">
                                             <h4 className="font-bold text-gray-900 mb-2">Demand Forecast</h4>
                                             <p className="text-gray-500 leading-relaxed mb-4">{marketParams?.market_prospects.demand_forecast.summary}</p>
                                             <div className="grid grid-cols-3 gap-3">
                                                 {Object.entries(marketParams?.market_prospects.demand_forecast.growth_projections || {}).map(([region, growth]) => (
                                                     <div key={region} className="bg-gray-50 p-3 rounded-lg text-center border border-gray-100">
-                                                        <span className="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-1">{region}</span>
+                                                        <span className="text-sm font-bold text-gray-400 uppercase tracking-wider block mb-1">{region}</span>
                                                         <span className="font-bold text-green-600">{growth}</span>
                                                     </div>
                                                 ))}
@@ -954,12 +963,12 @@ export default function SimulationPage() {
                                         <div className="p-2 bg-red-50 rounded-lg">
                                             <Globe className="w-5 h-5 text-red-600" />
                                         </div>
-                                        <h2 className="text-xl font-bold text-gray-900">Network Coverage Prediction</h2>
+                                        <h2 className="text-2xl font-bold text-gray-900">Network Coverage Prediction</h2>
                                     </div>
                                     <div className="space-y-8">
                                         {['usa', 'asia', 'europe'].map(region => (
                                             <div key={region} className="h-48">
-                                                <h4 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4">{region}</h4>
+                                                <h4 className="text-base font-bold text-gray-400 uppercase tracking-wider mb-4">{region}</h4>
                                                 <ResponsiveContainer width="100%" height="100%">
                                                     <LineChart
                                                         data={networkCoverage?.regions[region as 'usa' | 'asia' | 'europe'].tech_1.map((_, i) => ({
@@ -996,11 +1005,11 @@ export default function SimulationPage() {
                                         <div className="p-2 bg-red-50 rounded-lg">
                                             <DollarSign className="w-5 h-5 text-red-600" />
                                         </div>
-                                        <h2 className="text-xl font-bold text-gray-900">Key Parameters</h2>
+                                        <h2 className="text-2xl font-bold text-gray-900">Key Parameters</h2>
                                     </div>
 
                                     <div className="overflow-x-auto">
-                                        <table className="w-full text-base text-left">
+                                        <table className="w-full text-lg text-left">
                                             <thead className="bg-red-50 text-gray-700 font-bold">
                                                 <tr>
                                                     <th className="p-4">Parameter</th>
@@ -1095,14 +1104,14 @@ export default function SimulationPage() {
                                                 ))}
 
                                                 {/* Interest Rates */}
-                                                <tr className="bg-gray-100/50"><td colSpan={3} className="p-4 font-bold text-gray-800 text-xs uppercase tracking-wider">Main debt interest rate, %</td></tr>
+                                                <tr className="bg-gray-100/50"><td colSpan={3} className="p-4 font-bold text-gray-800 text-sm uppercase tracking-wider">Main debt interest rate, %</td></tr>
                                                 <tr className="hover:bg-gray-50/50">
                                                     <td className="p-4 text-gray-600">{marketParams?.detailed_parameters?.finance.interest_rates.long_term.region}</td>
                                                     <td className="p-4 text-right font-medium">{marketParams?.detailed_parameters?.finance.interest_rates.long_term.this_round.toFixed(1)}</td>
                                                     <td className="p-4 text-right text-gray-500">{marketParams?.detailed_parameters?.finance.interest_rates.long_term.last_round.toFixed(1)}</td>
                                                 </tr>
 
-                                                <tr className="bg-gray-100/50"><td colSpan={3} className="p-4 font-bold text-gray-800 text-xs uppercase tracking-wider">Short-term loan interest rate, %</td></tr>
+                                                <tr className="bg-gray-100/50"><td colSpan={3} className="p-4 font-bold text-gray-800 text-sm uppercase tracking-wider">Short-term loan interest rate, %</td></tr>
                                                 {marketParams?.detailed_parameters?.finance.interest_rates.short_term.map((item, i) => (
                                                     <tr key={i} className="hover:bg-gray-50/50">
                                                         <td className="p-4 text-gray-600">{item.region}</td>
@@ -1111,7 +1120,7 @@ export default function SimulationPage() {
                                                     </tr>
                                                 ))}
 
-                                                <tr className="bg-gray-100/50"><td colSpan={3} className="p-4 font-bold text-gray-800 text-xs uppercase tracking-wider">Cash interest rate, %</td></tr>
+                                                <tr className="bg-gray-100/50"><td colSpan={3} className="p-4 font-bold text-gray-800 text-sm uppercase tracking-wider">Cash interest rate, %</td></tr>
                                                 {marketParams?.detailed_parameters?.finance.interest_rates.cash.map((item, i) => (
                                                     <tr key={i} className="hover:bg-gray-50/50">
                                                         <td className="p-4 text-gray-600">{item.region}</td>
@@ -1120,14 +1129,14 @@ export default function SimulationPage() {
                                                     </tr>
                                                 ))}
 
-                                                <tr className="bg-gray-100/50"><td colSpan={3} className="p-4 font-bold text-gray-800 text-xs uppercase tracking-wider">Cost of capital, %</td></tr>
+                                                <tr className="bg-gray-100/50"><td colSpan={3} className="p-4 font-bold text-gray-800 text-sm uppercase tracking-wider">Cost of capital, %</td></tr>
                                                 <tr className="hover:bg-gray-50/50">
                                                     <td className="p-4 text-gray-600">Capital opportunity cost</td>
                                                     <td className="p-4 text-right font-medium">{marketParams?.detailed_parameters?.finance.cost_of_capital.this_round.toFixed(1)}</td>
                                                     <td className="p-4 text-right text-gray-500">{marketParams?.detailed_parameters?.finance.cost_of_capital.last_round.toFixed(1)}</td>
                                                 </tr>
 
-                                                <tr className="bg-gray-100/50"><td colSpan={3} className="p-4 font-bold text-gray-800 text-xs uppercase tracking-wider">Corporate income tax, %</td></tr>
+                                                <tr className="bg-gray-100/50"><td colSpan={3} className="p-4 font-bold text-gray-800 text-sm uppercase tracking-wider">Corporate income tax, %</td></tr>
                                                 {marketParams?.detailed_parameters?.finance.corporate_tax.map((item, i) => (
                                                     <tr key={i} className="hover:bg-gray-50/50">
                                                         <td className="p-4 text-gray-600">{item.region}</td>
@@ -1189,7 +1198,7 @@ export default function SimulationPage() {
                                 <button
                                     onClick={() => setProductionTab('plan')}
                                     className={clsx(
-                                        "pb-3 text-sm font-medium transition-all relative",
+                                        "pb-3 text-base font-medium transition-all relative",
                                         productionTab === 'plan' ? "text-red-600" : "text-gray-500 hover:text-gray-800"
                                     )}
                                 >
@@ -1201,7 +1210,7 @@ export default function SimulationPage() {
                                 <button
                                     onClick={() => setProductionTab('invest')}
                                     className={clsx(
-                                        "pb-3 text-sm font-medium transition-all relative",
+                                        "pb-3 text-base font-medium transition-all relative",
                                         productionTab === 'invest' ? "text-red-600" : "text-gray-500 hover:text-gray-800"
                                     )}
                                 >
@@ -1217,7 +1226,7 @@ export default function SimulationPage() {
                                     {/* Left Column: Production Plan Chart */}
                                     <div className="lg:col-span-1 bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                                         <div className="flex justify-between items-center mb-6">
-                                            <h3 className="font-bold text-gray-900 text-lg">Production plan, pieces</h3>
+                                            <h3 className="font-bold text-gray-900 text-xl">Production plan, pieces</h3>
                                         </div>
                                         <div className="h-80">
                                             <ResponsiveContainer width="100%" height="100%">
@@ -1249,17 +1258,17 @@ export default function SimulationPage() {
                                         {/* Self Production Table */}
                                         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                                             <div className="px-6 py-4 border-b border-gray-50 bg-red-50/30">
-                                                <h3 className="font-bold text-red-700 text-lg">Self-production</h3>
+                                                <h3 className="font-bold text-red-700 text-xl">Self-production</h3>
                                             </div>
                                             <div className="overflow-x-auto">
-                                                <table className="w-full text-sm text-left">
+                                                <table className="w-full text-base text-left">
                                                     <thead>
                                                         <tr className="bg-red-50 text-gray-700 font-bold border-b border-red-100">
                                                             <th className="p-4 w-1/4"></th>
                                                             <th className="p-4 text-center border-r border-red-100" colSpan={2}>USA</th>
                                                             <th className="p-4 text-center" colSpan={2}>Asia</th>
                                                         </tr>
-                                                        <tr className="bg-gray-50 border-b border-gray-100 text-xs uppercase tracking-wider text-gray-500">
+                                                        <tr className="bg-gray-50 border-b border-gray-100 text-sm uppercase tracking-wider text-gray-500">
                                                             <th className="p-3"></th>
                                                             <th className="p-3 text-center w-1/5">Production Line 1</th>
                                                             <th className="p-3 text-center w-1/5 border-r border-gray-100">Production Line 2</th>
@@ -1274,7 +1283,7 @@ export default function SimulationPage() {
                                                                 (['line1', 'line2'] as const).map(line => (
                                                                     <td key={`${region}-${line}`} className={`p-2 ${line === 'line2' && region === 'usa' ? 'border-r border-gray-50' : ''}`}>
                                                                         <select
-                                                                            className="w-full bg-white border border-gray-200 rounded px-2 py-1.5 text-sm focus:border-red-500 focus:ring-1 focus:ring-red-500"
+                                                                            className="w-full bg-white border border-gray-200 rounded px-2 py-1.5 text-base focus:border-red-500 focus:ring-1 focus:ring-red-500"
                                                                             value={currentTeamState.decisions.production[region][line].tech}
                                                                             onChange={(e) => handleProductionChange(region, line, 'tech', e.target.value)}
                                                                         >
@@ -1291,7 +1300,7 @@ export default function SimulationPage() {
                                                                     <td key={`${region}-${line}`} className={`p-2 ${line === 'line2' && region === 'usa' ? 'border-r border-gray-50' : ''}`}>
                                                                         <input
                                                                             type="number"
-                                                                            className="w-full bg-white border border-gray-200 rounded px-2 py-1.5 text-sm text-right focus:border-red-500 focus:ring-1 focus:ring-red-500"
+                                                                            className="w-full bg-white border border-gray-200 rounded px-2 py-1.5 text-base text-right focus:border-red-500 focus:ring-1 focus:ring-red-500"
                                                                             value={currentTeamState.decisions.production[region][line].capacity}
                                                                             onChange={(e) => handleProductionChange(region, line, 'capacity', parseFloat(e.target.value) || 0)}
                                                                         />
@@ -1336,7 +1345,7 @@ export default function SimulationPage() {
                                                 <div className="px-6 py-3 bg-gray-50 border-b border-gray-100">
                                                     <h4 className="font-bold text-gray-800">Production capacity</h4>
                                                 </div>
-                                                <table className="w-full text-sm text-left">
+                                                <table className="w-full text-base text-left">
                                                     <thead>
                                                         <tr className="bg-red-50/50 text-gray-700 font-bold border-b border-red-50">
                                                             <th className="p-4 w-1/4"></th>
@@ -1363,17 +1372,17 @@ export default function SimulationPage() {
                                         {/* Outsourcing Production Table */}
                                         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                                             <div className="px-6 py-4 border-b border-gray-50 bg-red-50/30 flex justify-between items-center">
-                                                <h3 className="font-bold text-red-700 text-lg">Outsourcing production</h3>
+                                                <h3 className="font-bold text-red-700 text-xl">Outsourcing production</h3>
                                             </div>
                                             <div className="overflow-x-auto">
-                                                <table className="w-full text-sm text-left">
+                                                <table className="w-full text-base text-left">
                                                     <thead>
                                                         <tr className="bg-red-50 text-gray-700 font-bold border-b border-red-100">
                                                             <th className="p-4 w-1/4"></th>
                                                             <th className="p-4 text-center border-r border-red-100" colSpan={2}>USA</th>
                                                             <th className="p-4 text-center" colSpan={2}>Asia</th>
                                                         </tr>
-                                                        <tr className="bg-gray-50 border-b border-gray-100 text-xs uppercase tracking-wider text-gray-500">
+                                                        <tr className="bg-gray-50 border-b border-gray-100 text-sm uppercase tracking-wider text-gray-500">
                                                             <th className="p-3">technology</th>
                                                             <th className="p-3 text-center w-1/5">Technology 1</th>
                                                             <th className="p-3 text-center w-1/5 border-r border-gray-100">Technology 2</th>
@@ -1385,16 +1394,16 @@ export default function SimulationPage() {
                                                         <tr>
                                                             <td className="p-4 font-medium text-gray-700">Planned outsourcing volume: 1,000 pieces</td>
                                                             <td className="p-2">
-                                                                <input type="number" className="w-full bg-white border border-gray-200 rounded px-2 py-1.5 text-sm text-right" defaultValue={400} />
+                                                                <input type="number" className="w-full bg-white border border-gray-200 rounded px-2 py-1.5 text-base text-right" defaultValue={400} />
                                                             </td>
                                                             <td className="p-2 border-r border-gray-50">
-                                                                <input type="number" className="w-full bg-white border border-gray-200 rounded px-2 py-1.5 text-sm text-right" defaultValue={0} />
+                                                                <input type="number" className="w-full bg-white border border-gray-200 rounded px-2 py-1.5 text-base text-right" defaultValue={0} />
                                                             </td>
                                                             <td className="p-2">
-                                                                <input type="number" className="w-full bg-white border border-gray-200 rounded px-2 py-1.5 text-sm text-right" defaultValue={0} />
+                                                                <input type="number" className="w-full bg-white border border-gray-200 rounded px-2 py-1.5 text-base text-right" defaultValue={0} />
                                                             </td>
                                                             <td className="p-2">
-                                                                <input type="number" className="w-full bg-white border border-gray-200 rounded px-2 py-1.5 text-sm text-right" defaultValue={0} />
+                                                                <input type="number" className="w-full bg-white border border-gray-200 rounded px-2 py-1.5 text-base text-right" defaultValue={0} />
                                                             </td>
                                                         </tr>
                                                         <tr>
@@ -1423,8 +1432,8 @@ export default function SimulationPage() {
                                     <div className="xl:col-span-1 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden h-fit">
                                         <div className="px-8 py-6 border-b border-gray-50 flex justify-between items-center">
                                             <div>
-                                                <h3 className="font-bold text-gray-900 text-lg">Capacity Overview</h3>
-                                                <p className="text-sm text-gray-400 mt-1">Sales vs. Capacity trends</p>
+                                                <h3 className="font-bold text-gray-900 text-xl">Capacity Overview</h3>
+                                                <p className="text-base text-gray-400 mt-1">Sales vs. Capacity trends</p>
                                             </div>
                                             <div className="p-2 bg-red-50 rounded-lg">
                                                 <BarChart3 className="w-5 h-5 text-red-600" />
@@ -1460,22 +1469,22 @@ export default function SimulationPage() {
                                         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                                             <div className="px-8 py-6 border-b border-gray-50 flex justify-between items-center">
                                                 <div>
-                                                    <h3 className="font-bold text-gray-900 text-lg">Demand Forecast</h3>
-                                                    <p className="text-sm text-gray-400 mt-1">Projected demand in thousands of units</p>
+                                                    <h3 className="font-bold text-gray-900 text-xl">Demand Forecast</h3>
+                                                    <p className="text-base text-gray-400 mt-1">Projected demand in thousands of units</p>
                                                 </div>
                                                 <div className="p-2 bg-red-50 rounded-lg">
                                                     <TrendingUp className="w-5 h-5 text-red-600" />
                                                 </div>
                                             </div>
                                             <div className="p-8">
-                                                <table className="w-full text-sm">
+                                                <table className="w-full text-base">
                                                     <thead>
                                                         <tr className="border-b border-gray-100">
-                                                            <th className="p-4 text-left text-sm font-bold text-gray-400 uppercase tracking-wider">Technology</th>
-                                                            <th className="p-4 text-right text-sm font-bold text-gray-400 uppercase tracking-wider">Last Round</th>
-                                                            <th className="p-4 text-right text-sm font-bold text-gray-400 uppercase tracking-wider">This Round</th>
-                                                            <th className="p-4 text-right text-sm font-bold text-gray-400 uppercase tracking-wider">Next Round</th>
-                                                            <th className="p-4 text-right text-sm font-bold text-gray-400 uppercase tracking-wider">Round 3</th>
+                                                            <th className="p-4 text-left text-base font-bold text-gray-400 uppercase tracking-wider">Technology</th>
+                                                            <th className="p-4 text-right text-base font-bold text-gray-400 uppercase tracking-wider">Last Round</th>
+                                                            <th className="p-4 text-right text-base font-bold text-gray-400 uppercase tracking-wider">This Round</th>
+                                                            <th className="p-4 text-right text-base font-bold text-gray-400 uppercase tracking-wider">Next Round</th>
+                                                            <th className="p-4 text-right text-base font-bold text-gray-400 uppercase tracking-wider">Round 3</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody className="divide-y divide-gray-50">
@@ -1487,14 +1496,14 @@ export default function SimulationPage() {
                                                                 <td className="p-4 text-right">
                                                                     <input
                                                                         type="number"
-                                                                        className="w-24 text-right bg-white border border-gray-200 rounded-lg px-2 py-1.5 text-sm font-medium focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all"
+                                                                        className="w-24 text-right bg-white border border-gray-200 rounded-lg px-2 py-1.5 text-base font-medium focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all"
                                                                         defaultValue={0}
                                                                     />
                                                                 </td>
                                                                 <td className="p-4 text-right">
                                                                     <input
                                                                         type="number"
-                                                                        className="w-24 text-right bg-white border border-gray-200 rounded-lg px-2 py-1.5 text-sm font-medium focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all"
+                                                                        className="w-24 text-right bg-white border border-gray-200 rounded-lg px-2 py-1.5 text-base font-medium focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all"
                                                                         defaultValue={0}
                                                                     />
                                                                 </td>
@@ -1518,10 +1527,10 @@ export default function SimulationPage() {
                                                 <div className="p-2 bg-red-50 rounded-lg">
                                                     <Settings className="w-5 h-5 text-red-600" />
                                                 </div>
-                                                <h3 className="font-bold text-gray-900 text-lg">Production Parameters</h3>
+                                                <h3 className="font-bold text-gray-900 text-xl">Production Parameters</h3>
                                             </div>
                                             <div className="overflow-x-auto">
-                                                <table className="w-full text-sm text-left">
+                                                <table className="w-full text-base text-left">
                                                     <thead className="bg-red-50 text-gray-700 font-bold">
                                                         <tr>
                                                             <th className="p-4">Parameter</th>
@@ -1581,17 +1590,17 @@ export default function SimulationPage() {
                                                     <Factory className="w-5 h-5 text-red-600" />
                                                 </div>
                                                 <div>
-                                                    <h3 className="font-bold text-gray-900 text-lg">Factory Investment</h3>
-                                                    <p className="text-sm text-gray-400 mt-1">Manage capacity expansion</p>
+                                                    <h3 className="font-bold text-gray-900 text-xl">Factory Investment</h3>
+                                                    <p className="text-base text-gray-400 mt-1">Manage capacity expansion</p>
                                                 </div>
                                             </div>
                                             <div className="p-8">
-                                                <table className="w-full text-sm">
+                                                <table className="w-full text-base">
                                                     <thead>
                                                         <tr className="border-b border-gray-100">
-                                                            <th className="p-4 text-left text-xs font-bold text-gray-400 uppercase tracking-wider w-1/3">Metric</th>
-                                                            <th className="p-4 text-center text-xs font-bold text-gray-900 uppercase tracking-wider bg-gray-50/50 rounded-t-lg">USA</th>
-                                                            <th className="p-4 text-center text-sm font-bold text-gray-900 uppercase tracking-wider bg-gray-50/50 rounded-t-lg border-l border-white">Asia</th>
+                                                            <th className="p-4 text-left text-sm font-bold text-gray-400 uppercase tracking-wider w-1/3">Metric</th>
+                                                            <th className="p-4 text-center text-sm font-bold text-gray-900 uppercase tracking-wider bg-gray-50/50 rounded-t-lg">USA</th>
+                                                            <th className="p-4 text-center text-base font-bold text-gray-900 uppercase tracking-wider bg-gray-50/50 rounded-t-lg border-l border-white">Asia</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody className="divide-y divide-gray-50">
@@ -1603,13 +1612,13 @@ export default function SimulationPage() {
                                                         <tr>
                                                             <td className="p-4 font-medium text-gray-700">
                                                                 Investment
-                                                                <span className="ml-1 text-gray-400 text-xs">k USD</span>
+                                                                <span className="ml-1 text-gray-400 text-sm">k USD</span>
                                                             </td>
                                                             {(['usa', 'asia'] as const).map(region => (
                                                                 <td key={region} className="p-4">
                                                                     <input
                                                                         type="number"
-                                                                        className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm font-medium text-right focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all"
+                                                                        className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-base font-medium text-right focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all"
                                                                         value={currentTeamState.decisions.production[region].investment}
                                                                         onChange={(e) => handleProductionChange(region, 'investment', 'investment', parseFloat(e.target.value) || 0)}
                                                                     />
@@ -1633,7 +1642,7 @@ export default function SimulationPage() {
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                                 {/* R&D Progress Chart */}
                                 <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-                                    <h3 className="font-bold text-gray-900 mb-4 text-center text-lg">R&D Progress (%)</h3>
+                                    <h3 className="font-bold text-gray-900 mb-4 text-center text-xl">R&D Progress (%)</h3>
                                     <div className="h-64">
                                         <ResponsiveContainer width="100%" height="100%">
                                             <BarChart data={[
@@ -1659,7 +1668,7 @@ export default function SimulationPage() {
 
                                 {/* R&D Features Chart */}
                                 <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-                                    <h3 className="font-bold text-gray-900 mb-4 text-center text-lg">R&D Features</h3>
+                                    <h3 className="font-bold text-gray-900 mb-4 text-center text-xl">R&D Features</h3>
                                     <div className="h-64">
                                         <ResponsiveContainer width="100%" height="100%">
                                             <BarChart data={[
@@ -1690,21 +1699,21 @@ export default function SimulationPage() {
                                 <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                                     <div className="px-8 py-6 border-b border-gray-50 flex justify-between items-center">
                                         <div>
-                                            <h3 className="font-bold text-gray-900 text-xl">In-house Development</h3>
-                                            <p className="text-sm text-gray-400 mt-1">Invest in technology and features</p>
+                                            <h3 className="font-bold text-gray-900 text-2xl">In-house Development</h3>
+                                            <p className="text-base text-gray-400 mt-1">Invest in technology and features</p>
                                         </div>
                                         <div className="p-2 bg-red-50 rounded-lg">
                                             <TrendingUp className="w-5 h-5 text-red-600" />
                                         </div>
                                     </div>
                                     <div className="p-8">
-                                        <table className="w-full text-sm">
+                                        <table className="w-full text-base">
                                             <thead>
                                                 <tr className="border-b border-gray-100">
-                                                    <th className="p-4 text-left text-sm font-bold text-gray-400 uppercase tracking-wider w-1/4">Technology</th>
-                                                    <th className="p-4 text-right text-sm font-bold text-gray-400 uppercase tracking-wider">This Round (k USD)</th>
-                                                    <th className="p-4 text-right text-sm font-bold text-gray-400 uppercase tracking-wider">Last Round (k USD)</th>
-                                                    <th className="p-4 text-right text-sm font-bold text-gray-400 uppercase tracking-wider">Cost of New Features</th>
+                                                    <th className="p-4 text-left text-base font-bold text-gray-400 uppercase tracking-wider w-1/4">Technology</th>
+                                                    <th className="p-4 text-right text-base font-bold text-gray-400 uppercase tracking-wider">This Round (k USD)</th>
+                                                    <th className="p-4 text-right text-base font-bold text-gray-400 uppercase tracking-wider">Last Round (k USD)</th>
+                                                    <th className="p-4 text-right text-base font-bold text-gray-400 uppercase tracking-wider">Cost of New Features</th>
                                                 </tr>
                                             </thead>
                                             <tbody className="divide-y divide-gray-50">
@@ -1715,7 +1724,7 @@ export default function SimulationPage() {
                                                             <div className="relative">
                                                                 <input
                                                                     type="number"
-                                                                    className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm font-medium text-right focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all"
+                                                                    className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-base font-medium text-right focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all"
                                                                     value={currentTeamState.decisions.rnd[tech]?.spend || 0}
                                                                     onChange={(e) => handleRndChange(tech, 'spend', parseFloat(e.target.value) || 0)}
                                                                 />
@@ -1744,20 +1753,20 @@ export default function SimulationPage() {
                                 <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                                     <div className="px-8 py-6 border-b border-gray-50 flex justify-between items-center">
                                         <div>
-                                            <h3 className="font-bold text-gray-900 text-xl">Feature Introduction</h3>
-                                            <p className="text-sm text-gray-400 mt-1">Purchase licenses for new features</p>
+                                            <h3 className="font-bold text-gray-900 text-2xl">Feature Introduction</h3>
+                                            <p className="text-base text-gray-400 mt-1">Purchase licenses for new features</p>
                                         </div>
                                         <div className="p-2 bg-red-50 rounded-lg">
                                             <DollarSign className="w-5 h-5 text-red-600" />
                                         </div>
                                     </div>
                                     <div className="p-8">
-                                        <table className="w-full text-sm">
+                                        <table className="w-full text-base">
                                             <thead>
                                                 <tr className="border-b border-gray-100">
-                                                    <th className="p-4 text-left text-sm font-bold text-gray-400 uppercase tracking-wider w-1/4">Technology</th>
-                                                    <th className="p-4 text-left text-sm font-bold text-gray-400 uppercase tracking-wider w-1/2">Additional Features</th>
-                                                    <th className="p-4 text-right text-sm font-bold text-gray-400 uppercase tracking-wider">Cost (USD)</th>
+                                                    <th className="p-4 text-left text-base font-bold text-gray-400 uppercase tracking-wider w-1/4">Technology</th>
+                                                    <th className="p-4 text-left text-base font-bold text-gray-400 uppercase tracking-wider w-1/2">Additional Features</th>
+                                                    <th className="p-4 text-right text-base font-bold text-gray-400 uppercase tracking-wider">Cost (USD)</th>
                                                 </tr>
                                             </thead>
                                             <tbody className="divide-y divide-gray-50">
@@ -1785,7 +1794,7 @@ export default function SimulationPage() {
                                                             <td className="p-4">
                                                                 <div className="relative">
                                                                     <select
-                                                                        className="w-full appearance-none bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all"
+                                                                        className="w-full appearance-none bg-white border border-gray-200 rounded-lg px-3 py-2 text-base font-medium text-gray-700 focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all"
                                                                         value={selectedOption}
                                                                         onChange={(e) => handleRndChange(tech, 'features', e.target.value)}
                                                                     >
@@ -1838,7 +1847,7 @@ export default function SimulationPage() {
                             <div className="flex items-center justify-between">
                                 <div>
                                     <h2 className="text-3xl font-bold text-gray-900">Marketing Strategy</h2>
-                                    <p className="text-base text-gray-500 mt-1">Manage product features, pricing, and promotion for {marketingRegion.toUpperCase()}</p>
+                                    <p className="text-lg text-gray-500 mt-1">Manage product features, pricing, and promotion for {marketingRegion.toUpperCase()}</p>
                                 </div>
                                 {/* Region Tabs */}
                                 <div className="flex bg-gray-100/50 p-1 rounded-xl">
@@ -1847,7 +1856,7 @@ export default function SimulationPage() {
                                             key={region}
                                             onClick={() => setMarketingRegion(region)}
                                             className={clsx(
-                                                "px-4 py-2 text-base font-medium rounded-lg transition-all capitalize",
+                                                "px-4 py-2 text-lg font-medium rounded-lg transition-all capitalize",
                                                 marketingRegion === region
                                                     ? "bg-white text-red-600 shadow-sm"
                                                     : "text-gray-500 hover:text-gray-700 hover:bg-gray-200/50"
@@ -1890,16 +1899,16 @@ export default function SimulationPage() {
                                     <div key={tech} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                                         <div className="px-8 py-6 border-b border-gray-50 flex justify-between items-center">
                                             <div>
-                                                <h3 className="font-bold text-gray-900 text-xl border-b-2 border-red-500 inline-block pb-1">Technology {idx + 1}</h3>
+                                                <h3 className="font-bold text-gray-900 text-2xl border-b-2 border-red-500 inline-block pb-1">Technology {idx + 1}</h3>
                                             </div>
                                         </div>
                                         <div className="p-8">
-                                            <table className="w-full text-sm">
+                                            <table className="w-full text-base">
                                                 <thead>
                                                     <tr className="bg-red-50/50 border-b border-red-100">
-                                                        <th className="p-4 text-left text-sm font-bold text-gray-700 uppercase tracking-wider w-1/2"></th>
-                                                        <th className="p-4 text-right text-sm font-bold text-gray-700 uppercase tracking-wider">This round</th>
-                                                        <th className="p-4 text-right text-sm font-bold text-gray-700 uppercase tracking-wider">Last round</th>
+                                                        <th className="p-4 text-left text-base font-bold text-gray-700 uppercase tracking-wider w-1/2"></th>
+                                                        <th className="p-4 text-right text-base font-bold text-gray-700 uppercase tracking-wider">This round</th>
+                                                        <th className="p-4 text-right text-base font-bold text-gray-700 uppercase tracking-wider">Last round</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody className="divide-y divide-gray-50">
@@ -1909,7 +1918,7 @@ export default function SimulationPage() {
                                                             <div className="flex justify-end">
                                                                 <input
                                                                     type="number"
-                                                                    className="w-24 text-right bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm font-medium focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all"
+                                                                    className="w-24 text-right bg-white border border-gray-200 rounded-lg px-3 py-2 text-base font-medium focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all"
                                                                     value={data.features}
                                                                     onChange={(e) => handleMarketingChange(marketingRegion, tech, 'features', parseFloat(e.target.value) || 0)}
                                                                 />
@@ -1932,7 +1941,7 @@ export default function SimulationPage() {
                                                             <div className="flex justify-end">
                                                                 <input
                                                                     type="number"
-                                                                    className="w-24 text-right bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm font-medium focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all"
+                                                                    className="w-24 text-right bg-white border border-gray-200 rounded-lg px-3 py-2 text-base font-medium focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all"
                                                                     value={data.price}
                                                                     onChange={(e) => handleMarketingChange(marketingRegion, tech, 'price', parseFloat(e.target.value) || 0)}
                                                                 />
@@ -1946,7 +1955,7 @@ export default function SimulationPage() {
                                                             <div className="flex justify-end">
                                                                 <input
                                                                     type="number"
-                                                                    className="w-24 text-right bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm font-medium focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all"
+                                                                    className="w-24 text-right bg-white border border-gray-200 rounded-lg px-3 py-2 text-base font-medium focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all"
                                                                     value={data.promo}
                                                                     onChange={(e) => handleMarketingChange(marketingRegion, tech, 'promo', parseFloat(e.target.value) || 0)}
                                                                 />
@@ -2080,20 +2089,20 @@ export default function SimulationPage() {
                                 <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                                     <div className="px-8 py-6 border-b border-gray-50 flex justify-between items-center">
                                         <div>
-                                            <h3 className="font-bold text-gray-900 text-xl">Logistics Priority</h3>
-                                            <p className="text-sm text-gray-400 mt-1">Manage shipping priorities between regions</p>
+                                            <h3 className="font-bold text-gray-900 text-2xl">Logistics Priority</h3>
+                                            <p className="text-base text-gray-400 mt-1">Manage shipping priorities between regions</p>
                                         </div>
                                         <div className="p-2 bg-red-50 rounded-lg">
                                             <ArrowRightLeft className="w-5 h-5 text-red-600" />
                                         </div>
                                     </div>
                                     <div className="p-8">
-                                        <table className="w-full text-sm">
+                                        <table className="w-full text-base">
                                             <thead>
                                                 <tr className="bg-red-50/50 border-b border-red-100">
-                                                    <th className="p-4 text-left text-sm font-bold text-gray-700 uppercase tracking-wider w-1/4">technology</th>
-                                                    <th className="p-4 text-right text-sm font-bold text-gray-700 uppercase tracking-wider">Production, thousands of pieces</th>
-                                                    <th className="p-4 text-right text-sm font-bold text-gray-700 uppercase tracking-wider">Logistics Priority</th>
+                                                    <th className="p-4 text-left text-base font-bold text-gray-700 uppercase tracking-wider w-1/4">technology</th>
+                                                    <th className="p-4 text-right text-base font-bold text-gray-700 uppercase tracking-wider">Production, thousands of pieces</th>
+                                                    <th className="p-4 text-right text-base font-bold text-gray-700 uppercase tracking-wider">Logistics Priority</th>
                                                 </tr>
                                             </thead>
                                             <tbody className="divide-y divide-gray-50">
@@ -2112,7 +2121,7 @@ export default function SimulationPage() {
                                                                 <div className="flex justify-end">
                                                                     <div className="relative w-full max-w-xs">
                                                                         <select
-                                                                            className="w-full appearance-none bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all"
+                                                                            className="w-full appearance-none bg-white border border-gray-200 rounded-lg px-3 py-2 text-base font-medium text-gray-700 focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all"
                                                                             value={currentTeamState.decisions.logistics.usa[tech]}
                                                                             onChange={(e) => handleLogisticsChange('usa', tech, e.target.value)}
                                                                         >
@@ -2124,7 +2133,7 @@ export default function SimulationPage() {
                                                                     </div>
                                                                 </div>
                                                             ) : (
-                                                                <span className="text-gray-400 text-sm italic">{idx === 1 ? 'Not sold in any market' : 'Not developed'}</span>
+                                                                <span className="text-gray-400 text-base italic">{idx === 1 ? 'Not sold in any market' : 'Not developed'}</span>
                                                             )}
                                                         </td>
                                                     </tr>
@@ -2141,7 +2150,7 @@ export default function SimulationPage() {
                                                             {logisticsData.asia[tech].totalProduct.toLocaleString()}
                                                         </td>
                                                         <td className="p-4 text-right">
-                                                            <span className="text-gray-400 text-sm italic">
+                                                            <span className="text-gray-400 text-base italic">
                                                                 {idx === 0 ? 'Not produced' : idx === 1 ? 'Not sold in any market' : 'Not developed'}
                                                             </span>
                                                         </td>
@@ -2155,7 +2164,7 @@ export default function SimulationPage() {
                                 {/* Revenue/Cost Chart */}
                                 <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                                     <div className="flex justify-between items-center mb-4">
-                                        <h3 className="font-bold text-gray-900 text-xl">Unit Revenue vs Cost (Excl. Functions)</h3>
+                                        <h3 className="font-bold text-gray-900 text-2xl">Unit Revenue vs Cost (Excl. Functions)</h3>
                                         <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
                                             <BarChart3 className="w-5 h-5 text-gray-400" />
                                         </button>
@@ -2183,7 +2192,7 @@ export default function SimulationPage() {
                                             </ComposedChart>
                                         </ResponsiveContainer>
                                     </div>
-                                    <div className="flex justify-center gap-6 mt-4 text-xs text-gray-500">
+                                    <div className="flex justify-center gap-6 mt-4 text-sm text-gray-500">
                                         <div className="flex items-center gap-2">
                                             <div className="w-3 h-3 bg-[#648dae]"></div>
                                             <span>Production Cost</span>
@@ -2202,7 +2211,7 @@ export default function SimulationPage() {
                                 <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                                     <div className="px-8 py-6 border-b border-gray-50 flex justify-between items-center">
                                         <div>
-                                            <h3 className="font-bold text-red-600 text-xl">Logistics plan, thousands of items</h3>
+                                            <h3 className="font-bold text-red-600 text-2xl">Logistics plan, thousands of items</h3>
                                         </div>
                                     </div>
                                     <div className="p-0">
@@ -2211,12 +2220,12 @@ export default function SimulationPage() {
                                             <div className="px-8 py-4 bg-white">
                                                 <h4 className="font-bold text-gray-900">USA</h4>
                                             </div>
-                                            <table className="w-full text-sm">
+                                            <table className="w-full text-base">
                                                 <thead>
                                                     <tr className="bg-red-100/50 border-y border-red-100">
-                                                        <th className="p-3 pl-8 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">Metric</th>
+                                                        <th className="p-3 pl-8 text-left text-base font-bold text-gray-700 uppercase tracking-wider">Metric</th>
                                                         {['tech1', 'tech2', 'tech3', 'tech4'].map((tech, i) => (
-                                                            <th key={tech} className="p-3 pr-8 text-right text-sm font-bold text-gray-700 uppercase tracking-wider">Tech {i + 1}</th>
+                                                            <th key={tech} className="p-3 pr-8 text-right text-base font-bold text-gray-700 uppercase tracking-wider">Tech {i + 1}</th>
                                                         ))}
                                                     </tr>
                                                 </thead>
@@ -2252,12 +2261,12 @@ export default function SimulationPage() {
                                             <div className="px-8 py-4 bg-white">
                                                 <h4 className="font-bold text-gray-900">Asia</h4>
                                             </div>
-                                            <table className="w-full text-sm">
+                                            <table className="w-full text-base">
                                                 <thead>
                                                     <tr className="bg-red-100/50 border-y border-red-100">
-                                                        <th className="p-3 pl-8 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">Metric</th>
+                                                        <th className="p-3 pl-8 text-left text-base font-bold text-gray-700 uppercase tracking-wider">Metric</th>
                                                         {['tech1', 'tech2', 'tech3', 'tech4'].map((tech, i) => (
-                                                            <th key={tech} className="p-3 pr-8 text-right text-sm font-bold text-gray-700 uppercase tracking-wider">Tech {i + 1}</th>
+                                                            <th key={tech} className="p-3 pr-8 text-right text-base font-bold text-gray-700 uppercase tracking-wider">Tech {i + 1}</th>
                                                         ))}
                                                     </tr>
                                                 </thead>
@@ -2293,12 +2302,12 @@ export default function SimulationPage() {
                                             <div className="px-8 py-4 bg-white">
                                                 <h4 className="font-bold text-gray-900">Europe</h4>
                                             </div>
-                                            <table className="w-full text-sm">
+                                            <table className="w-full text-base">
                                                 <thead>
                                                     <tr className="bg-red-100/50 border-y border-red-100">
-                                                        <th className="p-3 pl-8 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">Metric</th>
+                                                        <th className="p-3 pl-8 text-left text-base font-bold text-gray-700 uppercase tracking-wider">Metric</th>
                                                         {['tech1', 'tech2', 'tech3', 'tech4'].map((tech, i) => (
-                                                            <th key={tech} className="p-3 pr-8 text-right text-sm font-bold text-gray-700 uppercase tracking-wider">Tech {i + 1}</th>
+                                                            <th key={tech} className="p-3 pr-8 text-right text-base font-bold text-gray-700 uppercase tracking-wider">Tech {i + 1}</th>
                                                         ))}
                                                     </tr>
                                                 </thead>
@@ -2343,23 +2352,23 @@ export default function SimulationPage() {
                                     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                                         <div className="px-8 py-6 border-b border-gray-50 flex justify-between items-center">
                                             <div>
-                                                <h3 className="font-bold text-gray-900 text-xl">Transfer pricing</h3>
+                                                <h3 className="font-bold text-gray-900 text-2xl">Transfer pricing</h3>
                                             </div>
                                             <div className="p-2 bg-gray-50 rounded-full text-gray-400">
                                                 <AlertCircle className="w-5 h-5" />
                                             </div>
                                         </div>
                                         <div className="p-6">
-                                            <p className="text-sm text-gray-600 mb-6 border-l-4 border-red-500 pl-4 py-2 bg-gray-50 rounded-r-lg">
+                                            <p className="text-base text-gray-600 mb-6 border-l-4 border-red-500 pl-4 py-2 bg-gray-50 rounded-r-lg">
                                                 The transfer price is related to your unit cost. It must be in the range of 1-2. For example, if your decision is 1.5, then the transfer price is 1.5 times the unit cost.
                                             </p>
-                                            <table className="w-full text-sm">
+                                            <table className="w-full text-base">
                                                 <thead>
                                                     <tr className="bg-red-50/50 border-y border-red-100">
-                                                        <th className="p-3 pl-4 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">From</th>
-                                                        <th className="p-3 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">to</th>
-                                                        <th className="p-3 text-right text-sm font-bold text-gray-700 uppercase tracking-wider">This round</th>
-                                                        <th className="p-3 pr-4 text-right text-sm font-bold text-gray-700 uppercase tracking-wider">Last round</th>
+                                                        <th className="p-3 pl-4 text-left text-base font-bold text-gray-700 uppercase tracking-wider">From</th>
+                                                        <th className="p-3 text-left text-base font-bold text-gray-700 uppercase tracking-wider">to</th>
+                                                        <th className="p-3 text-right text-base font-bold text-gray-700 uppercase tracking-wider">This round</th>
+                                                        <th className="p-3 pr-4 text-right text-base font-bold text-gray-700 uppercase tracking-wider">Last round</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody className="divide-y divide-gray-50">
@@ -2382,7 +2391,7 @@ export default function SimulationPage() {
                                                                         min="1"
                                                                         max="2"
                                                                         step="0.01"
-                                                                        className="w-24 text-right bg-white border border-gray-200 rounded-lg px-3 py-1.5 text-sm font-medium focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all"
+                                                                        className="w-24 text-right bg-white border border-gray-200 rounded-lg px-3 py-1.5 text-base font-medium focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all"
                                                                         value={currentTeamState.decisions.tax.transferPrice[route.key as keyof typeof currentTeamState.decisions.tax.transferPrice]}
                                                                         onChange={(e) => handleTaxChange(route.key as any, parseFloat(e.target.value) || 1)}
                                                                     />
@@ -2402,17 +2411,17 @@ export default function SimulationPage() {
                                     {/* Taxes Table */}
                                     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                                         <div className="px-8 py-6 border-b border-gray-50">
-                                            <h3 className="font-bold text-red-600 text-xl">Taxes, thousands of USD</h3>
+                                            <h3 className="font-bold text-red-600 text-2xl">Taxes, thousands of USD</h3>
                                         </div>
                                         <div className="p-0">
-                                            <table className="w-full text-sm">
+                                            <table className="w-full text-base">
                                                 <thead>
                                                     <tr className="bg-red-50/50 border-y border-red-100">
-                                                        <th className="p-3 pl-6 text-left text-sm font-bold text-gray-700 uppercase tracking-wider w-1/3"></th>
-                                                        <th className="p-3 text-right text-sm font-bold text-gray-700 uppercase tracking-wider">USA</th>
-                                                        <th className="p-3 text-right text-sm font-bold text-gray-700 uppercase tracking-wider">Asia</th>
-                                                        <th className="p-3 text-right text-sm font-bold text-gray-700 uppercase tracking-wider">Europe</th>
-                                                        <th className="p-3 pr-6 text-right text-sm font-bold text-gray-700 uppercase tracking-wider">worldwide</th>
+                                                        <th className="p-3 pl-6 text-left text-base font-bold text-gray-700 uppercase tracking-wider w-1/3"></th>
+                                                        <th className="p-3 text-right text-base font-bold text-gray-700 uppercase tracking-wider">USA</th>
+                                                        <th className="p-3 text-right text-base font-bold text-gray-700 uppercase tracking-wider">Asia</th>
+                                                        <th className="p-3 text-right text-base font-bold text-gray-700 uppercase tracking-wider">Europe</th>
+                                                        <th className="p-3 pr-6 text-right text-base font-bold text-gray-700 uppercase tracking-wider">worldwide</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody className="divide-y divide-gray-50">
@@ -2480,7 +2489,7 @@ export default function SimulationPage() {
                                     {/* Tax Chart */}
                                     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                                         <div className="flex justify-between items-center mb-4">
-                                            <h3 className="font-bold text-gray-900 text-xl">Tax Analysis</h3>
+                                            <h3 className="font-bold text-gray-900 text-2xl">Tax Analysis</h3>
                                             <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
                                                 <BarChart3 className="w-5 h-5 text-gray-400" />
                                             </button>
@@ -2510,7 +2519,7 @@ export default function SimulationPage() {
                                                 </ComposedChart>
                                             </ResponsiveContainer>
                                         </div>
-                                        <div className="flex justify-center gap-6 mt-4 text-xs text-gray-500">
+                                        <div className="flex justify-center gap-6 mt-4 text-sm text-gray-500">
                                             <div className="flex items-center gap-2">
                                                 <div className="w-3 h-3 bg-[#f59e0b]"></div>
                                                 <span>Taxable Profit</span>
@@ -2535,7 +2544,7 @@ export default function SimulationPage() {
                                 <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                                     <div className="flex justify-between items-center mb-6">
                                         <div>
-                                            <h3 className="font-bold text-gray-900 text-xl">Equity & Liabilities (Composite), %</h3>
+                                            <h3 className="font-bold text-gray-900 text-2xl">Equity & Liabilities (Composite), %</h3>
                                         </div>
                                         <div className="p-2 bg-gray-50 rounded-lg">
                                             <BarChart3 className="w-5 h-5 text-gray-400" />
@@ -2567,7 +2576,7 @@ export default function SimulationPage() {
                                 <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                                     <div className="flex justify-between items-center mb-6">
                                         <div>
-                                            <h3 className="font-bold text-gray-900 text-xl">International Treasury Management, USD</h3>
+                                            <h3 className="font-bold text-gray-900 text-2xl">International Treasury Management, USD</h3>
                                         </div>
                                         <div className="p-2 bg-gray-50 rounded-lg">
                                             <Globe className="w-5 h-5 text-gray-400" />
@@ -2605,15 +2614,15 @@ export default function SimulationPage() {
                                     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                                         <div className="px-8 py-6 border-b border-gray-50 flex justify-between items-center">
                                             <div>
-                                                <h3 className="font-bold text-gray-900 text-xl">Financing Decisions</h3>
-                                                <p className="text-sm text-gray-400 mt-1">Manage capital structure and dividends</p>
+                                                <h3 className="font-bold text-gray-900 text-2xl">Financing Decisions</h3>
+                                                <p className="text-base text-gray-400 mt-1">Manage capital structure and dividends</p>
                                             </div>
                                             <div className="p-2 bg-blue-50 rounded-lg">
                                                 <Settings className="w-5 h-5 text-blue-600" />
                                             </div>
                                         </div>
                                         <div className="p-8">
-                                            <table className="w-full text-sm">
+                                            <table className="w-full text-base">
                                                 <tbody className="divide-y divide-gray-50">
                                                     <tr className="hover:bg-gray-50/50 transition-colors">
                                                         <td className="p-4 font-medium text-gray-700">Long-term Loans (Change)</td>
@@ -2621,11 +2630,11 @@ export default function SimulationPage() {
                                                             <div className="flex justify-end items-center gap-2">
                                                                 <input
                                                                     type="number"
-                                                                    className="w-32 text-right bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm font-medium focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
+                                                                    className="w-32 text-right bg-white border border-gray-200 rounded-lg px-3 py-2 text-base font-medium focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
                                                                     value={currentTeamState.decisions.finance.longTermLoans}
                                                                     onChange={(e) => handleFinanceChange('longTermLoans', parseFloat(e.target.value) || 0)}
                                                                 />
-                                                                <span className="text-gray-400 text-xs">kUSD</span>
+                                                                <span className="text-gray-400 text-sm">kUSD</span>
                                                             </div>
                                                         </td>
                                                     </tr>
@@ -2635,11 +2644,11 @@ export default function SimulationPage() {
                                                             <div className="flex justify-end items-center gap-2">
                                                                 <input
                                                                     type="number"
-                                                                    className="w-32 text-right bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm font-medium focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
+                                                                    className="w-32 text-right bg-white border border-gray-200 rounded-lg px-3 py-2 text-base font-medium focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
                                                                     value={currentTeamState.decisions.finance.issueShares}
                                                                     onChange={(e) => handleFinanceChange('issueShares', parseFloat(e.target.value) || 0)}
                                                                 />
-                                                                <span className="text-gray-400 text-xs">kShares</span>
+                                                                <span className="text-gray-400 text-sm">kShares</span>
                                                             </div>
                                                         </td>
                                                     </tr>
@@ -2649,11 +2658,11 @@ export default function SimulationPage() {
                                                             <div className="flex justify-end items-center gap-2">
                                                                 <input
                                                                     type="number"
-                                                                    className="w-32 text-right bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm font-medium focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
+                                                                    className="w-32 text-right bg-white border border-gray-200 rounded-lg px-3 py-2 text-base font-medium focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
                                                                     value={currentTeamState.decisions.finance.buybackShares}
                                                                     onChange={(e) => handleFinanceChange('buybackShares', parseFloat(e.target.value) || 0)}
                                                                 />
-                                                                <span className="text-gray-400 text-xs">kShares</span>
+                                                                <span className="text-gray-400 text-sm">kShares</span>
                                                             </div>
                                                         </td>
                                                     </tr>
@@ -2663,11 +2672,11 @@ export default function SimulationPage() {
                                                             <div className="flex justify-end items-center gap-2">
                                                                 <input
                                                                     type="number"
-                                                                    className="w-32 text-right bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm font-medium focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
+                                                                    className="w-32 text-right bg-white border border-gray-200 rounded-lg px-3 py-2 text-base font-medium focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
                                                                     value={currentTeamState.decisions.finance.dividend}
                                                                     onChange={(e) => handleFinanceChange('dividend', parseFloat(e.target.value) || 0)}
                                                                 />
-                                                                <span className="text-gray-400 text-xs">kUSD</span>
+                                                                <span className="text-gray-400 text-sm">kUSD</span>
                                                             </div>
                                                         </td>
                                                     </tr>
@@ -2683,41 +2692,41 @@ export default function SimulationPage() {
                                     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                                         <div className="px-8 py-6 border-b border-gray-50 flex justify-between items-center">
                                             <div>
-                                                <h3 className="font-bold text-gray-900 text-xl">Internal Loans</h3>
-                                                <p className="text-sm text-gray-400 mt-1">Manage inter-company financing (k USD)</p>
+                                                <h3 className="font-bold text-gray-900 text-2xl">Internal Loans</h3>
+                                                <p className="text-base text-gray-400 mt-1">Manage inter-company financing (k USD)</p>
                                             </div>
                                             <div className="p-2 bg-purple-50 rounded-lg">
                                                 <ArrowRightLeft className="w-5 h-5 text-purple-600" />
                                             </div>
                                         </div>
                                         <div className="p-8 space-y-6">
-                                            <div className="flex justify-between items-center text-base">
+                                            <div className="flex justify-between items-center text-lg">
                                                 <div className="flex items-center gap-2 text-gray-600">
                                                     <span>USA</span>
                                                     <ArrowRightLeft className="w-3 h-3" />
                                                     <span>Asia</span>
                                                 </div>
                                                 <div className="flex items-center gap-2">
-                                                    <span className="text-sm text-gray-400">(+ to Asia, - to USA)</span>
+                                                    <span className="text-base text-gray-400">(+ to Asia, - to USA)</span>
                                                     <input
                                                         type="number"
-                                                        className="w-32 text-right bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm font-medium focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all"
+                                                        className="w-32 text-right bg-white border border-gray-200 rounded-lg px-3 py-2 text-base font-medium focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all"
                                                         value={currentTeamState.decisions.finance.internalLoans.usaToAsia}
                                                         onChange={(e) => handleFinanceChange('internalLoans', { ...currentTeamState.decisions.finance.internalLoans, usaToAsia: parseFloat(e.target.value) || 0 })}
                                                     />
                                                 </div>
                                             </div>
-                                            <div className="flex justify-between items-center text-base">
+                                            <div className="flex justify-between items-center text-lg">
                                                 <div className="flex items-center gap-2 text-gray-600">
                                                     <span>USA</span>
                                                     <ArrowRightLeft className="w-3 h-3" />
                                                     <span>Europe</span>
                                                 </div>
                                                 <div className="flex items-center gap-2">
-                                                    <span className="text-sm text-gray-400">(+ to Europe, - to USA)</span>
+                                                    <span className="text-base text-gray-400">(+ to Europe, - to USA)</span>
                                                     <input
                                                         type="number"
-                                                        className="w-32 text-right bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm font-medium focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all"
+                                                        className="w-32 text-right bg-white border border-gray-200 rounded-lg px-3 py-2 text-base font-medium focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all"
                                                         value={currentTeamState.decisions.finance.internalLoans.usaToEurope}
                                                         onChange={(e) => handleFinanceChange('internalLoans', { ...currentTeamState.decisions.finance.internalLoans, usaToEurope: parseFloat(e.target.value) || 0 })}
                                                     />
@@ -2730,15 +2739,15 @@ export default function SimulationPage() {
                                     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                                         <div className="px-8 py-6 border-b border-gray-50 flex justify-between items-center">
                                             <div>
-                                                <h3 className="font-bold text-gray-900 text-xl">Cash Flow Statement</h3>
-                                                <p className="text-sm text-gray-400 mt-1">Parent company (k USD)</p>
+                                                <h3 className="font-bold text-gray-900 text-2xl">Cash Flow Statement</h3>
+                                                <p className="text-base text-gray-400 mt-1">Parent company (k USD)</p>
                                             </div>
                                             <div className="p-2 bg-green-50 rounded-lg">
                                                 <TrendingUp className="w-5 h-5 text-green-600" />
                                             </div>
                                         </div>
                                         <div className="p-8">
-                                            <table className="w-full text-base">
+                                            <table className="w-full text-lg">
                                                 <tbody className="divide-y divide-gray-50">
                                                     <tr className="bg-gray-50/50"><td className="p-3 font-bold text-gray-900" colSpan={2}>Operating Activities</td></tr>
                                                     <tr><td className="p-3 pl-6 text-gray-600">EBITDA</td><td className="p-3 text-right font-medium">{financeData.ebitda.toLocaleString(undefined, { maximumFractionDigits: 0 })}</td></tr>

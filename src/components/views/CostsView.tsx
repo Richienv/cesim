@@ -35,14 +35,14 @@ export function CostsView({ teams }: CostsViewProps) {
         <div className="space-y-6">
             <div className="flex items-center justify-between gap-4">
                 <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-gray-500">Region:</span>
+                    <span className="text-base font-medium text-gray-500">Region:</span>
                     <div className="flex p-1 bg-gray-100 rounded-lg w-fit">
                         {regions.map(r => (
                             <button
                                 key={r}
                                 onClick={() => setActiveRegion(r)}
                                 className={clsx(
-                                    "px-4 py-2 text-sm font-medium rounded-md transition-all",
+                                    "px-4 py-2 text-base font-medium rounded-md transition-all",
                                     activeRegion === r
                                         ? "bg-white text-gray-900 shadow-sm"
                                         : "text-gray-500 hover:text-gray-700"
@@ -55,11 +55,11 @@ export function CostsView({ teams }: CostsViewProps) {
                 </div>
 
                 <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-gray-500">Tech:</span>
+                    <span className="text-base font-medium text-gray-500">Tech:</span>
                     <select
                         value={activeTech}
                         onChange={(e) => setActiveTech(e.target.value)}
-                        className="bg-white border border-gray-200 text-gray-700 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block p-2.5"
+                        className="bg-white border border-gray-200 text-gray-700 text-base rounded-lg focus:ring-red-500 focus:border-red-500 block p-2.5"
                     >
                         {techs.map(t => (
                             <option key={t} value={t}>{t}</option>

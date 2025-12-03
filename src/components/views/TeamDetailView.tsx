@@ -255,20 +255,20 @@ export function TeamDetailView({ teams, initialTeam }: TeamDetailViewProps) {
             {/* Header */}
             <div className="flex flex-col md:flex-row justify-between items-center gap-4 bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
                 <div>
-                    <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
+                    <h2 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
                         {selectedTeam.name}
-                        <span className={clsx("px-3 py-1 text-sm font-medium rounded-full border", strategy.bg, strategy.color, strategy.border)}>
+                        <span className={clsx("px-3 py-1 text-base font-medium rounded-full border", strategy.bg, strategy.color, strategy.border)}>
                             {strategy.name}
                         </span>
                     </h2>
-                    <p className="text-gray-500 text-sm mt-1">{strategy.desc}</p>
+                    <p className="text-gray-500 text-base mt-1">{strategy.desc}</p>
                 </div>
                 <div className="flex items-center gap-3">
-                    <span className="text-sm font-medium text-gray-500">Analyze Team:</span>
+                    <span className="text-base font-medium text-gray-500">Analyze Team:</span>
                     <select
                         value={selectedTeamName}
                         onChange={(e) => setSelectedTeamName(e.target.value)}
-                        className="bg-gray-50 border border-gray-200 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5"
+                        className="bg-gray-50 border border-gray-200 text-gray-900 text-base rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5"
                     >
                         {sortedTeams.map(t => (
                             <option key={t.name} value={t.name}>{t.name}</option>
@@ -279,7 +279,7 @@ export function TeamDetailView({ teams, initialTeam }: TeamDetailViewProps) {
 
             {/* SECTION 1: REGIONAL BREAKDOWN (TOP) */}
             <div>
-                <h3 className="text-lg font-bold text-gray-900 mb-6">Regional Breakdown</h3>
+                <h3 className="text-xl font-bold text-gray-900 mb-6">Regional Breakdown</h3>
                 <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
                     {['USA', 'Asia', 'Europe'].map(regionName => {
                         const regionKey = regionName.toLowerCase() as 'usa' | 'asia' | 'europe';
@@ -295,13 +295,13 @@ export function TeamDetailView({ teams, initialTeam }: TeamDetailViewProps) {
                             <div key={regionName} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                                 <div className="bg-gray-50 px-6 py-4 border-b border-gray-200 flex justify-between items-center">
                                     <h4 className="font-semibold text-gray-900">{regionName}</h4>
-                                    <span className="text-xs font-medium bg-white px-2 py-1 rounded border border-gray-200 text-gray-500">
+                                    <span className="text-sm font-medium bg-white px-2 py-1 rounded border border-gray-200 text-gray-500">
                                         {currency}
                                     </span>
                                 </div>
                                 <div className="overflow-x-auto">
-                                    <table className="w-full text-sm text-left">
-                                        <thead className="text-xs text-gray-500 uppercase bg-gray-50/50">
+                                    <table className="w-full text-base text-left">
+                                        <thead className="text-sm text-gray-500 uppercase bg-gray-50/50">
                                             <tr>
                                                 <th className="px-4 py-3">Tech</th>
                                                 <th className="px-4 py-3 text-right">Price</th>
@@ -361,9 +361,9 @@ export function TeamDetailView({ teams, initialTeam }: TeamDetailViewProps) {
 
             {/* SECTION 2: SUPPLY CHAIN FLOW (Redesigned) */}
             <div className="pt-8 border-t border-gray-100">
-                <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
+                <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
                     <Truck className="w-5 h-5 text-indigo-600" />
-                    Supply Chain Flow <span className="text-gray-400 font-normal text-sm">(Production &rarr; Logistics &rarr; Sales)</span>
+                    Supply Chain Flow <span className="text-gray-400 font-normal text-base">(Production &rarr; Logistics &rarr; Sales)</span>
                 </h3>
 
                 <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
@@ -397,9 +397,9 @@ export function TeamDetailView({ teams, initialTeam }: TeamDetailViewProps) {
                                         return (
                                             <div key={tech} className="relative">
                                                 <div className="flex justify-between items-end mb-2">
-                                                    <span className="font-bold text-gray-800 text-sm">{tech}</span>
+                                                    <span className="font-bold text-gray-800 text-base">{tech}</span>
                                                     {lData.unsatisfiedDemand > 0 && (
-                                                        <span className="text-xs font-bold text-red-500 flex items-center gap-1 bg-red-50 px-2 py-0.5 rounded-full">
+                                                        <span className="text-sm font-bold text-red-500 flex items-center gap-1 bg-red-50 px-2 py-0.5 rounded-full">
                                                             <AlertCircle className="w-3 h-3" />
                                                             Missed: {lData.unsatisfiedDemand.toFixed(0)}k
                                                         </span>
@@ -450,30 +450,30 @@ export function TeamDetailView({ teams, initialTeam }: TeamDetailViewProps) {
 
             {/* SECTION 4: DEEP DIVE METRICS (Financials & Capacity) */}
             <div className="pt-8 border-t border-gray-100">
-                <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
                     <Scale className="w-5 h-5 text-indigo-500" />
-                    Deep Dive Analysis <span className="text-gray-400 font-normal text-sm">(Financials & Production)</span>
+                    Deep Dive Analysis <span className="text-gray-400 font-normal text-base">(Financials & Production)</span>
                 </h3>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     {/* Financial Position (Balance Sheet) */}
                     <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                        <p className="text-sm text-gray-500 font-medium mb-4">Financial Position (Balance Sheet)</p>
+                        <p className="text-base text-gray-500 font-medium mb-4">Financial Position (Balance Sheet)</p>
                         <div className="space-y-4">
                             <div className="flex justify-between items-center border-b border-gray-50 pb-2">
-                                <span className="text-sm text-gray-600">Total Assets</span>
+                                <span className="text-base text-gray-600">Total Assets</span>
                                 <span className="font-bold text-gray-900">${(teamMetrics.totalAssets / 1000).toFixed(1)}k</span>
                             </div>
                             <div className="flex justify-between items-center border-b border-gray-50 pb-2">
-                                <span className="text-sm text-gray-600">Shareholders' Equity</span>
+                                <span className="text-base text-gray-600">Shareholders' Equity</span>
                                 <span className="font-bold text-blue-600">${(teamMetrics.totalEquity / 1000).toFixed(1)}k</span>
                             </div>
                             <div className="flex justify-between items-center border-b border-gray-50 pb-2">
-                                <span className="text-sm text-gray-600">Fixed Assets</span>
+                                <span className="text-base text-gray-600">Fixed Assets</span>
                                 <span className="font-bold text-gray-900">${(teamMetrics.fixedAssets / 1000).toFixed(1)}k</span>
                             </div>
                             <div className="flex justify-between items-center">
-                                <span className="text-sm text-gray-600">Receivables</span>
+                                <span className="text-base text-gray-600">Receivables</span>
                                 <span className="font-bold text-gray-900">${(teamMetrics.receivables / 1000).toFixed(1)}k</span>
                             </div>
                         </div>
@@ -481,7 +481,7 @@ export function TeamDetailView({ teams, initialTeam }: TeamDetailViewProps) {
 
                     {/* Production Efficiency (Capacity) */}
                     <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                        <p className="text-sm text-gray-500 font-medium mb-4">Production Efficiency</p>
+                        <p className="text-base text-gray-500 font-medium mb-4">Production Efficiency</p>
                         <div className="space-y-6">
                             {['USA', 'Asia'].map(region => {
                                 const rKey = region.toLowerCase() as 'usa' | 'asia';
@@ -489,11 +489,11 @@ export function TeamDetailView({ teams, initialTeam }: TeamDetailViewProps) {
 
                                 return (
                                     <div key={region}>
-                                        <p className="text-xs font-bold text-gray-400 uppercase mb-2">{region} Capacity Usage</p>
+                                        <p className="text-sm font-bold text-gray-400 uppercase mb-2">{region} Capacity Usage</p>
                                         <div className="space-y-3">
                                             {Object.entries(capUsage).map(([tech, usage]) => (
                                                 <div key={tech}>
-                                                    <div className="flex justify-between text-xs mb-1">
+                                                    <div className="flex justify-between text-sm mb-1">
                                                         <span className="text-gray-700">{tech}</span>
                                                         <span className={clsx("font-bold", usage > 100 ? "text-red-500" : "text-green-600")}>
                                                             {usage.toFixed(1)}%
@@ -507,7 +507,7 @@ export function TeamDetailView({ teams, initialTeam }: TeamDetailViewProps) {
                                                     </div>
                                                 </div>
                                             ))}
-                                            {Object.keys(capUsage).length === 0 && <p className="text-xs text-gray-400 italic">No capacity data available.</p>}
+                                            {Object.keys(capUsage).length === 0 && <p className="text-sm text-gray-400 italic">No capacity data available.</p>}
                                         </div>
                                     </div>
                                 );
@@ -517,26 +517,26 @@ export function TeamDetailView({ teams, initialTeam }: TeamDetailViewProps) {
 
                     {/* Operational Health (Existing) */}
                     <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                        <p className="text-sm text-gray-500 font-medium mb-4">Operational Health</p>
+                        <p className="text-base text-gray-500 font-medium mb-4">Operational Health</p>
                         <div className="space-y-4">
                             <div className="flex items-center gap-3">
                                 <div className="p-2 bg-green-50 rounded-lg"><Wallet className="w-4 h-4 text-green-600" /></div>
                                 <div>
-                                    <p className="text-xs text-gray-500">Cash on Hand</p>
+                                    <p className="text-sm text-gray-500">Cash on Hand</p>
                                     <p className="font-bold text-gray-900">${(teamMetrics.cash / 1000).toFixed(1)}k</p>
                                 </div>
                             </div>
                             <div className="flex items-center gap-3">
                                 <div className="p-2 bg-orange-50 rounded-lg"><Box className="w-4 h-4 text-orange-600" /></div>
                                 <div>
-                                    <p className="text-xs text-gray-500">Inventory Value</p>
+                                    <p className="text-sm text-gray-500">Inventory Value</p>
                                     <p className="font-bold text-gray-900">${(teamMetrics.inventory / 1000).toFixed(1)}k</p>
                                 </div>
                             </div>
                             <div className="flex items-center gap-3">
                                 <div className="p-2 bg-red-50 rounded-lg"><Layers className="w-4 h-4 text-red-600" /></div>
                                 <div>
-                                    <p className="text-xs text-gray-500">Long-term Debt</p>
+                                    <p className="text-sm text-gray-500">Long-term Debt</p>
                                     <p className="font-bold text-gray-900">${(teamMetrics.debt / 1000).toFixed(1)}k</p>
                                 </div>
                             </div>
@@ -547,17 +547,17 @@ export function TeamDetailView({ teams, initialTeam }: TeamDetailViewProps) {
 
             {/* SECTION 5: GLOBAL STRATEGY INPUTS (Existing) */}
             <div className="pt-8 border-t border-gray-100">
-                <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
                     <Lightbulb className="w-5 h-5 text-yellow-500" />
-                    Global Strategy <span className="text-gray-400 font-normal text-sm">(Aggregated View)</span>
+                    Global Strategy <span className="text-gray-400 font-normal text-base">(Aggregated View)</span>
                 </h3>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     {/* Value Proposition Matrix */}
                     <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col">
                         <div className="flex justify-between items-start mb-4">
-                            <p className="text-sm text-gray-500 font-medium">Value Proposition (Price vs Features)</p>
-                            <div className={clsx("px-2 py-1 rounded text-xs font-bold",
+                            <p className="text-base text-gray-500 font-medium">Value Proposition (Price vs Features)</p>
+                            <div className={clsx("px-2 py-1 rounded text-sm font-bold",
                                 teamMetrics.featureDiffPct > 0 ? "bg-purple-50 text-purple-600" : "bg-gray-50 text-gray-600"
                             )}>
                                 {teamMetrics.featureDiffPct > 0 ? "+" : ""}{teamMetrics.featureDiffPct.toFixed(1)}% Feat vs Avg
@@ -578,17 +578,17 @@ export function TeamDetailView({ teams, initialTeam }: TeamDetailViewProps) {
                                 </ScatterChart>
                             </ResponsiveContainer>
                         </div>
-                        <p className="text-xs text-center text-gray-400 mt-2">Blue dot is current team. Higher is better features, right is higher price.</p>
+                        <p className="text-sm text-center text-gray-400 mt-2">Blue dot is current team. Higher is better features, right is higher price.</p>
                     </div>
 
                     {/* Marketing & Innovation Card */}
                     <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                        <p className="text-sm text-gray-500 font-medium mb-4">Investment Strategy</p>
+                        <p className="text-base text-gray-500 font-medium mb-4">Investment Strategy</p>
 
                         <div className="space-y-6">
                             {/* Promotion */}
                             <div>
-                                <div className="flex justify-between text-sm mb-1">
+                                <div className="flex justify-between text-base mb-1">
                                     <span className="text-gray-700 font-medium">Promotion Spend</span>
                                     <span className={clsx("font-bold", teamMetrics.promoDiffPct > 0 ? "text-green-600" : "text-gray-600")}>
                                         ${(teamMetrics.promo / 1000).toFixed(1)}k
@@ -604,7 +604,7 @@ export function TeamDetailView({ teams, initialTeam }: TeamDetailViewProps) {
 
                             {/* R&D */}
                             <div>
-                                <div className="flex justify-between text-sm mb-1">
+                                <div className="flex justify-between text-base mb-1">
                                     <span className="text-gray-700 font-medium">R&D Investment</span>
                                     <span className={clsx("font-bold", teamMetrics.rndDiffPct > 0 ? "text-blue-600" : "text-gray-600")}>
                                         ${(teamMetrics.rnd / 1000).toFixed(1)}k
@@ -622,7 +622,7 @@ export function TeamDetailView({ teams, initialTeam }: TeamDetailViewProps) {
 
                     {/* Manufacturing Mix */}
                     <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                        <p className="text-sm text-gray-500 font-medium mb-2">Manufacturing Mix</p>
+                        <p className="text-base text-gray-500 font-medium mb-2">Manufacturing Mix</p>
                         <div className="h-[140px]">
                             <ResponsiveContainer width="100%" height="100%">
                                 <PieChart>
@@ -652,9 +652,9 @@ export function TeamDetailView({ teams, initialTeam }: TeamDetailViewProps) {
 
             {/* SECTION 6: PERFORMANCE RESULTS */}
             <div className="pt-8 border-t border-gray-100">
-                <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
                     <Award className="w-5 h-5 text-blue-500" />
-                    Global Performance <span className="text-gray-400 font-normal text-sm">(Aggregated Results)</span>
+                    Global Performance <span className="text-gray-400 font-normal text-base">(Aggregated Results)</span>
                 </h3>
 
                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
@@ -674,8 +674,8 @@ export function TeamDetailView({ teams, initialTeam }: TeamDetailViewProps) {
                             </svg>
                             <span className="absolute text-3xl font-bold">{teamMetrics.overallScore.toFixed(0)}</span>
                         </div>
-                        <h4 className="font-semibold text-lg">Performance Score</h4>
-                        <p className="text-blue-100 text-xs mt-1">Based on Revenue & Profit vs Market Leaders</p>
+                        <h4 className="font-semibold text-xl">Performance Score</h4>
+                        <p className="text-blue-100 text-sm mt-1">Based on Revenue & Profit vs Market Leaders</p>
                     </div>
 
                     {/* Financial Outcomes */}
@@ -710,9 +710,9 @@ function MetricCard({ title, value, icon, subtext }: { title: string, value: str
         <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 flex items-center gap-4">
             <div className="p-3 bg-gray-50 rounded-lg">{icon}</div>
             <div>
-                <p className="text-sm text-gray-500 font-medium">{title}</p>
-                <h4 className="text-2xl font-bold text-gray-900">{value}</h4>
-                {subtext && <p className="text-xs text-gray-400 mt-0.5">{subtext}</p>}
+                <p className="text-base text-gray-500 font-medium">{title}</p>
+                <h4 className="text-3xl font-bold text-gray-900">{value}</h4>
+                {subtext && <p className="text-sm text-gray-400 mt-0.5">{subtext}</p>}
             </div>
         </div>
     );
