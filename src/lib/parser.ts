@@ -1,5 +1,18 @@
 import * as XLSX from 'xlsx';
 import { RoundData, TeamData, FinancialMetrics, RegionManufacturing, LogisticsData, MarginData, TechMetrics } from './types';
+import { TRANSLATION_MAP } from './translationMap';
+
+// Helper to translate keys
+const translate = (key: string): string => {
+    if (!key) return "";
+    const trimmed = key.trim();
+    // Direct lookup
+    if (TRANSLATION_MAP[trimmed]) return TRANSLATION_MAP[trimmed];
+
+    // Try to find if the key contains any of the Chinese keys (partial match for some cases)
+    // But for now, let's rely on direct mapping or the key itself if not found
+    return trimmed;
+};
 
 export const parseCesimData = (fileBuffer: ArrayBuffer): RoundData => {
     const workbook = XLSX.read(fileBuffer, { type: 'array' });
@@ -7,12 +20,17 @@ export const parseCesimData = (fileBuffer: ArrayBuffer): RoundData => {
     const worksheet = workbook.Sheets[sheetName];
     const data = XLSX.utils.sheet_to_json(worksheet, { header: 1 }) as any[][];
 
-    // Helper to find row index by keyword
+    // Helper to find row index by keyword (checking both English and Chinese)
     const findRowIndex = (keyword: string, startFrom = 0): number => {
         for (let i = startFrom; i < data.length; i++) {
             const cell = data[i][0];
-            if (cell && String(cell).toLowerCase().includes(keyword.toLowerCase())) {
-                return i;
+            if (cell) {
+                const cellStr = String(cell).trim();
+                // Check if cell matches keyword directly or if its translation matches
+                if (cellStr.toLowerCase().includes(keyword.toLowerCase()) ||
+                    translate(cellStr).toLowerCase().includes(keyword.toLowerCase())) {
+                    return i;
+                }
             }
         }
         return -1;
@@ -55,10 +73,10 @@ export const parseCesimData = (fileBuffer: ArrayBuffer): RoundData => {
 
     // Define all section headers we care about
     const sectionHeaders = [
-        { key: "Income Statement, k USD, Global", type: "financials", subtype: "incomeStatement", region: "global" },
-        { key: "Income Statement, k USD, USA", type: "financials", subtype: "incomeStatement", region: "usa" },
-        { key: "Income Statement, k USD, Asia", type: "financials", subtype: "incomeStatement", region: "asia" },
-        { key: "Income Statement, k USD, Europe", type: "financials", subtype: "incomeStatement", region: "europe" },
+        { key: "Income statement, k USD, Global", type: "financials", subtype: "incomeStatement", region: "global" },
+        { key: "Income statement, k USD, USA", type: "financials", subtype: "incomeStatement", region: "usa" },
+        { key: "Income statement, k USD, Asia", type: "financials", subtype: "incomeStatement", region: "asia" },
+        { key: "Income statement, k USD, Europe", type: "financials", subtype: "incomeStatement", region: "europe" },
         { key: "Balance sheet, k USD, Global", type: "financials", subtype: "balanceSheet", region: "global" },
         { key: "Balance sheet, k USD, USA", type: "financials", subtype: "balanceSheet", region: "usa" },
         { key: "Balance sheet, k USD, Asia", type: "financials", subtype: "balanceSheet", region: "asia" },
@@ -88,8 +106,10 @@ export const parseCesimData = (fileBuffer: ArrayBuffer): RoundData => {
     const extractSimpleBlock = (startRow: number, endRow: number, target: (team: TeamData, key: string, val: number) => void) => {
         for (let i = startRow + 1; i < endRow; i++) {
             const row = data[i];
-            const label = row && row[0] ? String(row[0]).trim() : null;
-            if (!label) continue;
+            const rawLabel = row && row[0] ? String(row[0]).trim() : null;
+            if (!rawLabel) continue;
+
+            const label = translate(rawLabel);
 
             teams.forEach((team, idx) => {
                 let val = row[idx + 1];
@@ -153,8 +173,10 @@ export const parseCesimData = (fileBuffer: ArrayBuffer): RoundData => {
 
         for (let i = start + 1; i < end; i++) {
             const row = data[i];
-            const label = row && row[0] ? String(row[0]).trim() : "";
-            if (!label) continue;
+            const rawLabel = row && row[0] ? String(row[0]).trim() : "";
+            if (!rawLabel) continue;
+
+            const label = translate(rawLabel);
 
             // Detect Market Share subsection
             if (label.toLowerCase().includes("market shares")) {
@@ -231,8 +253,10 @@ export const parseCesimData = (fileBuffer: ArrayBuffer): RoundData => {
 
         for (let i = start + 1; i < end; i++) {
             const row = data[i];
-            const label = row && row[0] ? String(row[0]).trim() : "";
-            if (!label) continue;
+            const rawLabel = row && row[0] ? String(row[0]).trim() : "";
+            if (!rawLabel) continue;
+
+            const label = translate(rawLabel);
 
             if (label.includes("In-house manufacturing")) { currentSection = "inHouse"; continue; }
             if (label.includes("Contract manufacturing")) { currentSection = "contract"; continue; }
@@ -267,8 +291,10 @@ export const parseCesimData = (fileBuffer: ArrayBuffer): RoundData => {
 
         for (let i = start + 1; i < end; i++) {
             const row = data[i];
-            const label = row && row[0] ? String(row[0]).trim() : "";
-            if (!label) continue;
+            const rawLabel = row && row[0] ? String(row[0]).trim() : "";
+            if (!rawLabel) continue;
+
+            const label = translate(rawLabel);
 
             if (label.includes("Tech")) { currentTech = label.split(",")[0].trim(); continue; }
             if (label === "USA" || label === "Asia" || label === "Europe") { currentRegion = label.toLowerCase(); continue; }
@@ -311,8 +337,10 @@ export const parseCesimData = (fileBuffer: ArrayBuffer): RoundData => {
 
         for (let i = start + 1; i < end; i++) {
             const row = data[i];
-            const label = row && row[0] ? String(row[0]).trim() : "";
-            if (!label) continue;
+            const rawLabel = row && row[0] ? String(row[0]).trim() : "";
+            if (!rawLabel) continue;
+
+            const label = translate(rawLabel);
 
             // Identify headers that are not Regions or Techs
             if (label !== "USA" && label !== "Asia" && label !== "Europe" && !label.startsWith("Tech")) {
@@ -344,8 +372,10 @@ export const parseCesimData = (fileBuffer: ArrayBuffer): RoundData => {
 
         for (let i = start; i < end; i++) {
             const row = data[i];
-            const label = row && row[0] ? String(row[0]).trim() : "";
-            if (!label) continue;
+            const rawLabel = row && row[0] ? String(row[0]).trim() : "";
+            if (!rawLabel) continue;
+
+            const label = translate(rawLabel);
 
             if (label.includes("Margin breakdown")) {
                 if (label.includes("USA")) currentRegion = "usa";

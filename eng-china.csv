@@ -1,0 +1,165 @@
+English,Chinese
+"Round results, Practice round 1",回合结果，练习回合1
+"Income statement, k USD, Global","损益表, 千 USD, 全球"
+Sales revenue,销售额
+Costs and expenses,成本和费用
+In-house manufacturing costs,自身生产成本
+Feature costs,功能成本
+Contract manufacturing costs,外包生产成本
+Transportation and tariffs,运输和关税
+R&D,研发
+Promotion,广告
+Administration,行政管理
+Costs and expenses total,成本与费用合计
+"Operating profit before depreciation (EBITDA)",息税折旧及摊销前利润(EBITDA)
+Depreciation from fixed assets,固定资产折旧
+"Operating profit (EBIT)",息税前利润(EBIT)
+Net financing expenses,财务费用净额
+Profit before taxes,税前利润
+Income taxes,所得税
+Profit for the round,本回合利润
+"Balance sheet, k USD, Global","资产负债表, 千 USD, 全球"
+Assets,资产
+Fixed assets,固定资产
+Receivables,应收账款
+Cash and cash equivalents,现金及等价物
+Total assets,总资产
+Shareholders' equity,股东权益
+Share capital,股本
+Additional paid-in capital,资本公积
+Retained earnings,留存收益
+Total equity,权益合计
+Shareholders' liabilities,股东负债
+Long-term debts,长期贷款
+"Short-term debts (unplanned)",短期贷款（无计划）
+Payables,应付账款
+Total liabilities,负债总计
+"Total shareholders' equity and liabilities",股东权益和负债总计
+"Income statement, k USD, USA","损益表, 千 USD, 美国"
+from markets,当地销售额
+from internal transfers,出口销售额
+Sales revenue total,销售额合计
+Costs of imported products,进口产品成本
+Costs and expenses total,成本和费用合计
+"Balance sheet, k USD, USA","资产负债表, 千 USD, 美国"
+Retained earnings,留存盈余
+Internal loans,内部贷款
+Total liabilities,负债合计
+"Parent company's cash flow statement, k USD","母公司现金流量表, 千 USD"
+Cash provided by operating activities,来自经营活动的现金
+"Change in receivables (incr - / decr +)","应收账变化(增 - / 减 +)"
+"Change in inventories (incr - / decr +)","库存变化(增 - / 减 +)"
+"Change in payables (incr + / decr -)","应付账变化(增 + / 减 -)"
+"Net financing expenses (expense - / income +)","净融资费用（支出-，收入+）"
+Total,总计
+Cash provided by investment activities,投资活动产生的现金
+Plant investments,工厂投资
+Cash flow before financing activities,融资前现金流量
+Cash provided by financing activities,融资活动产生的现金
+Dividends,股息
+Proceeds from equity issues and buybacks,股票发行和回购收益
+Dividends received from subsidiaries,来自子公司的股息
+"Change in long-term debt (incr + / decr -)","长期贷款变化(增加 + / 减少 -)"
+"Change in short-term debt (incr + / decr -)","短期贷款变化(增加 + / 减少 -)"
+Change in internal loans,内部贷款变化
+Change in cash and cash equivalents,现金及等价物变化
+Cash 1.1.,现金 1.1.
+Cash 31.12.,现金 31.12.
+"Income statement, k USD, Asia","损益表, 千 USD, 亚洲"
+from markets,本地销售额
+"Balance sheet, k USD, Asia","资产负债表, 千 USD, 亚洲"
+"Cash flow statement, k USD, Asia","现金流量表, 千 USD, 亚洲"
+Dividends paid to parent company,支付给母公司的股息
+"Income statement, k USD, Europe","损益表, 千 USD, 欧洲"
+Operating profit,营业利润
+Accumulated profit/loss,累计盈亏
+Intercompany receivables,内部应收账款
+Inventory,库存
+Intercompany payables,内部应付账款
+Ratios and key financial indicators,关键财务指标和比率
+Ratios,财务指标
+"Cumulative earnings, k USD","累计收益, 千 USD"
+"Market capitalization of the company, k USD","公司市值, 千 USD"
+"Shares outstanding at the end of round, k shares","本回合末已发行股票数, 千股"
+"Share price at the end of round, USD","本回合末每股交易价格, USD"
+"Average trading price during the round, USD","本回合每股交易均价, USD"
+"Dividend yield, %","股息收益, %"
+P/E ratio,市盈率
+"Cumulative total shareholder return (p.a.), %","累计股东回报率（p.a.）, %"
+"Key financial indicators, %","关键财务指标, %"
+Gross margin,毛利
+Return on sales (ROS),销售利润率(ROS)
+Equity ratio,权益比率
+Net debt to equity (gearing),净债务与股东权益之比(gearing)
+Return on capital employed (ROCE),已动用资本回报率(ROCE)
+Return on equity (ROE),股东权益回报率(ROE)
+"Earnings per share (EPS), USD","每股盈利(EPS), USD"
+"Market report, global",市场报告，全球
+"Global market shares, %","全球市场份额, %"
+Tech 1,技术1
+Tech 2,技术2
+Tech 3,技术3
+Tech 4,技术4
+"Market report, USA","市场报告, 美国"
+"Selling price, USD","售价, USD"
+Number of offered features,所提供的功能数量
+"Sales, k units","销售, 千件"
+"Demand, k units","需求, 千件"
+"USA market shares, %","美国 市场份额, %"
+"Market report, Asia","市场报告, 亚洲"
+"Selling Price, RMB","售价, RMB"
+"Asia market shares, %","亚洲 市场份额, %"
+"Market report, Europe","市场报告, 欧洲"
+"Selling Price, EUR","售价, EUR"
+"Europe market shares, %","欧洲 市场份额, %"
+Manufacturing details,生产详情
+"In-house manufacturing, k units","自身生产, 千件"
+USA,美国
+Asia,亚洲
+"Contract manufacturing, k units","外包生产, 千件"
+"Capacity usage, %","产能使用, %"
+Free capacity,闲置产能
+Number of plants,工厂数量
+This round,本回合
+Next round,下回合
+After next round,下回合后
+Logistics details,物流详情
+"Tech 1, k units","技术1, 千件"
+In-house manufacturing,自身生产
+Contract manufacturing,外包生产
+Imported from Asia,进口自亚洲
+Total products,产品总量
+Sales in USA,在美国销售
+Exported to Asia,出口到 亚洲
+Exported to Europe,出口到 欧洲
+Production buffer,生产缓冲
+Unsatisfied demand,未满足需求
+Imported from USA,进口自美国
+Sales in Asia,在亚洲销售
+Exported to USA,出口到 美国
+Europe,欧洲
+Sales in Europe,在欧洲销售
+"Tech 2, k units","技术2, 千件"
+"Tech 3, k units","技术3, 千件"
+"Tech 4, k units","技术4, 千件"
+"Origin of products sold in, k units","该市场所售产品来源，, 千件"
+Cost report,成本报告
+"Transportation cost incl. tariffs per sold product, USD","每件售出产品的含关税运费, USD"
+Average logistics cost per sold product,每件售出产品的平均物流成本
+"In-house manufacturing cost per unit, USD","单件产品的自身生产成本, USD"
+"Contract manufacturing cost per unit, USD","单件外包产品成本, USD"
+"Average unit cost per sold product, USD","每件售出产品的平均成本, USD"
+Weighted average,加权平均值
+"Production scrap, %","废品率，% , %"
+"Company-specific debt interest rates, %","公司特定债务利率, %"
+"USA, long","美国, 长期"
+"USA, short","美国, 短期"
+"Asia, short","亚洲, 短期"
+"Europe, short","欧洲, 短期"
+"Margin breakdown by tech, k USD, USA","边际收益明细（按技术划分）, 千 USD, 美国"
+In-house and contract manufacturing,自身和外包生产
+Cost of imported products,进口产品成本
+Total costs of unit sold,单位销售的成本总额
+Gross profit,销售利润
+"Margin breakdown by tech, k USD, Asia","边际收益明细（按技术划分）, 千 USD, 亚洲"
+"Margin breakdown by tech, k USD, Europe","边际收益明细（按技术划分）, 千 USD, 欧洲"
