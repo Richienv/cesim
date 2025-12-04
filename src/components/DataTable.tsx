@@ -5,7 +5,7 @@ interface DataTableProps {
     title: string;
     teams: TeamData[];
     dataExtractor: (team: TeamData) => Record<string, number>;
-    formatValue?: (val: number, key: string) => string;
+    formatValue?: (val: number, key: string) => string | React.ReactNode;
 }
 
 export function DataTable({ title, teams, dataExtractor, formatValue }: DataTableProps) {

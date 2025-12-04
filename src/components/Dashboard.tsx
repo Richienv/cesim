@@ -2,8 +2,9 @@
 
 import React, { useMemo, useState } from 'react';
 import { RoundData } from '@/lib/types';
+import { calculateRankings } from '@/lib/ranking';
 import {
-    AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Legend, Cell
+    AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Legend, Cell, LabelList
 } from 'recharts';
 import {
     Activity, BarChart3, DollarSign, Factory, FileText, PieChart, Truck, Users, TrendingUp, Search, Bell, ArrowRight, ArrowRightLeft, Target, ArrowLeft
@@ -17,6 +18,7 @@ import { MarginsView } from './views/MarginsView';
 import { MarketView } from './views/MarketView';
 import { TeamDetailView } from './views/TeamDetailView';
 import { ComparisonView } from './views/ComparisonView';
+import { DataTable } from './DataTable';
 
 interface DashboardProps {
     data: RoundData[];
@@ -40,6 +42,7 @@ export function Dashboard({ data }: DashboardProps) {
     const [selectedTech, setSelectedTech] = useState("Tech 1");
     const [viewMode, setViewMode] = useState<'tech' | 'region'>('tech');
     const [selectedRegion, setSelectedRegion] = useState("Asia");
+    const [highlightedTeams, setHighlightedTeams] = useState<string[]>([]);
     const latestRound = data[data.length - 1];
     const teams = latestRound?.teams || [];
 
@@ -77,6 +80,19 @@ export function Dashboard({ data }: DashboardProps) {
         setSelectedTeamForAnalysis(teamName);
         setActiveTab("TeamAnalysis");
     };
+
+    const handleChartClick = (teamName: string) => {
+        setHighlightedTeams(prev => {
+            if (prev.includes(teamName)) {
+                return prev.filter(t => t !== teamName);
+            }
+            if (prev.length >= 3) {
+                return [...prev.slice(1), teamName];
+            }
+            return [...prev, teamName];
+        });
+    };
+
     return (
         <div className="space-y-6">
             {/* Navigation Tabs */}
@@ -116,25 +132,20 @@ export function Dashboard({ data }: DashboardProps) {
             {
                 activeTab === "Overview" && (
                     <div className="space-y-6 animate-in fade-in duration-500">
+
+
                         {/* Top 3 Teams Section */}
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                            {teamsByRevenue.slice(0, 3).map((team, index) => {
-                                // Find Top Product (Highest Demand)
-                                let topProduct = { tech: '', region: '', volume: 0, promotion: 0 };
-                                ['usa', 'asia', 'europe'].forEach(r => {
-                                    const region = r as 'usa' | 'asia' | 'europe';
-                                    ['Tech 1', 'Tech 2', 'Tech 3', 'Tech 4'].forEach(tech => {
-                                        const volume = team.demand[region]?.[tech] || 0;
-                                        if (volume > topProduct.volume) {
-                                            topProduct = {
-                                                tech,
-                                                region: r.charAt(0).toUpperCase() + r.slice(1),
-                                                volume,
-                                                promotion: team.margins[region]?.[tech]?.promotion || 0
-                                            };
-                                        }
-                                    });
-                                });
+                            {calculateRankings(teams).slice(0, 3).map((rankInfo, index) => {
+                                const team = teams.find(t => t.name === rankInfo.teamName);
+                                if (!team) return null;
+
+                                const tsr = team.financials.ratios["Cumulative total shareholder return (p.a.), %"] || 0;
+                                const roe = team.financials.ratios["Return on equity (ROE)"] || 0;
+                                const dividends = team.financials.cashFlow.global["Dividends"] || 0;
+                                const shortTermLoans = team.financials.balanceSheet.global["Short-term debts (unplanned)"] || 0;
+                                const longTermLoans = team.financials.balanceSheet.global["Long-term debts"] || 0;
+                                const marketingSpend = team.financials.incomeStatement.global["Promotion"] || 0;
 
                                 const gradientClass = index === 0 ? 'from-yellow-400 to-yellow-600' :
                                     index === 1 ? 'from-gray-300 to-gray-500' :
@@ -157,42 +168,62 @@ export function Dashboard({ data }: DashboardProps) {
                                                 <div className="flex items-center gap-2">
                                                     <h3 className="font-bold text-gray-900 text-xl group-hover:text-blue-600 transition-colors">{team.name}</h3>
                                                 </div>
-                                                <p className="text-sm text-gray-500 mt-1">Market Leader</p>
+                                                <p className="text-sm text-gray-500 mt-1">Rank #{index + 1}</p>
                                             </div>
                                         </div>
 
                                         <div className="grid grid-cols-2 gap-4 mb-6 border-b border-gray-100 pb-6 relative z-10">
                                             <div>
-                                                <p className="text-sm text-gray-500 mb-1">Total Revenue</p>
-                                                <p className="font-bold text-gray-900 text-xl">${(getMetric(team, "Financials", "Sales revenue") / 1000).toFixed(1)}k</p>
+                                                <p className="text-xs text-gray-500 mb-1">TSR</p>
+                                                <p className="font-bold text-gray-900">{tsr.toFixed(2)}%</p>
                                             </div>
                                             <div>
-                                                <p className="text-sm text-gray-500 mb-1">Total Profit</p>
-                                                <p className="font-bold text-green-600 text-xl">${(getMetric(team, "Financials", "Operating profit before depreciation (EBITDA)") / 1000).toFixed(1)}k</p>
+                                                <p className="text-xs text-gray-500 mb-1">ROE</p>
+                                                <p className="font-bold text-gray-900">{roe.toFixed(2)}%</p>
+                                            </div>
+                                            <div>
+                                                <p className="text-xs text-gray-500 mb-1">Dividends</p>
+                                                <p className="font-bold text-gray-900">${dividends.toLocaleString()}</p>
+                                            </div>
+                                            <div>
+                                                <p className="text-xs text-gray-500 mb-1">Marketing</p>
+                                                <p className="font-bold text-gray-900">${marketingSpend.toLocaleString()}</p>
+                                            </div>
+                                            <div>
+                                                <p className="text-xs text-gray-500 mb-1">Short-term Loans</p>
+                                                <p className="font-bold text-red-600">${shortTermLoans.toLocaleString()}</p>
+                                            </div>
+                                            <div>
+                                                <p className="text-xs text-gray-500 mb-1">Long-term Loans</p>
+                                                <p className="font-bold text-orange-600">${longTermLoans.toLocaleString()}</p>
                                             </div>
                                         </div>
 
                                         <div className="relative z-10">
-                                            <p className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">Top Performing Product</p>
-                                            <div className="bg-gray-50 rounded-lg p-4 space-y-3">
-                                                <div className="flex justify-between items-center">
-                                                    <span className="text-base font-medium text-gray-700">{topProduct.tech}</span>
-                                                    <span className="text-sm font-medium px-2 py-1 bg-white rounded border border-gray-200 text-gray-600">{topProduct.region}</span>
+                                            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Pricing Strategy</p>
+                                            <div className="bg-gray-50 rounded-lg p-3">
+                                                <div className="grid grid-cols-4 gap-2 text-xs mb-2 border-b border-gray-200 pb-2">
+                                                    <div className="font-medium text-gray-400"></div>
+                                                    <div className="font-medium text-center text-gray-500">USA</div>
+                                                    <div className="font-medium text-center text-gray-500">Asia</div>
+                                                    <div className="font-medium text-center text-gray-500">Eur</div>
                                                 </div>
-                                                <div className="flex justify-between items-center text-base">
-                                                    <span className="text-gray-500">Sales Volume</span>
-                                                    <span className="font-semibold text-gray-900">{topProduct.volume.toFixed(0)}k units</span>
-                                                </div>
-                                                <div className="flex justify-between items-center text-base">
-                                                    <span className="text-gray-500">Marketing</span>
-                                                    <span className="font-semibold text-blue-600">${topProduct.promotion.toFixed(0)}k</span>
-                                                </div>
+                                                {['Tech 1', 'Tech 2', 'Tech 3', 'Tech 4'].map(tech => (
+                                                    <div key={tech} className="grid grid-cols-4 gap-2 text-xs py-1">
+                                                        <div className="font-medium text-gray-600 truncate">{tech}</div>
+                                                        <div className="text-center text-gray-900">${team.prices.usa?.[tech] || '-'}</div>
+                                                        <div className="text-center text-gray-900">¥{team.prices.asia?.[tech] || '-'}</div>
+                                                        <div className="text-center text-gray-900">€{team.prices.europe?.[tech] || '-'}</div>
+                                                    </div>
+                                                ))}
                                             </div>
                                         </div>
                                     </div>
                                 );
                             })}
                         </div>
+
+
 
                         {/* Competitive Strategy Analysis */}
                         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-6">
@@ -328,9 +359,27 @@ export function Dashboard({ data }: DashboardProps) {
                                                         contentStyle={{ fontSize: '12px' }}
                                                     />
                                                     <Bar dataKey="price" radius={[4, 4, 0, 0]}>
-                                                        {chartData.map((entry, index) => (
-                                                            <Cell key={`cell-${index}`} fill={getColor(entry.price)} />
-                                                        ))}
+                                                        {chartData.map((entry, index) => {
+                                                            const isHighlighted = highlightedTeams.includes(entry.name);
+                                                            const isDimmed = highlightedTeams.length > 0 && !isHighlighted;
+                                                            return (
+                                                                <Cell
+                                                                    key={`cell-${index}`}
+                                                                    fill={getColor(entry.price)}
+                                                                    onClick={() => handleChartClick(entry.name)}
+                                                                    cursor="pointer"
+                                                                    opacity={isDimmed ? 0.1 : 1}
+                                                                    stroke={isHighlighted ? "#000" : "none"}
+                                                                    strokeWidth={isHighlighted ? 2 : 0}
+                                                                />
+                                                            );
+                                                        })}
+                                                        <LabelList
+                                                            dataKey="price"
+                                                            position="top"
+                                                            formatter={(val: any) => val}
+                                                            style={{ fontSize: '10px', fill: '#6b7280' }}
+                                                        />
                                                     </Bar>
                                                 </BarChart>
                                             </ResponsiveContainer>
@@ -393,9 +442,27 @@ export function Dashboard({ data }: DashboardProps) {
                                                             contentStyle={{ fontSize: '12px' }}
                                                         />
                                                         <Bar dataKey="promotion" radius={[4, 4, 0, 0]}>
-                                                            {chartData.map((entry, index) => (
-                                                                <Cell key={`cell-${index}`} fill={getMarketingColor(entry.promotion)} />
-                                                            ))}
+                                                            {chartData.map((entry, index) => {
+                                                                const isHighlighted = highlightedTeams.includes(entry.name);
+                                                                const isDimmed = highlightedTeams.length > 0 && !isHighlighted;
+                                                                return (
+                                                                    <Cell
+                                                                        key={`cell-${index}`}
+                                                                        fill={getMarketingColor(entry.promotion)}
+                                                                        onClick={() => handleChartClick(entry.name)}
+                                                                        cursor="pointer"
+                                                                        opacity={isDimmed ? 0.1 : 1}
+                                                                        stroke={isHighlighted ? "#000" : "none"}
+                                                                        strokeWidth={isHighlighted ? 2 : 0}
+                                                                    />
+                                                                );
+                                                            })}
+                                                            <LabelList
+                                                                dataKey="promotion"
+                                                                position="top"
+                                                                formatter={(val: any) => val > 0 ? val.toLocaleString() : ''}
+                                                                style={{ fontSize: '10px', fill: '#6b7280' }}
+                                                            />
                                                         </Bar>
                                                     </BarChart>
                                                 </ResponsiveContainer>
@@ -421,6 +488,12 @@ export function Dashboard({ data }: DashboardProps) {
                                             volume: t.demand[rKey]?.[techName] || 0
                                         }));
 
+                                        const totalVolume = chartData.reduce((sum, d) => sum + d.volume, 0);
+                                        const chartDataWithShare = chartData.map(d => ({
+                                            ...d,
+                                            share: totalVolume > 0 ? (d.volume / totalVolume) * 100 : 0
+                                        }));
+
                                         const values = chartData.map(d => d.volume).filter(p => p > 0);
                                         const minVal = Math.min(...values);
                                         const maxVal = Math.max(...values);
@@ -431,8 +504,6 @@ export function Dashboard({ data }: DashboardProps) {
 
                                             const ratio = (val - minVal) / (maxVal - minVal);
                                             // Light Cyan to Dark Cyan
-                                            // Min: 207, 250, 254 (cyan-100)
-                                            // Max: 8, 145, 178 (cyan-600)
                                             const r = 207 + (8 - 207) * ratio;
                                             const g = 250 + (145 - 250) * ratio;
                                             const b = 254 + (178 - 254) * ratio;
@@ -445,7 +516,7 @@ export function Dashboard({ data }: DashboardProps) {
                                                     {viewMode === 'tech' ? `${item} (Units)` : `${item} (Units)`}
                                                 </h4>
                                                 <ResponsiveContainer width="100%" height="100%">
-                                                    <BarChart data={chartData} margin={{ top: 5, right: 5, left: -10, bottom: 60 }}>
+                                                    <BarChart data={chartDataWithShare} margin={{ top: 20, right: 5, left: -10, bottom: 60 }}>
                                                         <CartesianGrid strokeDasharray="3 3" vertical={false} />
                                                         <XAxis
                                                             dataKey="name"
@@ -457,13 +528,34 @@ export function Dashboard({ data }: DashboardProps) {
                                                         />
                                                         <YAxis tick={{ fontSize: 10 }} tickFormatter={(val) => `${(val / 1000).toFixed(0)}k`} />
                                                         <Tooltip
-                                                            formatter={(val: number) => `${val.toLocaleString()} units`}
+                                                            formatter={(val: number, name: string, props: any) => [
+                                                                `${val.toLocaleString()} units (${props.payload.share.toFixed(1)}%)`,
+                                                                "Volume"
+                                                            ]}
                                                             contentStyle={{ fontSize: '12px' }}
                                                         />
                                                         <Bar dataKey="volume" radius={[4, 4, 0, 0]}>
-                                                            {chartData.map((entry, index) => (
-                                                                <Cell key={`cell-${index}`} fill={getVolumeColor(entry.volume)} />
-                                                            ))}
+                                                            {chartDataWithShare.map((entry, index) => {
+                                                                const isHighlighted = highlightedTeams.includes(entry.name);
+                                                                const isDimmed = highlightedTeams.length > 0 && !isHighlighted;
+                                                                return (
+                                                                    <Cell
+                                                                        key={`cell-${index}`}
+                                                                        fill={getVolumeColor(entry.volume)}
+                                                                        onClick={() => handleChartClick(entry.name)}
+                                                                        cursor="pointer"
+                                                                        opacity={isDimmed ? 0.1 : 1}
+                                                                        stroke={isHighlighted ? "#000" : "none"}
+                                                                        strokeWidth={isHighlighted ? 2 : 0}
+                                                                    />
+                                                                );
+                                                            })}
+                                                            <LabelList
+                                                                dataKey="share"
+                                                                position="top"
+                                                                formatter={(val: any) => val > 0 ? `${val.toFixed(0)}%` : ''}
+                                                                style={{ fontSize: '10px', fill: '#6b7280' }}
+                                                            />
                                                         </Bar>
                                                     </BarChart>
                                                 </ResponsiveContainer>
@@ -473,6 +565,7 @@ export function Dashboard({ data }: DashboardProps) {
                                 </div>
                             </div>
                         </div>
+
 
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                             <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
@@ -484,7 +577,23 @@ export function Dashboard({ data }: DashboardProps) {
                                             <XAxis dataKey="name" />
                                             <YAxis tickFormatter={(val) => `$${val / 1000}k`} />
                                             <Tooltip formatter={(val: number) => [`$${val.toLocaleString()}`, 'Revenue']} />
-                                            <Bar dataKey="revenue" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                                            <Bar dataKey="revenue" radius={[4, 4, 0, 0]}>
+                                                {teamsByRevenue.map((entry, index) => {
+                                                    const isHighlighted = highlightedTeams.includes(entry.name);
+                                                    const isDimmed = highlightedTeams.length > 0 && !isHighlighted;
+                                                    return (
+                                                        <Cell
+                                                            key={`cell-${index}`}
+                                                            fill="#3b82f6"
+                                                            onClick={() => handleChartClick(entry.name)}
+                                                            cursor="pointer"
+                                                            opacity={isDimmed ? 0.1 : 1}
+                                                            stroke={isHighlighted ? "#000" : "none"}
+                                                            strokeWidth={isHighlighted ? 2 : 0}
+                                                        />
+                                                    );
+                                                })}
+                                            </Bar>
                                         </BarChart>
                                     </ResponsiveContainer>
                                 </div>
@@ -499,12 +608,514 @@ export function Dashboard({ data }: DashboardProps) {
                                             <XAxis dataKey="name" />
                                             <YAxis tickFormatter={(val) => `$${val / 1000}k`} />
                                             <Tooltip formatter={(val: number) => [`$${val.toLocaleString()}`, 'EBITDA']} />
-                                            <Bar dataKey="ebitda" fill="#22c55e" radius={[4, 4, 0, 0]} />
+                                            <Bar dataKey="ebitda" radius={[4, 4, 0, 0]}>
+                                                {barData.map((entry, index) => {
+                                                    const isHighlighted = highlightedTeams.includes(entry.name);
+                                                    const isDimmed = highlightedTeams.length > 0 && !isHighlighted;
+                                                    return (
+                                                        <Cell
+                                                            key={`cell-${index}`}
+                                                            fill="#22c55e"
+                                                            onClick={() => handleChartClick(entry.name)}
+                                                            cursor="pointer"
+                                                            opacity={isDimmed ? 0.1 : 1}
+                                                            stroke={isHighlighted ? "#000" : "none"}
+                                                            strokeWidth={isHighlighted ? 2 : 0}
+                                                        />
+                                                    );
+                                                })}
+                                            </Bar>
                                         </BarChart>
                                     </ResponsiveContainer>
                                 </div>
                             </div>
                         </div>
+
+
+                        {/* Balance Sheet Analysis */}
+                        <div className="border-t border-gray-100 pt-8 mt-8">
+                            <h4 className="text-md font-medium text-gray-700 mb-6 border-l-4 border-red-500 pl-3">Balance Sheet Analysis (k USD)</h4>
+
+                            <div className="space-y-8">
+                                {/* Assets Section */}
+                                <div>
+                                    <h5 className="text-sm font-bold text-gray-600 mb-4 uppercase tracking-wide">Assets</h5>
+                                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                                        {[
+                                            { label: 'Receivables', key: 'Receivables', color: '#60a5fa' },
+                                            { label: 'Cash & Equivalents', key: 'Cash and cash equivalents', color: '#34d399' },
+                                            { label: 'Total Assets', key: 'Total assets', color: '#818cf8' },
+                                        ].map((metric) => {
+                                            const chartData = teams.map(t => ({
+                                                name: t.name,
+                                                value: t.financials.balanceSheet.global[metric.key] || 0
+                                            }));
+                                            return (
+                                                <div key={metric.key} className="h-[250px] bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+                                                    <h4 className="text-xs font-medium text-gray-400 mb-2 text-center">{metric.label}</h4>
+                                                    <ResponsiveContainer width="100%" height="100%">
+                                                        <BarChart data={chartData} margin={{ top: 20, right: 5, left: -10, bottom: 60 }}>
+                                                            <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                                                            <XAxis dataKey="name" tick={{ fontSize: 10 }} interval={0} angle={-45} textAnchor="end" height={60} />
+                                                            <YAxis tick={{ fontSize: 10 }} tickFormatter={(val) => `${(val / 1000).toFixed(0)}k`} />
+                                                            <Tooltip formatter={(val: number) => [val.toLocaleString(), metric.label]} contentStyle={{ fontSize: '12px' }} />
+                                                            <Bar dataKey="value" radius={[4, 4, 0, 0]}>
+                                                                {chartData.map((entry, index) => {
+                                                                    const isHighlighted = highlightedTeams.includes(entry.name);
+                                                                    const isDimmed = highlightedTeams.length > 0 && !isHighlighted;
+                                                                    return (
+                                                                        <Cell
+                                                                            key={`cell-${index}`}
+                                                                            fill={metric.color}
+                                                                            onClick={() => handleChartClick(entry.name)}
+                                                                            cursor="pointer"
+                                                                            opacity={isDimmed ? 0.1 : 1}
+                                                                            stroke={isHighlighted ? "#000" : "none"}
+                                                                            strokeWidth={isHighlighted ? 2 : 0}
+                                                                        />
+                                                                    );
+                                                                })}
+                                                                <LabelList dataKey="value" position="top" formatter={(val: any) => val > 0 ? `${(val / 1000).toFixed(0)}k` : ''} style={{ fontSize: '10px', fill: '#6b7280' }} />
+                                                            </Bar>
+                                                        </BarChart>
+                                                    </ResponsiveContainer>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+
+                                {/* Equity Section */}
+                                <div>
+                                    <h5 className="text-sm font-bold text-gray-600 mb-4 uppercase tracking-wide">Shareholders' Equity</h5>
+                                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                                        {[
+                                            { label: 'Share Capital', key: 'Share capital', color: '#f472b6' },
+                                            { label: 'Retained Earnings', key: 'Retained earnings', color: '#fbbf24' },
+                                            { label: 'Total Equity', key: 'Total equity', color: '#f87171' },
+                                        ].map((metric) => {
+                                            const chartData = teams.map(t => ({
+                                                name: t.name,
+                                                value: t.financials.balanceSheet.global[metric.key] || 0
+                                            }));
+                                            return (
+                                                <div key={metric.key} className="h-[250px] bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+                                                    <h4 className="text-xs font-medium text-gray-400 mb-2 text-center">{metric.label}</h4>
+                                                    <ResponsiveContainer width="100%" height="100%">
+                                                        <BarChart data={chartData} margin={{ top: 20, right: 5, left: -10, bottom: 60 }}>
+                                                            <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                                                            <XAxis dataKey="name" tick={{ fontSize: 10 }} interval={0} angle={-45} textAnchor="end" height={60} />
+                                                            <YAxis tick={{ fontSize: 10 }} tickFormatter={(val) => `${(val / 1000).toFixed(0)}k`} />
+                                                            <Tooltip formatter={(val: number) => [val.toLocaleString(), metric.label]} contentStyle={{ fontSize: '12px' }} />
+                                                            <Bar dataKey="value" radius={[4, 4, 0, 0]}>
+                                                                {chartData.map((entry, index) => {
+                                                                    const isHighlighted = highlightedTeams.includes(entry.name);
+                                                                    const isDimmed = highlightedTeams.length > 0 && !isHighlighted;
+                                                                    return (
+                                                                        <Cell
+                                                                            key={`cell-${index}`}
+                                                                            fill={metric.color}
+                                                                            onClick={() => handleChartClick(entry.name)}
+                                                                            cursor="pointer"
+                                                                            opacity={isDimmed ? 0.1 : 1}
+                                                                            stroke={isHighlighted ? "#000" : "none"}
+                                                                            strokeWidth={isHighlighted ? 2 : 0}
+                                                                        />
+                                                                    );
+                                                                })}
+                                                                <LabelList dataKey="value" position="top" formatter={(val: any) => val > 0 ? `${(val / 1000).toFixed(0)}k` : ''} style={{ fontSize: '10px', fill: '#6b7280' }} />
+                                                            </Bar>
+                                                        </BarChart>
+                                                    </ResponsiveContainer>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+
+                                {/* Liabilities Section */}
+                                <div>
+                                    <h5 className="text-sm font-bold text-gray-600 mb-4 uppercase tracking-wide">Liabilities</h5>
+                                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                                        {[
+                                            { label: 'Long-term Loans', key: 'Long-term debts', color: '#a78bfa' },
+                                            { label: 'Short-term Loans', key: 'Short-term debts (unplanned)', color: '#fb923c' },
+                                            { label: 'Payables', key: 'Payables', color: '#94a3b8' },
+                                        ].map((metric) => {
+                                            const chartData = teams.map(t => ({
+                                                name: t.name,
+                                                value: t.financials.balanceSheet.global[metric.key] || 0
+                                            }));
+                                            return (
+                                                <div key={metric.key} className="h-[250px] bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+                                                    <h4 className="text-xs font-medium text-gray-400 mb-2 text-center">{metric.label}</h4>
+                                                    <ResponsiveContainer width="100%" height="100%">
+                                                        <BarChart data={chartData} margin={{ top: 20, right: 5, left: -10, bottom: 60 }}>
+                                                            <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                                                            <XAxis dataKey="name" tick={{ fontSize: 10 }} interval={0} angle={-45} textAnchor="end" height={60} />
+                                                            <YAxis tick={{ fontSize: 10 }} tickFormatter={(val) => `${(val / 1000).toFixed(0)}k`} />
+                                                            <Tooltip formatter={(val: number) => [val.toLocaleString(), metric.label]} contentStyle={{ fontSize: '12px' }} />
+                                                            <Bar dataKey="value" radius={[4, 4, 0, 0]}>
+                                                                {chartData.map((entry, index) => {
+                                                                    const isHighlighted = highlightedTeams.includes(entry.name);
+                                                                    const isDimmed = highlightedTeams.length > 0 && !isHighlighted;
+                                                                    return (
+                                                                        <Cell
+                                                                            key={`cell-${index}`}
+                                                                            fill={metric.color}
+                                                                            onClick={() => handleChartClick(entry.name)}
+                                                                            cursor="pointer"
+                                                                            opacity={isDimmed ? 0.1 : 1}
+                                                                            stroke={isHighlighted ? "#000" : "none"}
+                                                                            strokeWidth={isHighlighted ? 2 : 0}
+                                                                        />
+                                                                    );
+                                                                })}
+                                                                <LabelList dataKey="value" position="top" formatter={(val: any) => val > 0 ? `${(val / 1000).toFixed(0)}k` : ''} style={{ fontSize: '10px', fill: '#6b7280' }} />
+                                                            </Bar>
+                                                        </BarChart>
+                                                    </ResponsiveContainer>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        {/* Key Financial Indicators Charts */}
+                        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-6">
+                            <h3 className="text-xl font-semibold text-gray-900 mb-6">Key Financial Indicators</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                {/* Dividend Yield */}
+                                <div className="h-[300px]">
+                                    <h4 className="text-sm font-medium text-gray-500 mb-4 text-center">Dividend Yield (%)</h4>
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <BarChart data={teams.map(t => ({ name: t.name, value: t.financials.ratios["Dividend yield, %"] || 0 }))} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                                            <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                                            <XAxis dataKey="name" tick={{ fontSize: 10 }} interval={0} angle={-45} textAnchor="end" height={60} />
+                                            <YAxis />
+                                            <Tooltip formatter={(val: number) => `${val.toFixed(2)}%`} />
+                                            <Bar dataKey="value" radius={[4, 4, 0, 0]}>
+                                                {teams.map((entry, index) => {
+                                                    const isHighlighted = highlightedTeams.includes(entry.name);
+                                                    const isDimmed = highlightedTeams.length > 0 && !isHighlighted;
+                                                    return (
+                                                        <Cell
+                                                            key={`cell-${index}`}
+                                                            fill="#10b981"
+                                                            onClick={() => handleChartClick(entry.name)}
+                                                            cursor="pointer"
+                                                            opacity={isDimmed ? 0.1 : 1}
+                                                            stroke={isHighlighted ? "#000" : "none"}
+                                                            strokeWidth={isHighlighted ? 2 : 0}
+                                                        />
+                                                    );
+                                                })}
+                                                <LabelList dataKey="value" position="top" formatter={(val: any) => `${val.toFixed(2)}%`} style={{ fontSize: '10px', fill: '#6b7280' }} />
+                                            </Bar>
+                                        </BarChart>
+                                    </ResponsiveContainer>
+                                </div>
+                                {/* Average Share Price */}
+                                <div className="h-[300px]">
+                                    <h4 className="text-sm font-medium text-gray-500 mb-4 text-center">Average Share Price (USD)</h4>
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <BarChart data={teams.map(t => ({ name: t.name, value: t.financials.ratios["Average trading price during the round, USD"] || 0 }))} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                                            <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                                            <XAxis dataKey="name" tick={{ fontSize: 10 }} interval={0} angle={-45} textAnchor="end" height={60} />
+                                            <YAxis />
+                                            <Tooltip formatter={(val: number) => `$${val.toFixed(2)}`} />
+                                            <Bar dataKey="value" radius={[4, 4, 0, 0]}>
+                                                {teams.map((entry, index) => {
+                                                    const isHighlighted = highlightedTeams.includes(entry.name);
+                                                    const isDimmed = highlightedTeams.length > 0 && !isHighlighted;
+                                                    return (
+                                                        <Cell
+                                                            key={`cell-${index}`}
+                                                            fill="#3b82f6"
+                                                            onClick={() => handleChartClick(entry.name)}
+                                                            cursor="pointer"
+                                                            opacity={isDimmed ? 0.1 : 1}
+                                                            stroke={isHighlighted ? "#000" : "none"}
+                                                            strokeWidth={isHighlighted ? 2 : 0}
+                                                        />
+                                                    );
+                                                })}
+                                                <LabelList dataKey="value" position="top" formatter={(val: any) => `$${val.toFixed(0)}`} style={{ fontSize: '10px', fill: '#6b7280' }} />
+                                            </Bar>
+                                        </BarChart>
+                                    </ResponsiveContainer>
+                                </div>
+                                {/* Share Price at End */}
+                                <div className="h-[300px]">
+                                    <h4 className="text-sm font-medium text-gray-500 mb-4 text-center">Share Price at End (USD)</h4>
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <BarChart data={teams.map(t => ({ name: t.name, value: t.financials.ratios["Share price at the end of round, USD"] || 0 }))} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                                            <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                                            <XAxis dataKey="name" tick={{ fontSize: 10 }} interval={0} angle={-45} textAnchor="end" height={60} />
+                                            <YAxis />
+                                            <Tooltip formatter={(val: number) => `$${val.toFixed(2)}`} />
+                                            <Bar dataKey="value" radius={[4, 4, 0, 0]}>
+                                                {teams.map((entry, index) => {
+                                                    const isHighlighted = highlightedTeams.includes(entry.name);
+                                                    const isDimmed = highlightedTeams.length > 0 && !isHighlighted;
+                                                    return (
+                                                        <Cell
+                                                            key={`cell-${index}`}
+                                                            fill="#8b5cf6"
+                                                            onClick={() => handleChartClick(entry.name)}
+                                                            cursor="pointer"
+                                                            opacity={isDimmed ? 0.1 : 1}
+                                                            stroke={isHighlighted ? "#000" : "none"}
+                                                            strokeWidth={isHighlighted ? 2 : 0}
+                                                        />
+                                                    );
+                                                })}
+                                                <LabelList dataKey="value" position="top" formatter={(val: any) => `$${val.toFixed(0)}`} style={{ fontSize: '10px', fill: '#6b7280' }} />
+                                            </Bar>
+                                        </BarChart>
+                                    </ResponsiveContainer>
+                                </div>
+                                {/* Shares Issued */}
+                                <div className="h-[300px]">
+                                    <h4 className="text-sm font-medium text-gray-500 mb-4 text-center">Shares Issued (k)</h4>
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <BarChart data={teams.map(t => ({ name: t.name, value: t.financials.ratios["Shares outstanding at the end of round, k shares"] || 0 }))} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                                            <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                                            <XAxis dataKey="name" tick={{ fontSize: 10 }} interval={0} angle={-45} textAnchor="end" height={60} />
+                                            <YAxis />
+                                            <Tooltip formatter={(val: number) => val.toLocaleString()} />
+                                            <Bar dataKey="value" radius={[4, 4, 0, 0]}>
+                                                {teams.map((entry, index) => {
+                                                    const isHighlighted = highlightedTeams.includes(entry.name);
+                                                    const isDimmed = highlightedTeams.length > 0 && !isHighlighted;
+                                                    return (
+                                                        <Cell
+                                                            key={`cell-${index}`}
+                                                            fill="#f59e0b"
+                                                            onClick={() => handleChartClick(entry.name)}
+                                                            cursor="pointer"
+                                                            opacity={isDimmed ? 0.1 : 1}
+                                                            stroke={isHighlighted ? "#000" : "none"}
+                                                            strokeWidth={isHighlighted ? 2 : 0}
+                                                        />
+                                                    );
+                                                })}
+                                                <LabelList dataKey="value" position="top" formatter={(val: any) => val.toLocaleString()} style={{ fontSize: '10px', fill: '#6b7280' }} />
+                                            </Bar>
+                                        </BarChart>
+                                    </ResponsiveContainer>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Production & Logistics Analysis */}
+                        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-6">
+                            <h3 className="text-xl font-semibold text-gray-900 mb-6">Production & Logistics Analysis</h3>
+
+                            <div className="space-y-8">
+
+
+                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                                    {/* Tech 1 Production Cost */}
+                                    <div className="h-[350px]">
+                                        <h4 className="text-base font-medium text-gray-500 mb-4 text-center">Tech 1 Production Cost (USD)</h4>
+                                        <ResponsiveContainer width="100%" height="100%">
+                                            <BarChart
+                                                data={teams.map(t => ({
+                                                    name: t.name,
+                                                    usaInHouse: t.costs.usa["In-house manufacturing cost per unit, USD - Tech 1"] || 0,
+                                                    usaContract: t.costs.usa["Contract manufacturing cost per unit, USD - Tech 1"] || 0,
+                                                    asiaInHouse: t.costs.asia["In-house manufacturing cost per unit, USD - Tech 1"] || 0,
+                                                    asiaContract: t.costs.asia["Contract manufacturing cost per unit, USD - Tech 1"] || 0,
+                                                }))}
+                                                margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                                            >
+                                                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                                                <XAxis dataKey="name" tick={{ fontSize: 10 }} interval={0} angle={-45} textAnchor="end" height={60} />
+                                                <YAxis />
+                                                <Tooltip formatter={(val: number) => `$${val.toFixed(2)}`} />
+                                                <Legend />
+                                                <Bar dataKey="usaInHouse" name="USA In-house" radius={[4, 4, 0, 0]}>
+                                                    {teams.map((entry, index) => {
+                                                        const isHighlighted = highlightedTeams.includes(entry.name);
+                                                        const isDimmed = highlightedTeams.length > 0 && !isHighlighted;
+                                                        return <Cell key={`cell-${index}`} fill="#1e3a8a" onClick={() => handleChartClick(entry.name)} cursor="pointer" opacity={isDimmed ? 0.1 : 1} stroke={isHighlighted ? "#000" : "none"} strokeWidth={isHighlighted ? 2 : 0} />;
+                                                    })}
+                                                </Bar>
+                                                <Bar dataKey="usaContract" name="USA Contract" radius={[4, 4, 0, 0]}>
+                                                    {teams.map((entry, index) => {
+                                                        const isHighlighted = highlightedTeams.includes(entry.name);
+                                                        const isDimmed = highlightedTeams.length > 0 && !isHighlighted;
+                                                        return <Cell key={`cell-${index}`} fill="#60a5fa" onClick={() => handleChartClick(entry.name)} cursor="pointer" opacity={isDimmed ? 0.1 : 1} stroke={isHighlighted ? "#000" : "none"} strokeWidth={isHighlighted ? 2 : 0} />;
+                                                    })}
+                                                </Bar>
+                                                <Bar dataKey="asiaInHouse" name="Asia In-house" radius={[4, 4, 0, 0]}>
+                                                    {teams.map((entry, index) => {
+                                                        const isHighlighted = highlightedTeams.includes(entry.name);
+                                                        const isDimmed = highlightedTeams.length > 0 && !isHighlighted;
+                                                        return <Cell key={`cell-${index}`} fill="#b91c1c" onClick={() => handleChartClick(entry.name)} cursor="pointer" opacity={isDimmed ? 0.1 : 1} stroke={isHighlighted ? "#000" : "none"} strokeWidth={isHighlighted ? 2 : 0} />;
+                                                    })}
+                                                </Bar>
+                                                <Bar dataKey="asiaContract" name="Asia Contract" radius={[4, 4, 0, 0]}>
+                                                    {teams.map((entry, index) => {
+                                                        const isHighlighted = highlightedTeams.includes(entry.name);
+                                                        const isDimmed = highlightedTeams.length > 0 && !isHighlighted;
+                                                        return <Cell key={`cell-${index}`} fill="#f87171" onClick={() => handleChartClick(entry.name)} cursor="pointer" opacity={isDimmed ? 0.1 : 1} stroke={isHighlighted ? "#000" : "none"} strokeWidth={isHighlighted ? 2 : 0} />;
+                                                    })}
+                                                </Bar>
+                                            </BarChart>
+                                        </ResponsiveContainer>
+                                    </div>
+
+                                    {/* Tech 2 Production Cost */}
+                                    <div className="h-[350px]">
+                                        <h4 className="text-base font-medium text-gray-500 mb-4 text-center">Tech 2 Production Cost (USD)</h4>
+                                        <ResponsiveContainer width="100%" height="100%">
+                                            <BarChart
+                                                data={teams.map(t => ({
+                                                    name: t.name,
+                                                    usaInHouse: t.costs.usa["In-house manufacturing cost per unit, USD - Tech 2"] || 0,
+                                                    usaContract: t.costs.usa["Contract manufacturing cost per unit, USD - Tech 2"] || 0,
+                                                    asiaInHouse: t.costs.asia["In-house manufacturing cost per unit, USD - Tech 2"] || 0,
+                                                    asiaContract: t.costs.asia["Contract manufacturing cost per unit, USD - Tech 2"] || 0,
+                                                }))}
+                                                margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                                            >
+                                                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                                                <XAxis dataKey="name" tick={{ fontSize: 10 }} interval={0} angle={-45} textAnchor="end" height={60} />
+                                                <YAxis />
+                                                <Tooltip formatter={(val: number) => `$${val.toFixed(2)}`} />
+                                                <Legend />
+                                                <Bar dataKey="usaInHouse" name="USA In-house" radius={[4, 4, 0, 0]}>
+                                                    {teams.map((entry, index) => {
+                                                        const isHighlighted = highlightedTeams.includes(entry.name);
+                                                        const isDimmed = highlightedTeams.length > 0 && !isHighlighted;
+                                                        return <Cell key={`cell-${index}`} fill="#1e3a8a" onClick={() => handleChartClick(entry.name)} cursor="pointer" opacity={isDimmed ? 0.1 : 1} stroke={isHighlighted ? "#000" : "none"} strokeWidth={isHighlighted ? 2 : 0} />;
+                                                    })}
+                                                </Bar>
+                                                <Bar dataKey="usaContract" name="USA Contract" radius={[4, 4, 0, 0]}>
+                                                    {teams.map((entry, index) => {
+                                                        const isHighlighted = highlightedTeams.includes(entry.name);
+                                                        const isDimmed = highlightedTeams.length > 0 && !isHighlighted;
+                                                        return <Cell key={`cell-${index}`} fill="#60a5fa" onClick={() => handleChartClick(entry.name)} cursor="pointer" opacity={isDimmed ? 0.1 : 1} stroke={isHighlighted ? "#000" : "none"} strokeWidth={isHighlighted ? 2 : 0} />;
+                                                    })}
+                                                </Bar>
+                                                <Bar dataKey="asiaInHouse" name="Asia In-house" radius={[4, 4, 0, 0]}>
+                                                    {teams.map((entry, index) => {
+                                                        const isHighlighted = highlightedTeams.includes(entry.name);
+                                                        const isDimmed = highlightedTeams.length > 0 && !isHighlighted;
+                                                        return <Cell key={`cell-${index}`} fill="#b91c1c" onClick={() => handleChartClick(entry.name)} cursor="pointer" opacity={isDimmed ? 0.1 : 1} stroke={isHighlighted ? "#000" : "none"} strokeWidth={isHighlighted ? 2 : 0} />;
+                                                    })}
+                                                </Bar>
+                                                <Bar dataKey="asiaContract" name="Asia Contract" radius={[4, 4, 0, 0]}>
+                                                    {teams.map((entry, index) => {
+                                                        const isHighlighted = highlightedTeams.includes(entry.name);
+                                                        const isDimmed = highlightedTeams.length > 0 && !isHighlighted;
+                                                        return <Cell key={`cell-${index}`} fill="#f87171" onClick={() => handleChartClick(entry.name)} cursor="pointer" opacity={isDimmed ? 0.1 : 1} stroke={isHighlighted ? "#000" : "none"} strokeWidth={isHighlighted ? 2 : 0} />;
+                                                    })}
+                                                </Bar>
+                                            </BarChart>
+                                        </ResponsiveContainer>
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                                    {/* Total Production Volume */}
+                                    <div className="h-[350px]">
+                                        <h4 className="text-base font-medium text-gray-500 mb-4 text-center">Total Production Volume (k units)</h4>
+                                        <ResponsiveContainer width="100%" height="100%">
+                                            <BarChart
+                                                data={teams.map(t => {
+                                                    const sumMetrics = (metrics: any) => Object.values(metrics || {}).reduce((a: any, b: any) => a + b, 0) as number;
+                                                    return {
+                                                        name: t.name,
+                                                        usaInHouse: sumMetrics(t.manufacturing.usa.inHouse),
+                                                        usaContract: sumMetrics(t.manufacturing.usa.contract),
+                                                        asiaInHouse: sumMetrics(t.manufacturing.asia.inHouse),
+                                                        asiaContract: sumMetrics(t.manufacturing.asia.contract),
+                                                    };
+                                                })}
+                                                margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                                            >
+                                                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                                                <XAxis dataKey="name" tick={{ fontSize: 10 }} interval={0} angle={-45} textAnchor="end" height={60} />
+                                                <YAxis />
+                                                <Tooltip formatter={(val: number) => `${val.toLocaleString()} k`} />
+                                                <Legend />
+                                                <Bar dataKey="usaInHouse" name="USA In-house" stackId="a">
+                                                    {teams.map((entry, index) => {
+                                                        const isHighlighted = highlightedTeams.includes(entry.name);
+                                                        const isDimmed = highlightedTeams.length > 0 && !isHighlighted;
+                                                        return <Cell key={`cell-${index}`} fill="#1e3a8a" onClick={() => handleChartClick(entry.name)} cursor="pointer" opacity={isDimmed ? 0.1 : 1} stroke={isHighlighted ? "#000" : "none"} strokeWidth={isHighlighted ? 2 : 0} />;
+                                                    })}
+                                                </Bar>
+                                                <Bar dataKey="usaContract" name="USA Contract" stackId="a">
+                                                    {teams.map((entry, index) => {
+                                                        const isHighlighted = highlightedTeams.includes(entry.name);
+                                                        const isDimmed = highlightedTeams.length > 0 && !isHighlighted;
+                                                        return <Cell key={`cell-${index}`} fill="#60a5fa" onClick={() => handleChartClick(entry.name)} cursor="pointer" opacity={isDimmed ? 0.1 : 1} stroke={isHighlighted ? "#000" : "none"} strokeWidth={isHighlighted ? 2 : 0} />;
+                                                    })}
+                                                </Bar>
+                                                <Bar dataKey="asiaInHouse" name="Asia In-house" stackId="b">
+                                                    {teams.map((entry, index) => {
+                                                        const isHighlighted = highlightedTeams.includes(entry.name);
+                                                        const isDimmed = highlightedTeams.length > 0 && !isHighlighted;
+                                                        return <Cell key={`cell-${index}`} fill="#b91c1c" onClick={() => handleChartClick(entry.name)} cursor="pointer" opacity={isDimmed ? 0.1 : 1} stroke={isHighlighted ? "#000" : "none"} strokeWidth={isHighlighted ? 2 : 0} />;
+                                                    })}
+                                                </Bar>
+                                                <Bar dataKey="asiaContract" name="Asia Contract" stackId="b">
+                                                    {teams.map((entry, index) => {
+                                                        const isHighlighted = highlightedTeams.includes(entry.name);
+                                                        const isDimmed = highlightedTeams.length > 0 && !isHighlighted;
+                                                        return <Cell key={`cell-${index}`} fill="#f87171" onClick={() => handleChartClick(entry.name)} cursor="pointer" opacity={isDimmed ? 0.1 : 1} stroke={isHighlighted ? "#000" : "none"} strokeWidth={isHighlighted ? 2 : 0} />;
+                                                    })}
+                                                </Bar>
+                                            </BarChart>
+                                        </ResponsiveContainer>
+                                    </div>
+
+                                    {/* Capacity Utilization */}
+                                    <div className="h-[350px]">
+                                        <h4 className="text-base font-medium text-gray-500 mb-4 text-center">In-house Capacity Utilization (%)</h4>
+                                        <ResponsiveContainer width="100%" height="100%">
+                                            <BarChart
+                                                data={teams.map(t => ({
+                                                    name: t.name,
+                                                    usa: t.manufacturing.usa.capacityUsage["Total"] || 0,
+                                                    asia: t.manufacturing.asia.capacityUsage["Total"] || 0,
+                                                }))}
+                                                margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                                            >
+                                                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                                                <XAxis dataKey="name" tick={{ fontSize: 10 }} interval={0} angle={-45} textAnchor="end" height={60} />
+                                                <YAxis domain={[0, 100]} />
+                                                <Tooltip formatter={(val: number) => `${val.toFixed(1)}%`} />
+                                                <Legend />
+                                                <Bar dataKey="usa" name="USA" radius={[4, 4, 0, 0]}>
+                                                    {teams.map((entry, index) => {
+                                                        const isHighlighted = highlightedTeams.includes(entry.name);
+                                                        const isDimmed = highlightedTeams.length > 0 && !isHighlighted;
+                                                        return <Cell key={`cell-${index}`} fill="#1e3a8a" onClick={() => handleChartClick(entry.name)} cursor="pointer" opacity={isDimmed ? 0.1 : 1} stroke={isHighlighted ? "#000" : "none"} strokeWidth={isHighlighted ? 2 : 0} />;
+                                                    })}
+                                                </Bar>
+                                                <Bar dataKey="asia" name="Asia" radius={[4, 4, 0, 0]}>
+                                                    {teams.map((entry, index) => {
+                                                        const isHighlighted = highlightedTeams.includes(entry.name);
+                                                        const isDimmed = highlightedTeams.length > 0 && !isHighlighted;
+                                                        return <Cell key={`cell-${index}`} fill="#b91c1c" onClick={() => handleChartClick(entry.name)} cursor="pointer" opacity={isDimmed ? 0.1 : 1} stroke={isHighlighted ? "#000" : "none"} strokeWidth={isHighlighted ? 2 : 0} />;
+                                                    })}
+                                                </Bar>
+                                            </BarChart>
+                                        </ResponsiveContainer>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
                     </div>
                 )
             }
@@ -517,7 +1128,7 @@ export function Dashboard({ data }: DashboardProps) {
             {activeTab === "Logistics" && <LogisticsView teams={teams} />}
             {activeTab === "Costs" && <CostsView teams={teams} />}
             {activeTab === "Margins" && <MarginsView teams={teams} />}
-        </div>
+        </div >
     );
 }
 

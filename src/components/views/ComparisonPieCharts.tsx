@@ -161,6 +161,29 @@ export function ComparisonPieCharts({ teamA, teamB, region, tech }: ComparisonPi
                                         outerRadius={70}
                                         paddingAngle={2}
                                         dataKey="value"
+                                        label={({ cx, cy, midAngle = 0, innerRadius, outerRadius, value }) => {
+                                            const RADIAN = Math.PI / 180;
+                                            const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+                                            const x = cx + radius * Math.cos(-midAngle * RADIAN);
+                                            const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+                                            // Only show label if value is significant to avoid clutter
+                                            if (value === 0) return null;
+
+                                            return (
+                                                <text
+                                                    x={x}
+                                                    y={y}
+                                                    fill="white"
+                                                    textAnchor="middle"
+                                                    dominantBaseline="central"
+                                                    className="text-[10px] font-bold"
+                                                >
+                                                    {chart.formatter(value)}
+                                                </text>
+                                            );
+                                        }}
+                                        labelLine={false}
                                     >
                                         {chart.data.map((entry, index) => (
                                             <Cell key={`cell-${index}`} fill={entry.color} />

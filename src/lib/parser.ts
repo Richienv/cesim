@@ -261,7 +261,28 @@ export const parseCesimData = (fileBuffer: ArrayBuffer): RoundData => {
             if (label.includes("In-house manufacturing")) { currentSection = "inHouse"; continue; }
             if (label.includes("Contract manufacturing")) { currentSection = "contract"; continue; }
             if (label.includes("Capacity usage")) { currentSection = "capacityUsage"; continue; }
-            if (label === "USA" || label === "Asia") { currentRegion = label.toLowerCase(); continue; }
+
+            if (label === "USA" || label === "Asia") {
+                currentRegion = label.toLowerCase();
+
+                // Check if this region row itself has data (common for Capacity Usage)
+                const hasData = row.length > 1 && (typeof row[1] === 'number' || (typeof row[1] === 'string' && row[1].trim() !== ''));
+                if (hasData && currentSection === "capacityUsage") {
+                    teams.forEach((team, idx) => {
+                        let val = row[idx + 1];
+                        if (typeof val === 'string') val = parseFloat(val.replace(/,/g, ''));
+                        if (typeof val === 'number' && !isNaN(val)) {
+                            // Ensure capacityUsage object exists
+                            if (!team.manufacturing[currentRegion as "usa" | "asia"].capacityUsage) {
+                                team.manufacturing[currentRegion as "usa" | "asia"].capacityUsage = {};
+                            }
+                            // Use "Total" as the key for region-level capacity usage
+                            team.manufacturing[currentRegion as "usa" | "asia"].capacityUsage["Total"] = val;
+                        }
+                    });
+                }
+                continue;
+            }
 
             if (label.startsWith("Tech")) {
                 teams.forEach((team, idx) => {
@@ -273,7 +294,6 @@ export const parseCesimData = (fileBuffer: ArrayBuffer): RoundData => {
                         } else if (currentSection === "contract" && (currentRegion === "usa" || currentRegion === "asia")) {
                             team.manufacturing[currentRegion as "usa" | "asia"].contract[label] = val;
                         } else if (currentSection === "capacityUsage" && (currentRegion === "usa" || currentRegion === "asia")) {
-                            // Ensure capacityUsage object exists (it might not be initialized in the map above if we didn't update the initial state)
                             if (!team.manufacturing[currentRegion as "usa" | "asia"].capacityUsage) {
                                 team.manufacturing[currentRegion as "usa" | "asia"].capacityUsage = {};
                             }
@@ -350,6 +370,19 @@ export const parseCesimData = (fileBuffer: ArrayBuffer): RoundData => {
 
             if (label === "USA" || label === "Asia" || label === "Europe") {
                 currentRegion = label.toLowerCase();
+
+                // Check if this region row has data (for region-level metrics like Logistics Cost)
+                const hasData = row.length > 1 && (typeof row[1] === 'number' || (typeof row[1] === 'string' && row[1].trim() !== ''));
+                if (hasData && currentMetric) {
+                    teams.forEach((team, idx) => {
+                        let val = row[idx + 1];
+                        if (typeof val === 'string') val = parseFloat(val.replace(/,/g, ''));
+                        if (typeof val === 'number' && !isNaN(val)) {
+                            // Store with metric name as key (abusing TechMetrics structure slightly but it works)
+                            team.costs[currentRegion as "usa" | "asia" | "europe"][currentMetric] = val;
+                        }
+                    });
+                }
                 continue;
             }
 

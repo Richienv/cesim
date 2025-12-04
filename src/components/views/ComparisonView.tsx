@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { TeamData } from '@/lib/types';
 import { calculateRankings, TeamRank } from '@/lib/ranking';
 import {
-    BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Legend, PieChart, Pie, Cell
+    BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Legend, PieChart, Pie, Cell, LabelList
 } from 'recharts';
 import { ArrowRightLeft, TrendingUp, DollarSign, Activity, Target, Users, Factory, Truck, AlertCircle, Scale, Box, Trophy, Medal } from 'lucide-react';
 import { clsx } from 'clsx';
@@ -285,42 +285,51 @@ export function ComparisonView({ teams }: ComparisonViewProps) {
                         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                             <h3 className="text-2xl font-bold text-gray-900">Regional Deep Dive</h3>
 
-                            {/* Tech Selector */}
-                            <div className="flex bg-gray-100 p-1 rounded-lg">
-                                {['All', 'Tech 1', 'Tech 2', 'Tech 3', 'Tech 4'].map(tech => (
-                                    <button
-                                        key={tech}
-                                        onClick={() => setSelectedTech(tech)}
-                                        className={clsx(
-                                            "px-4 py-1.5 text-base font-medium rounded-md transition-all",
-                                            selectedTech === tech
-                                                ? "bg-white text-gray-900 shadow-sm"
-                                                : "text-gray-500 hover:text-gray-700"
-                                        )}
-                                    >
-                                        {tech}
-                                    </button>
-                                ))}
+                            <div className="flex gap-4">
+                                {/* Region Tabs */}
+                                <div className="flex bg-gray-100 p-1 rounded-lg">
+                                    {['USA', 'Asia', 'Europe'].map(r => (
+                                        <button
+                                            key={r}
+                                            onClick={() => setSelectedRegion(r.toLowerCase() as any)}
+                                            className={clsx(
+                                                "px-4 py-1.5 text-base font-medium rounded-md transition-all",
+                                                selectedRegion === r.toLowerCase()
+                                                    ? "bg-white text-gray-900 shadow-sm"
+                                                    : "text-gray-500 hover:text-gray-700"
+                                            )}
+                                        >
+                                            {r}
+                                        </button>
+                                    ))}
+                                </div>
+
+                                {/* Tech Selector */}
+                                <div className="flex bg-gray-100 p-1 rounded-lg">
+                                    {['All', 'Tech 1', 'Tech 2', 'Tech 3', 'Tech 4'].map(tech => (
+                                        <button
+                                            key={tech}
+                                            onClick={() => setSelectedTech(tech)}
+                                            className={clsx(
+                                                "px-4 py-1.5 text-base font-medium rounded-md transition-all",
+                                                selectedTech === tech
+                                                    ? "bg-white text-gray-900 shadow-sm"
+                                                    : "text-gray-500 hover:text-gray-700"
+                                            )}
+                                        >
+                                            {tech}
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-1 gap-6">
-                            {['USA', 'Asia', 'Europe'].map(regionName => {
-                                const region = regionName.toLowerCase() as 'usa' | 'asia' | 'europe';
-                                return (
-                                    <RegionalComparisonTable
-                                        key={region}
-                                        regionName={regionName}
-                                        region={region}
-                                        teamA={teamA}
-                                        teamB={teamB}
-                                        cardOrder={cardOrder}
-                                        onMoveCard={handleMoveCard}
-                                        selectedTech={selectedTech}
-                                    />
-                                );
-                            })}
-                        </div>
+                        <RegionalAnalysis
+                            region={selectedRegion === 'global' ? 'usa' : selectedRegion} // Default to USA if global selected for deep dive
+                            teamA={teamA}
+                            teamB={teamB}
+                            selectedTech={selectedTech}
+                        />
                     </div>
 
                     {/* Chart Filters */}
@@ -401,43 +410,6 @@ export function ComparisonView({ teams }: ComparisonViewProps) {
                         </div>
                     </div>
 
-                    {/* Detailed Market Share Table */}
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                        <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
-                            <h4 className="font-semibold text-gray-900">Global Market Share Comparison</h4>
-                        </div>
-                        <div className="overflow-x-auto">
-                            <table className="w-full text-base text-left">
-                                <thead className="text-sm text-gray-500 uppercase bg-gray-50">
-                                    <tr>
-                                        <th className="px-6 py-3">Technology</th>
-                                        <th className="px-6 py-3 text-right text-blue-600">{teamA.name}</th>
-                                        <th className="px-6 py-3 text-right text-orange-600">{teamB.name}</th>
-                                        <th className="px-6 py-3 text-right">Diff</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {['Tech 1', 'Tech 2', 'Tech 3', 'Tech 4'].map(tech => {
-                                        const shareA = teamA.marketShare.global[tech] || 0;
-                                        const shareB = teamB.marketShare.global[tech] || 0;
-                                        const diff = shareA - shareB;
-
-                                        return (
-                                            <tr key={tech} className="border-b border-gray-100 last:border-0 hover:bg-gray-50">
-                                                <td className="px-6 py-4 font-medium text-gray-900">{tech}</td>
-                                                <td className="px-6 py-4 text-right font-medium">{shareA.toFixed(2)}%</td>
-                                                <td className="px-6 py-4 text-right font-medium">{shareB.toFixed(2)}%</td>
-                                                <td className={clsx("px-6 py-4 text-right font-bold", diff > 0 ? "text-green-600" : "text-red-600")}>
-                                                    {diff > 0 ? '+' : ''}{diff.toFixed(2)}%
-                                                </td>
-                                            </tr>
-                                        );
-                                    })}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
                     {/* NEW: Manufacturing & Logistics Comparison */}
                     <div className="space-y-6">
                         <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-wrap gap-4 items-center justify-between">
@@ -480,6 +452,45 @@ export function ComparisonView({ teams }: ComparisonViewProps) {
                             tech={manufTech}
                         />
                     </div>
+
+                    {/* Detailed Market Share Table */}
+                    <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                        <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
+                            <h4 className="font-semibold text-gray-900">Global Market Share Comparison</h4>
+                        </div>
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-base text-left">
+                                <thead className="text-sm text-gray-500 uppercase bg-gray-50">
+                                    <tr>
+                                        <th className="px-6 py-3">Technology</th>
+                                        <th className="px-6 py-3 text-right text-blue-600">{teamA.name}</th>
+                                        <th className="px-6 py-3 text-right text-orange-600">{teamB.name}</th>
+                                        <th className="px-6 py-3 text-right">Diff</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {['Tech 1', 'Tech 2', 'Tech 3', 'Tech 4'].map(tech => {
+                                        const shareA = teamA.marketShare.global[tech] || 0;
+                                        const shareB = teamB.marketShare.global[tech] || 0;
+                                        const diff = shareA - shareB;
+
+                                        return (
+                                            <tr key={tech} className="border-b border-gray-100 last:border-0 hover:bg-gray-50">
+                                                <td className="px-6 py-4 font-medium text-gray-900">{tech}</td>
+                                                <td className="px-6 py-4 text-right font-medium">{shareA.toFixed(2)}%</td>
+                                                <td className="px-6 py-4 text-right font-medium">{shareB.toFixed(2)}%</td>
+                                                <td className={clsx("px-6 py-4 text-right font-bold", diff > 0 ? "text-green-600" : "text-red-600")}>
+                                                    {diff > 0 ? '+' : ''}{diff.toFixed(2)}%
+                                                </td>
+                                            </tr>
+                                        );
+                                    })}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+
                 </>
             )}
 
@@ -487,184 +498,132 @@ export function ComparisonView({ teams }: ComparisonViewProps) {
     );
 }
 
-function RegionalComparisonTable({
-    regionName,
-    region,
-    teamA,
-    teamB,
-    cardOrder,
-    onMoveCard,
-    selectedTech
-}: {
-    regionName: string,
-    region: 'usa' | 'asia' | 'europe',
-    teamA: TeamData,
-    teamB: TeamData,
-    cardOrder: string[],
-    onMoveCard: (dragIndex: number, hoverIndex: number) => void,
-    selectedTech: string
-}) {
+function RegionalAnalysis({ region, teamA, teamB, selectedTech }: { region: 'usa' | 'asia' | 'europe', teamA: TeamData, teamB: TeamData, selectedTech: string }) {
     const allTechs = ['Tech 1', 'Tech 2', 'Tech 3', 'Tech 4'];
     const techs = selectedTech === 'All' ? allTechs : [selectedTech];
 
-    // Determine currencies
-    let localCurrency = '$';
-    if (region === 'asia') localCurrency = '¥';
-    if (region === 'europe') localCurrency = '€';
+    let currency = '$';
+    if (region === 'asia') currency = '¥';
+    if (region === 'europe') currency = '€';
 
-    const reportingCurrency = '$'; // Financials are in k USD
+    // Prepare data for all charts
+    const data = techs.map(tech => {
+        const priceA = teamA.prices?.[region]?.[tech] || 0;
+        const priceB = teamB.prices?.[region]?.[tech] || 0;
 
-    // Helper to get metrics
-    const getMetrics = (team: TeamData, tech: string) => {
-        const price = team.prices?.[region]?.[tech] || 0;
-        const share = team.marketShare[region]?.[tech] || 0;
+        const marginA = teamA.margins?.[region]?.[tech];
+        const marginB = teamB.margins?.[region]?.[tech];
 
-        const log = team.logistics[region]?.[tech];
-        const sales = log ? Math.abs(log.sales) : 0;
-        const exported = log?.exported || 0;
-        const buffer = log?.productionBuffer || 0;
-        const unmet = log?.unsatisfiedDemand || 0;
+        const salesA = Math.abs(teamA.logistics[region]?.[tech]?.sales || 0);
+        const salesB = Math.abs(teamB.logistics[region]?.[tech]?.sales || 0);
 
-        // Use parsed demand if available, otherwise calculate
-        const parsedDemand = team.demand?.[region]?.[tech] || 0;
-        const totalDemand = parsedDemand > 0 ? parsedDemand : (sales + unmet);
+        const costA = salesA > 0 ? (marginA?.variableCosts || 0) / salesA : 0;
+        const costB = salesB > 0 ? (marginB?.variableCosts || 0) / salesB : 0;
 
-        const marginData = team.margins?.[region]?.[tech];
-        const promotion = marginData?.promotion || 0;
-        const variableCosts = marginData?.variableCosts || 0;
+        const profitA = priceA - costA;
+        const profitB = priceB - costB;
 
-        const unitCost = sales > 0 ? variableCosts / sales : 0;
+        const shareA = teamA.marketShare[region]?.[tech] || 0;
+        const shareB = teamB.marketShare[region]?.[tech] || 0;
 
-        const features = team.features?.[region]?.[tech] || 0;
+        const promoA = marginA?.promotion || 0;
+        const promoB = marginB?.promotion || 0;
 
-        return { price, share, sales, exported, buffer, unmet, totalDemand, promotion, unitCost, features };
-    };
-
-    // Helper for rendering value with indicator
-    const renderValueWithIndicator = (val: number, compareVal: number, inverse: boolean = false, prefix: string = "", suffix: string = "", showIndicator: boolean = true) => {
-        if (val === compareVal || !showIndicator) return <>{prefix}{val.toFixed(inverse ? 2 : (Number.isInteger(val) ? 0 : 1))}{suffix}</>;
-
-        const isHigher = val > compareVal;
-        const isBetter = inverse ? val < compareVal : val > compareVal;
-
-        const Arrow = isHigher ? "↑" : "↓";
-        const colorClass = isBetter ? "text-green-600" : "text-red-600";
-
-        return (
-            <span className="flex items-center justify-end">
-                {prefix}{val.toFixed(inverse ? 2 : (Number.isInteger(val) ? 0 : 1))}{suffix}
-                <span className={`${colorClass} font-bold ml-1`}>{Arrow}</span>
-            </span>
-        );
-    };
+        return {
+            name: tech,
+            priceA, priceB,
+            costA, costB,
+            profitA, profitB,
+            shareA, shareB,
+            salesA, salesB,
+            promoA, promoB
+        };
+    });
 
     return (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-6">
-            <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
-                <h4 className="font-bold text-xl text-gray-900">{regionName}</h4>
-            </div>
-
-            <div className="overflow-x-auto">
-                <table className="w-full text-base">
-                    <thead className="bg-gray-50 text-sm text-gray-500 uppercase">
-                        <tr>
-                            <th className="px-3 py-3 text-left sticky left-0 bg-gray-50 z-10 border-r border-gray-200">Tech</th>
-                            {/* Cost */}
-                            <th className="px-3 py-3 text-right text-blue-600 bg-green-50/30 border-l border-gray-100">Cost A</th>
-                            <th className="px-3 py-3 text-right text-orange-600 bg-green-50/30">Cost B</th>
-                            {/* Price */}
-                            <th className="px-3 py-3 text-right text-blue-600 bg-blue-50/30 border-l border-gray-100">Price A</th>
-                            <th className="px-3 py-3 text-right text-orange-600 bg-blue-50/30">Price B</th>
-                            {/* Promo */}
-                            <th className="px-3 py-3 text-right text-blue-600 bg-purple-50/30 border-l border-gray-100">Promo A</th>
-                            <th className="px-3 py-3 text-right text-orange-600 bg-purple-50/30">Promo B</th>
-                            {/* Sales */}
-                            <th className="px-3 py-3 text-right text-blue-600 bg-blue-50/30 border-l border-gray-100">Sales A</th>
-                            <th className="px-3 py-3 text-right text-orange-600 bg-blue-50/30">Sales B</th>
-                            {/* Profit */}
-                            <th className="px-3 py-3 text-right text-blue-600 bg-green-50/30 border-l border-gray-100">Profit A</th>
-                            <th className="px-3 py-3 text-right text-orange-600 bg-green-50/30">Profit B</th>
-                            {/* Share */}
-                            <th className="px-3 py-3 text-right text-blue-600 bg-blue-50/30 border-l border-gray-100">Share A</th>
-                            <th className="px-3 py-3 text-right text-orange-600 bg-orange-50/30">Share B</th>
-                            {/* Demand */}
-                            <th className="px-3 py-3 text-right text-blue-600 bg-purple-50/30 border-l border-gray-100">Demand A</th>
-                            <th className="px-3 py-3 text-right text-orange-600 bg-purple-50/30">Demand B</th>
-                            {/* Features */}
-                            <th className="px-3 py-3 text-right text-blue-600 bg-blue-50/30 border-l border-gray-100">Feat A</th>
-                            <th className="px-3 py-3 text-right text-orange-600 bg-orange-50/30">Feat B</th>
-                            {/* Buffer */}
-                            <th className="px-3 py-3 text-right text-blue-600 bg-green-50/30 border-l border-gray-100">Buf A</th>
-                            <th className="px-3 py-3 text-right text-orange-600 bg-green-50/30">Buf B</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-50">
-                        {techs.map(tech => {
-                            const mA = getMetrics(teamA, tech);
-                            const mB = getMetrics(teamB, tech);
-
-                            const profitA = mA.price - mA.unitCost;
-                            const profitB = mB.price - mB.unitCost;
-
-                            if (mA.price === 0 && mB.price === 0) return null;
-                            return (
-                                <tr key={tech} className="hover:bg-gray-50/50">
-                                    <td className="px-3 py-3 font-medium text-sm sticky left-0 bg-white z-10 border-r border-gray-100">{tech}</td>
-                                    {/* Cost */}
-                                    <td className="px-3 py-3 text-right bg-green-50/5 border-l border-gray-100">{renderValueWithIndicator(mA.unitCost, mB.unitCost, true, localCurrency)}</td>
-                                    <td className="px-3 py-3 text-right bg-green-50/5">{renderValueWithIndicator(mB.unitCost, mA.unitCost, true, localCurrency, "", false)}</td>
-                                    {/* Price */}
-                                    <td className="px-3 py-3 text-right bg-blue-50/5 border-l border-gray-100">{renderValueWithIndicator(mA.price, mB.price, false, localCurrency)}</td>
-                                    <td className="px-3 py-3 text-right bg-orange-50/5">{renderValueWithIndicator(mB.price, mA.price, false, localCurrency, "", false)}</td>
-                                    {/* Promo */}
-                                    <td className="px-3 py-3 text-right bg-purple-50/5 border-l border-gray-100">{renderValueWithIndicator(mA.promotion, mB.promotion, false, reportingCurrency, "k")}</td>
-                                    <td className="px-3 py-3 text-right bg-purple-50/5">{renderValueWithIndicator(mB.promotion, mA.promotion, false, reportingCurrency, "k", false)}</td>
-                                    {/* Sales */}
-                                    <td className="px-3 py-3 text-right bg-blue-50/5 border-l border-gray-100">{renderValueWithIndicator(mA.sales, mB.sales, false, "", "k")}</td>
-                                    <td className="px-3 py-3 text-right bg-orange-50/5">{renderValueWithIndicator(mB.sales, mA.sales, false, "", "k", false)}</td>
-                                    {/* Profit */}
-                                    <td className="px-3 py-3 text-right bg-green-50/5 border-l border-gray-100">{renderValueWithIndicator(profitA, profitB, false, reportingCurrency)}</td>
-                                    <td className="px-3 py-3 text-right bg-green-50/5">{renderValueWithIndicator(profitB, profitA, false, reportingCurrency, "", false)}</td>
-                                    {/* Share */}
-                                    <td className="px-3 py-3 text-right bg-blue-50/5 border-l border-gray-100">{renderValueWithIndicator(mA.share, mB.share, false, "", "%")}</td>
-                                    <td className="px-3 py-3 text-right bg-orange-50/5">{renderValueWithIndicator(mB.share, mA.share, false, "", "%", false)}</td>
-                                    {/* Demand */}
-                                    <td className="px-3 py-3 text-right bg-purple-50/5 border-l border-gray-100">{renderValueWithIndicator(mA.totalDemand, mB.totalDemand)}</td>
-                                    <td className="px-3 py-3 text-right bg-purple-50/5">{renderValueWithIndicator(mB.totalDemand, mA.totalDemand, false, "", "", false)}</td>
-                                    {/* Features */}
-                                    <td className="px-3 py-3 text-right bg-blue-50/5 border-l border-gray-100">{renderValueWithIndicator(mA.features, mB.features)}</td>
-                                    <td className="px-3 py-3 text-right bg-orange-50/5">{renderValueWithIndicator(mB.features, mA.features, false, "", "", false)}</td>
-                                    {/* Buffer */}
-                                    <td className="px-3 py-3 text-right bg-green-50/5 border-l border-gray-100">{renderValueWithIndicator(mA.buffer, mB.buffer, true)}</td>
-                                    <td className="px-3 py-3 text-right bg-green-50/5">{renderValueWithIndicator(mB.buffer, mA.buffer, true, "", "", false)}</td>
-                                </tr>
-                            );
-                        })}
-                    </tbody>
-                </table>
-            </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <ComparisonBarChart
+                title={`Price Strategy (${currency})`}
+                data={data}
+                keys={['priceA', 'priceB']}
+                teamNames={[teamA.name, teamB.name]}
+                formatter={(val) => `${currency}${val}`}
+            />
+            <ComparisonBarChart
+                title={`Unit Cost (${currency})`}
+                data={data}
+                keys={['costA', 'costB']}
+                teamNames={[teamA.name, teamB.name]}
+                formatter={(val) => `${currency}${val.toFixed(1)}`}
+            />
+            <ComparisonBarChart
+                title={`Unit Profit (${currency})`}
+                data={data}
+                keys={['profitA', 'profitB']}
+                teamNames={[teamA.name, teamB.name]}
+                formatter={(val) => `${currency}${val.toFixed(1)}`}
+            />
+            <ComparisonBarChart
+                title="Market Share (%)"
+                data={data}
+                keys={['shareA', 'shareB']}
+                teamNames={[teamA.name, teamB.name]}
+                formatter={(val) => `${val.toFixed(1)}%`}
+            />
+            <ComparisonBarChart
+                title="Sales Volume (Units)"
+                data={data}
+                keys={['salesA', 'salesB']}
+                teamNames={[teamA.name, teamB.name]}
+                formatter={(val) => `${(val / 1000).toFixed(1)}k`}
+            />
+            <ComparisonBarChart
+                title="Promotion Spend ($)"
+                data={data}
+                keys={['promoA', 'promoB']}
+                teamNames={[teamA.name, teamB.name]}
+                formatter={(val) => `$${(val / 1000).toFixed(0)}k`}
+            />
         </div>
     );
 }
 
-function ComparisonCard({ title, valA, valB, format, icon }: { title: string, valA: number, valB: number, format: (v: number) => string, icon: React.ReactNode }) {
-    const diff = valA - valB;
-    const isPositive = diff > 0;
-
+function ComparisonBarChart({ title, data, keys, teamNames, formatter }: {
+    title: string,
+    data: any[],
+    keys: [string, string],
+    teamNames: [string, string],
+    formatter: (val: number) => string
+}) {
     return (
-        <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
-            <div className="flex justify-between items-start mb-4">
-                <p className="text-base font-medium text-gray-500">{title}</p>
-                {icon}
-            </div>
-            <div className="flex justify-between items-end">
-                <div>
-                    <div className="text-3xl font-bold text-gray-900">{format(valA)}</div>
-                    <div className="text-sm text-gray-400 mt-1">vs {format(valB)}</div>
-                </div>
-                <div className={clsx("flex items-center text-base font-medium", isPositive ? "text-green-600" : "text-red-600")}>
-                    {isPositive ? '+' : ''}{format(diff)}
-                </div>
+        <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+            <h4 className="text-lg font-semibold text-gray-700 mb-4 text-center">{title}</h4>
+            <div className="h-[250px]">
+                <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={data} margin={{ top: 20, right: 5, left: -10, bottom: 5 }}>
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                        <XAxis dataKey="name" tick={{ fontSize: 12 }} />
+                        <YAxis tick={{ fontSize: 12 }} tickFormatter={(val) => formatter(val).replace(/[^\d\w.%]/g, '')} />
+                        <Tooltip formatter={formatter} />
+                        <Legend wrapperStyle={{ fontSize: '12px' }} />
+                        <Bar name={teamNames[0]} dataKey={keys[0]} fill="#3b82f6" radius={[4, 4, 0, 0]}>
+                            <LabelList
+                                dataKey={keys[0]}
+                                position="top"
+                                formatter={(val: any) => formatter(val)}
+                                style={{ fontSize: '10px', fill: '#666' }}
+                            />
+                        </Bar>
+                        <Bar name={teamNames[1]} dataKey={keys[1]} fill="#f97316" radius={[4, 4, 0, 0]}>
+                            <LabelList
+                                dataKey={keys[1]}
+                                position="top"
+                                formatter={(val: any) => formatter(val)}
+                                style={{ fontSize: '10px', fill: '#666' }}
+                            />
+                        </Bar>
+                    </BarChart>
+                </ResponsiveContainer>
             </div>
         </div>
     );
