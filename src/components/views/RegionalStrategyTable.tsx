@@ -20,6 +20,27 @@ export function RegionalStrategyTable({ teams, region }: RegionalStrategyTablePr
     const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
 
     const [hideZeroProfit, setHideZeroProfit] = useState(false);
+    const [onlyMomentum, setOnlyMomentum] = useState(false);
+
+    const [predictions, setPredictions] = useState<Record<string, { price?: number; marketing?: number; features?: number }>>({});
+
+    const handlePredictionChange = (teamName: string, tech: string, field: 'price' | 'marketing' | 'features', value: string) => {
+        const key = `${teamName}-${tech}`;
+        const numValue = parseFloat(value);
+
+        setPredictions(prev => {
+            const current = prev[key] || {};
+            const updated = { ...current, [field]: isNaN(numValue) ? undefined : numValue };
+
+            // Clean up empty predictions
+            if (updated.price === undefined && updated.marketing === undefined && updated.features === undefined) {
+                const { [key]: _, ...rest } = prev;
+                return rest;
+            }
+
+            return { ...prev, [key]: updated };
+        });
+    };
 
     const handleSort = (key: SortKey) => {
         if (sortKey === key) {
@@ -89,15 +110,33 @@ export function RegionalStrategyTable({ teams, region }: RegionalStrategyTablePr
                     <h4 className="font-bold text-blue-900">Strategy Focus: All Teams</h4>
                     <p className="text-sm text-blue-700">Comparing Momentum with <strong>all teams</strong>. Your strategy: <strong>{momentumStrategy}</strong>.</p>
                 </div>
-                <label className="flex items-center gap-2 cursor-pointer select-none">
-                    <input
-                        type="checkbox"
-                        checked={hideZeroProfit}
-                        onChange={(e) => setHideZeroProfit(e.target.checked)}
-                        className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
-                    />
-                    <span className="text-sm font-medium text-blue-900">Hide Zero Profit</span>
-                </label>
+                <div className="flex items-center gap-4">
+                    <button
+                        onClick={() => setPredictions({})}
+                        className="px-3 py-1 text-sm font-medium text-red-600 bg-red-50 hover:bg-red-100 rounded-md border border-red-200 transition-colors"
+                        disabled={Object.keys(predictions).length === 0}
+                    >
+                        Reset Predictions
+                    </button>
+                    <label className="flex items-center gap-2 cursor-pointer select-none">
+                        <input
+                            type="checkbox"
+                            checked={onlyMomentum}
+                            onChange={(e) => setOnlyMomentum(e.target.checked)}
+                            className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                        />
+                        <span className="text-sm font-medium text-blue-900">Only Momentum</span>
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer select-none">
+                        <input
+                            type="checkbox"
+                            checked={hideZeroProfit}
+                            onChange={(e) => setHideZeroProfit(e.target.checked)}
+                            className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                        />
+                        <span className="text-sm font-medium text-blue-900">Hide Zero Profit</span>
+                    </label>
+                </div>
             </div>
 
             {techs.map(tech => {
@@ -112,67 +151,93 @@ export function RegionalStrategyTable({ teams, region }: RegionalStrategyTablePr
                     const mData = rMargins?.[tech];
                     const lData = rLogistics?.[tech];
 
-                    const qty = Math.abs(lData?.sales || 0);
-                    const rev = mData?.sales || 0;
-                    const profit = mData?.grossProfit || 0;
-                    const promotion = mData?.promotion || 0;
-                    const price = rPrices?.[tech] || 0;
-                    const features = rFeatures?.[tech] || 0;
+                    // Actual Values (Raw USD from Parser)
+                    const actualQty = Math.abs(lData?.sales || 0);
+                    const actualRevUSD = mData?.sales || 0;
+                    const actualProfitUSD = mData?.grossProfit || 0;
+                    const actualPromotionUSD = mData?.promotion || 0;
+                    const actualPriceLocal = rPrices?.[tech] || 0;
+                    const actualFeatures = rFeatures?.[tech] || 0;
                     const share = rMarketShare?.[tech] || 0;
-                    const unitCost = qty > 0 ? (mData?.variableCosts || 0) / qty : 0;
+                    const unitCostUSD = actualQty > 0 ? (mData?.variableCosts || 0) / actualQty : 0;
 
-                    // Production Unit Cost Logic
-                    // Try to find where they produce this tech
-                    const prodCostUSA = team.manufacturing.usa.productionCost?.[tech] || 0;
-                    const prodCostAsia = team.manufacturing.asia.productionCost?.[tech] || 0;
+                    // Currency Conversion Logic
+                    // Margins are in USD, Prices are in Local Currency.
+                    // Calculate Exchange Rate: Local Price / Implied USD Price
+                    const impliedPriceUSD = actualQty > 0 ? actualRevUSD / actualQty : 0;
+                    const exchangeRate = (impliedPriceUSD > 0 && actualPriceLocal > 0) ? actualPriceLocal / impliedPriceUSD : 1;
 
-                    // Simple heuristic: If they produce in region, use that. Else default to Asia (common hub) or USA.
-                    // If region is Europe, they likely import.
-                    let pUnitCost = 0;
-                    if (region === 'usa') {
-                        pUnitCost = prodCostUSA > 0 ? prodCostUSA : prodCostAsia;
-                    } else if (region === 'asia') {
-                        pUnitCost = prodCostAsia > 0 ? prodCostAsia : prodCostUSA;
-                    } else { // Europe
-                        // Fallback to where they have production cost
-                        pUnitCost = prodCostAsia > 0 ? prodCostAsia : prodCostUSA;
-                    }
+                    // Display Values:
+                    // Unit Cost -> Convert to Local (to match Price magnitude)
+                    // Profit/EBITDA -> Keep in USD (to match Dashboard)
+                    const unitCostLocal = unitCostUSD * exchangeRate;
 
-                    // Allocation Logic
-                    const regionTotalSales = Object.values(rMargins || {}).reduce((sum, item) => sum + item.sales, 0);
-                    const revShare = regionTotalSales > 0 ? rev / regionTotalSales : 0;
-                    const regionEBITDA = team.financials.incomeStatement[region].ebitda || 0;
-                    const regionNetProfit = team.financials.incomeStatement[region].netProfit || 0;
+                    // Allocation Logic (USD)
+                    const regionTotalSalesUSD = Object.values(rMargins || {}).reduce((sum, item) => sum + item.sales, 0);
+                    const revShare = regionTotalSalesUSD > 0 ? actualRevUSD / regionTotalSalesUSD : 0;
+                    const regionEBITDA_USD = team.financials.incomeStatement[region].ebitda || 0;
+                    const regionNetProfit_USD = team.financials.incomeStatement[region].netProfit || 0;
 
-                    const regionContribution = Object.values(rMargins || {}).reduce((sum, item) => sum + (item.grossProfit - item.promotion), 0);
-                    const regionFixedCosts = regionContribution - regionEBITDA;
-                    const regionNonOpCosts = regionEBITDA - regionNetProfit;
+                    const regionContributionUSD = Object.values(rMargins || {}).reduce((sum, item) => sum + (item.grossProfit - item.promotion), 0);
+                    const regionFixedCostsUSD = regionContributionUSD - regionEBITDA_USD;
+                    const regionNonOpCostsUSD = regionEBITDA_USD - regionNetProfit_USD;
 
-                    const allocatedFixed = regionFixedCosts * revShare;
-                    const allocatedNonOp = regionNonOpCosts * revShare;
+                    const allocatedFixedUSD = regionFixedCostsUSD * revShare;
+                    const allocatedNonOpUSD = regionNonOpCostsUSD * revShare;
 
-                    const techContribution = profit - promotion;
-                    const techEBITDA = techContribution - allocatedFixed;
-                    const techNetProfit = techEBITDA - allocatedNonOp;
+                    // Prediction Logic
+                    const predKey = `${team.name}-${tech}`;
+                    const pred = predictions[predKey];
+                    const isPredicted = !!pred;
+
+                    // Inputs are in Local Currency (Price) or USD (Marketing? No, Marketing is usually USD in parser)
+                    // Wait, Marketing (Promotion) in Parser is USD.
+                    // User input for Marketing should probably be USD to match Dashboard?
+                    // But if Price is RMB, maybe Marketing should be RMB?
+                    // Let's assume Marketing Input is USD (since it was 100k, not 800k).
+                    // Actually, let's keep Marketing in USD for consistency with Profit.
+
+                    const priceLocal = pred?.price !== undefined ? pred.price : actualPriceLocal;
+                    const marketingUSD = pred?.marketing !== undefined ? pred.marketing : actualPromotionUSD;
+                    const features = pred?.features !== undefined ? pred.features : actualFeatures;
+                    const sales = actualQty; // Sales is no longer an input
+
+                    // Recalculate derived metrics
+                    // We need to calculate in one currency, then convert if needed.
+                    // Let's calculate in Local Currency (since Price and Unit Cost are Local), then convert Profit back to USD.
+
+                    const revenueLocal = priceLocal * sales;
+                    const cogsLocal = unitCostLocal * sales;
+                    const grossProfitLocal = revenueLocal - cogsLocal;
+
+                    // Convert Gross Profit back to USD for display
+                    const grossProfitUSD = exchangeRate > 0 ? grossProfitLocal / exchangeRate : 0;
+
+                    const techContributionUSD = grossProfitUSD - marketingUSD;
+                    const techEBITDA_USD = techContributionUSD - allocatedFixedUSD;
+                    const techNetProfit_USD = techEBITDA_USD - allocatedNonOpUSD;
 
                     return {
                         team,
                         name: team.name,
-                        pUnitCost,
-                        unitCost,
-                        price,
+                        isPredicted,
+                        predKey,
+
+                        unitCost: unitCostLocal, // Display in Local
+                        price: priceLocal,       // Display in Local
                         features,
                         share,
-                        sales: qty,
-                        marketing: promotion,
-                        contribution: techContribution,
-                        ebitda: techEBITDA,
-                        netProfit: techNetProfit
+                        sales,
+                        marketing: marketingUSD, // Display in USD
+                        contribution: techContributionUSD, // Display in USD
+                        ebitda: techEBITDA_USD,           // Display in USD
+                        netProfit: techNetProfit_USD      // Display in USD
                     };
                 });
 
                 // Filter data
                 const filteredData = tableData.filter(row => {
+                    if (onlyMomentum && row.name !== 'Momentum') return false;
                     if (hideZeroProfit && Math.abs(row.netProfit) < 1) return false;
                     return true;
                 });
@@ -211,9 +276,7 @@ export function RegionalStrategyTable({ teams, region }: RegionalStrategyTablePr
                                         <th className="px-4 py-3 text-right" onClick={() => handleSort('unitCost')}>
                                             <div className="flex items-center justify-end">Unit Cost <SortIcon column="unitCost" /></div>
                                         </th>
-                                        <th className="px-4 py-3 text-right" onClick={() => handleSort('pUnitCost' as any)}>
-                                            <div className="flex items-center justify-end">P.Unit Cost <SortIcon column={'pUnitCost' as any} /></div>
-                                        </th>
+
                                         <th className="px-4 py-3 text-right" onClick={() => handleSort('price')}>
                                             <div className="flex items-center justify-end">Price <SortIcon column="price" /></div>
                                         </th>
@@ -244,21 +307,41 @@ export function RegionalStrategyTable({ teams, region }: RegionalStrategyTablePr
                                     {sortedData.map((row) => {
                                         const isMomentum = row.name === 'Momentum';
                                         return (
-                                            <tr key={row.name} className={clsx("hover:bg-gray-50", isMomentum ? "bg-blue-50/30" : "")}>
+                                            <tr key={row.name} className={clsx(
+                                                "hover:bg-gray-50 transition-colors",
+                                                row.isPredicted ? "bg-red-50" : (isMomentum ? "bg-blue-50/30" : "")
+                                            )}>
                                                 <td className={clsx("px-4 py-3 font-medium", isMomentum ? "text-blue-700 font-bold" : "text-gray-900")}>
                                                     {row.name}
                                                 </td>
                                                 <td className="px-4 py-3 text-right text-gray-600">
                                                     {currency}{row.unitCost.toFixed(0)}
                                                 </td>
-                                                <td className="px-4 py-3 text-right text-gray-600">
-                                                    {currency}{row.pUnitCost.toFixed(0)}
+                                                <td className="px-4 py-3 text-right">
+                                                    <div className="flex items-center justify-end gap-2">
+                                                        <span className="text-gray-500 text-xs">{currency}{row.price.toFixed(0)}</span>
+                                                        <span className="text-gray-400">→</span>
+                                                        <input
+                                                            type="number"
+                                                            className="w-20 text-right p-1 border border-gray-200 rounded text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-300"
+                                                            placeholder={row.price.toFixed(0)}
+                                                            value={predictions[row.predKey]?.price ?? ''}
+                                                            onChange={(e) => handlePredictionChange(row.name, tech, 'price', e.target.value)}
+                                                        />
+                                                    </div>
                                                 </td>
-                                                <td className="px-4 py-3 text-right text-gray-600">
-                                                    {currency}{row.price.toFixed(0)}
-                                                </td>
-                                                <td className="px-4 py-3 text-right text-gray-600">
-                                                    {row.features}
+                                                <td className="px-4 py-3 text-right">
+                                                    <div className="flex items-center justify-end gap-2">
+                                                        <span className="text-gray-500 text-xs">{row.features}</span>
+                                                        <span className="text-gray-400">→</span>
+                                                        <input
+                                                            type="number"
+                                                            className="w-16 text-right p-1 border border-gray-200 rounded text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-300"
+                                                            placeholder={row.features.toString()}
+                                                            value={predictions[row.predKey]?.features ?? ''}
+                                                            onChange={(e) => handlePredictionChange(row.name, tech, 'features', e.target.value)}
+                                                        />
+                                                    </div>
                                                 </td>
                                                 <td className="px-4 py-3 text-right text-gray-600">
                                                     {row.share.toFixed(1)}%
@@ -266,8 +349,21 @@ export function RegionalStrategyTable({ teams, region }: RegionalStrategyTablePr
                                                 <td className="px-4 py-3 text-right text-gray-600">
                                                     {(row.sales / 1000).toFixed(0)}k
                                                 </td>
-                                                <td className="px-4 py-3 text-right text-gray-600">
-                                                    {currency}{(row.marketing / 1000).toFixed(0)}k
+                                                <td className="px-4 py-3 text-right">
+                                                    <div className="flex items-center justify-end gap-2">
+                                                        <span className="text-gray-500 text-xs">{currency}{(row.marketing / 1000).toFixed(0)}k</span>
+                                                        <span className="text-gray-400">→</span>
+                                                        <div className="flex items-center">
+                                                            <input
+                                                                type="number"
+                                                                className="w-16 text-right p-1 border border-gray-200 rounded text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-300"
+                                                                placeholder={(row.marketing / 1000).toFixed(0)}
+                                                                value={predictions[row.predKey]?.marketing ? (predictions[row.predKey]!.marketing! / 1000).toString() : ''}
+                                                                onChange={(e) => handlePredictionChange(row.name, tech, 'marketing', (parseFloat(e.target.value) * 1000).toString())}
+                                                            />
+                                                            <span className="text-xs text-gray-400 ml-1">k</span>
+                                                        </div>
+                                                    </div>
                                                 </td>
                                                 <td className={clsx("px-4 py-3 text-right font-bold", row.contribution >= 0 ? "text-green-600" : "text-red-600")}>
                                                     {currency}{(row.contribution / 1000).toFixed(0)}k
