@@ -132,7 +132,16 @@ export const parseCesimData = (fileBuffer: ArrayBuffer): RoundData => {
         if (section.type === "financials") {
             const regionKey = section.region as 'global' | 'usa' | 'asia' | 'europe';
             if (section.subtype === "incomeStatement") {
-                extractSimpleBlock(section.index, endIndex, (t, k, v) => t.financials.incomeStatement[regionKey][k] = v);
+                extractSimpleBlock(section.index, endIndex, (t, k, v) => {
+                    t.financials.incomeStatement[regionKey][k] = v;
+                    // Map specific keys to explicit properties for easier access
+                    if (k === "Transportation and tariffs") t.financials.incomeStatement[regionKey].transportationAndTariffs = v;
+                    if (k === "Income taxes") t.financials.incomeStatement[regionKey].incomeTax = v;
+                    if (k === "Profit for the round") t.financials.incomeStatement[regionKey].netProfit = v;
+                    if (k === "Operating profit before depreciation (EBITDA)" || k === "息税折旧及摊销前利润(EBITDA)") t.financials.incomeStatement[regionKey].ebitda = v;
+                    if (k === "Operating profit (EBIT)" || k === "息税前利润(EBIT)") t.financials.incomeStatement[regionKey].ebit = v;
+                    if (k === "Profit before taxes" || k === "税前利润") t.financials.incomeStatement[regionKey].profitBeforeTax = v;
+                });
             } else if (section.subtype === "balanceSheet") {
                 extractSimpleBlock(section.index, endIndex, (t, k, v) => t.financials.balanceSheet[regionKey][k] = v);
             } else if (section.subtype === "cashFlow") {
@@ -260,44 +269,82 @@ export const parseCesimData = (fileBuffer: ArrayBuffer): RoundData => {
 
             if (label.includes("In-house manufacturing")) { currentSection = "inHouse"; continue; }
             if (label.includes("Contract manufacturing")) { currentSection = "contract"; continue; }
+            // NEW: Parse Production Cost Section
+            if (label.includes("In-house manufacturing cost per unit") || label.includes("单件产品的自身生产成本")) {
+                currentSection = "productionCost";
+                continue;
+            }
             if (label.includes("Capacity usage")) { currentSection = "capacityUsage"; continue; }
 
-            if (label === "USA" || label === "Asia") {
+            // NEW: Parse Factory Count Section
+            if (label.includes("Number of plants") || label.includes("工厂数量")) {
+                currentSection = "factories";
+                continue;
+            }
+
+            if (label.includes("This round") || label.includes("本回合")) {
+                if (currentSection === "factories") currentSection = "factories_current";
+                continue;
+            }
+
+            if (label.includes("Next round") || label.includes("下回合")) {
+                if (currentSection === "factories_current") currentSection = "factories_next";
+                continue;
+            }
+
+            // Now handle the data parsing for factories_current
+            if ((label === "USA" || label === "Asia") && currentSection === "factories_current") {
+                teams.forEach((team, idx) => {
+                    let val = row[idx + 1];
+                    if (typeof val === 'string') val = parseFloat(val.replace(/,/g, ''));
+                    if (typeof val === 'number' && !isNaN(val)) {
+                        team.manufacturing[currentRegion as "usa" | "asia"].factories = val;
+                    }
+                });
+                continue;
+            }
+
+            if (label === "USA" || label === "Asia" || label === "Europe") {
                 currentRegion = label.toLowerCase();
 
                 // Check if this region row itself has data (common for Capacity Usage)
                 const hasData = row.length > 1 && (typeof row[1] === 'number' || (typeof row[1] === 'string' && row[1].trim() !== ''));
-                if (hasData && currentSection === "capacityUsage") {
-                    teams.forEach((team, idx) => {
-                        let val = row[idx + 1];
-                        if (typeof val === 'string') val = parseFloat(val.replace(/,/g, ''));
-                        if (typeof val === 'number' && !isNaN(val)) {
-                            // Ensure capacityUsage object exists
-                            if (!team.manufacturing[currentRegion as "usa" | "asia"].capacityUsage) {
-                                team.manufacturing[currentRegion as "usa" | "asia"].capacityUsage = {};
+
+                if (hasData) {
+                    if (currentSection === "capacityUsage") {
+                        teams.forEach((team, idx) => {
+                            let val = row[idx + 1];
+                            if (typeof val === 'string') val = parseFloat(val.replace(/,/g, ''));
+                            if (typeof val === 'number' && !isNaN(val)) {
+                                if ((currentRegion === "usa" || currentRegion === "asia") && !team.manufacturing[currentRegion].capacityUsage) {
+                                    team.manufacturing[currentRegion].capacityUsage = {};
+                                }
+                                if (currentRegion === "usa" || currentRegion === "asia") {
+                                    team.manufacturing[currentRegion].capacityUsage!["Total"] = val;
+                                }
                             }
-                            // Use "Total" as the key for region-level capacity usage
-                            team.manufacturing[currentRegion as "usa" | "asia"].capacityUsage["Total"] = val;
-                        }
-                    });
+                        });
+                    }
                 }
                 continue;
             }
 
             if (label.startsWith("Tech")) {
+                const techKey = label.replace("Tech ", "Tech"); // "Tech 1" -> "Tech1"
+
                 teams.forEach((team, idx) => {
                     let val = row[idx + 1];
                     if (typeof val === 'string') val = parseFloat(val.replace(/,/g, ''));
                     if (typeof val === 'number' && !isNaN(val)) {
                         if (currentSection === "inHouse" && (currentRegion === "usa" || currentRegion === "asia")) {
-                            team.manufacturing[currentRegion as "usa" | "asia"].inHouse[label] = val;
+                            team.manufacturing[currentRegion].inHouse[techKey] = val;
                         } else if (currentSection === "contract" && (currentRegion === "usa" || currentRegion === "asia")) {
-                            team.manufacturing[currentRegion as "usa" | "asia"].contract[label] = val;
+                            team.manufacturing[currentRegion].contract[techKey] = val;
                         } else if (currentSection === "capacityUsage" && (currentRegion === "usa" || currentRegion === "asia")) {
-                            if (!team.manufacturing[currentRegion as "usa" | "asia"].capacityUsage) {
-                                team.manufacturing[currentRegion as "usa" | "asia"].capacityUsage = {};
+                            if (!team.manufacturing[currentRegion].capacityUsage) {
+                                team.manufacturing[currentRegion].capacityUsage = {};
                             }
-                            team.manufacturing[currentRegion as "usa" | "asia"].capacityUsage[label] = val;
+                            team.manufacturing[currentRegion].capacityUsage[label] = val;
                         }
                     }
                 });
@@ -387,12 +434,21 @@ export const parseCesimData = (fileBuffer: ArrayBuffer): RoundData => {
             }
 
             if (label.startsWith("Tech") && currentRegion && currentMetric) {
+                const techKey = label.replace("Tech ", "Tech"); // "Tech 1" -> "Tech1"
                 teams.forEach((team, idx) => {
                     let val = row[idx + 1];
                     if (typeof val === 'string') val = parseFloat(val.replace(/,/g, ''));
                     if (typeof val === 'number' && !isNaN(val)) {
                         const key = `${currentMetric} - ${label}`;
                         team.costs[currentRegion as "usa" | "asia" | "europe"][key] = val;
+
+                        // NEW: Populate structured productionCost
+                        if (currentMetric.includes("In-house manufacturing cost per unit") && (currentRegion === "usa" || currentRegion === "asia")) {
+                            if (!team.manufacturing[currentRegion].productionCost) {
+                                team.manufacturing[currentRegion].productionCost = {};
+                            }
+                            team.manufacturing[currentRegion].productionCost![techKey] = val;
+                        }
                     }
                 });
             }
@@ -441,8 +497,12 @@ export const parseCesimData = (fileBuffer: ArrayBuffer): RoundData => {
 
     // Populate legacy metrics
     teams.forEach(team => {
-        Object.entries(team.financials.incomeStatement.global).forEach(([k, v]) => team.metrics["Financials"][k] = v);
-        Object.entries(team.market.global).forEach(([k, v]) => team.metrics["Market"][k] = v);
+        Object.entries(team.financials.incomeStatement.global).forEach(([k, v]) => {
+            if (v !== undefined) team.metrics["Financials"][k] = v;
+        });
+        Object.entries(team.market.global).forEach(([k, v]) => {
+            if (v !== undefined) team.metrics["Market"][k] = v;
+        });
     });
 
     return {

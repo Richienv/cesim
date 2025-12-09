@@ -8,6 +8,10 @@ import { ArrowRightLeft, TrendingUp, DollarSign, Activity, Target, Users, Factor
 import { clsx } from 'clsx';
 import { ComparisonPieCharts } from './ComparisonPieCharts';
 import { ManufacturingPieCharts } from './ManufacturingPieCharts';
+import { DetailedMarketAnalysis } from './DetailedMarketAnalysis';
+import { RegionalStrategyTable } from './RegionalStrategyTable';
+import { HiddenInsightsTable } from './HiddenInsightsTable';
+import { LogisticsComparisonTable } from './LogisticsComparisonTable';
 
 interface ComparisonViewProps {
     teams: TeamData[];
@@ -244,254 +248,47 @@ export function ComparisonView({ teams }: ComparisonViewProps) {
                     </div>
                 </div>
             ) : (
-                <>
-                    {/* Team Selectors */}
-                    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                        <div className="flex flex-col md:flex-row items-center justify-center gap-8">
-                            <div className="w-full md:w-1/3">
-                                <label className="block text-base font-medium text-gray-700 mb-2">Team A (Baseline)</label>
-                                <select
-                                    value={teamAId}
-                                    onChange={(e) => setTeamAId(e.target.value)}
-                                    className="w-full p-3 bg-blue-50 border border-blue-200 rounded-lg text-gray-900 font-medium focus:ring-blue-500 focus:border-blue-500"
-                                >
-                                    {teams.map(t => <option key={t.name} value={t.name}>{t.name}</option>)}
-                                </select>
-                            </div>
-
-                            <div className="flex items-center justify-center">
-                                <div className="p-3 bg-gray-100 rounded-full">
-                                    <ArrowRightLeft className="text-gray-500" />
-                                </div>
-                            </div>
-
-                            <div className="w-full md:w-1/3">
-                                <label className="block text-base font-medium text-gray-700 mb-2">Team B (Competitor)</label>
-                                <select
-                                    value={teamBId}
-                                    onChange={(e) => setTeamBId(e.target.value)}
-                                    className="w-full p-3 bg-orange-50 border border-orange-200 rounded-lg text-gray-900 font-medium focus:ring-orange-500 focus:border-orange-500"
-                                >
-                                    {teams.map(t => <option key={t.name} value={t.name}>{t.name}</option>)}
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-
-
+                <div className="space-y-6">
                     {/* Regional Deep Dive */}
-                    <div className="space-y-6">
-                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                            <h3 className="text-2xl font-bold text-gray-900">Regional Deep Dive</h3>
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                        <h3 className="text-2xl font-bold text-gray-900">Regional Deep Dive (Momentum)</h3>
 
-                            <div className="flex gap-4">
-                                {/* Region Tabs */}
-                                <div className="flex bg-gray-100 p-1 rounded-lg">
-                                    {['USA', 'Asia', 'Europe'].map(r => (
-                                        <button
-                                            key={r}
-                                            onClick={() => setSelectedRegion(r.toLowerCase() as any)}
-                                            className={clsx(
-                                                "px-4 py-1.5 text-base font-medium rounded-md transition-all",
-                                                selectedRegion === r.toLowerCase()
-                                                    ? "bg-white text-gray-900 shadow-sm"
-                                                    : "text-gray-500 hover:text-gray-700"
-                                            )}
-                                        >
-                                            {r}
-                                        </button>
-                                    ))}
-                                </div>
-
-                                {/* Tech Selector */}
-                                <div className="flex bg-gray-100 p-1 rounded-lg">
-                                    {['All', 'Tech 1', 'Tech 2', 'Tech 3', 'Tech 4'].map(tech => (
-                                        <button
-                                            key={tech}
-                                            onClick={() => setSelectedTech(tech)}
-                                            className={clsx(
-                                                "px-4 py-1.5 text-base font-medium rounded-md transition-all",
-                                                selectedTech === tech
-                                                    ? "bg-white text-gray-900 shadow-sm"
-                                                    : "text-gray-500 hover:text-gray-700"
-                                            )}
-                                        >
-                                            {tech}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
-
-                        <RegionalAnalysis
-                            region={selectedRegion === 'global' ? 'usa' : selectedRegion} // Default to USA if global selected for deep dive
-                            teamA={teamA}
-                            teamB={teamB}
-                            selectedTech={selectedTech}
-                        />
-                    </div>
-
-                    {/* Chart Filters */}
-                    <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-6 flex flex-wrap gap-4 items-center justify-between">
-                        <h3 className="text-lg font-bold text-gray-900">Performance Overview</h3>
                         <div className="flex gap-4">
-                            {/* Region Selector */}
-                            <select
-                                value={selectedRegion}
-                                onChange={(e) => setSelectedRegion(e.target.value as any)}
-                                className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 focus:ring-blue-500 focus:border-blue-500"
-                            >
-                                <option value="global">Global</option>
-                                <option value="usa">USA</option>
-                                <option value="asia">Asia</option>
-                                <option value="europe">Europe</option>
-                            </select>
-
-                            {/* Tech Selector */}
-                            <select
-                                value={selectedTech}
-                                onChange={(e) => setSelectedTech(e.target.value)}
-                                className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 focus:ring-blue-500 focus:border-blue-500"
-                            >
-                                <option value="All">All Technologies</option>
-                                <option value="Tech 1">Tech 1</option>
-                                <option value="Tech 2">Tech 2</option>
-                                <option value="Tech 3">Tech 3</option>
-                                <option value="Tech 4">Tech 4</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    {/* Comparison Pie Charts */}
-                    <ComparisonPieCharts
-                        teamA={teamA}
-                        teamB={teamB}
-                        region={selectedRegion}
-                        tech={selectedTech}
-                    />
-
-                    {/* Charts */}
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        {/* Financial Bar Chart */}
-                        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                            <h3 className="text-xl font-semibold text-gray-900 mb-6">Financial Comparison</h3>
-                            <div className="h-[350px]">
-                                <ResponsiveContainer width="100%" height="100%">
-                                    <BarChart data={financialComparisonData}>
-                                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                                        <XAxis dataKey="name" />
-                                        <YAxis tickFormatter={(val) => `$${val / 1000}k`} />
-                                        <Tooltip formatter={(val: number) => `$${val.toLocaleString()}`} />
-                                        <Legend />
-                                        <Bar name={teamA.name} dataKey="A" fill="#3b82f6" radius={[4, 4, 0, 0]} />
-                                        <Bar name={teamB.name} dataKey="B" fill="#f97316" radius={[4, 4, 0, 0]} />
-                                    </BarChart>
-                                </ResponsiveContainer>
-                            </div>
-                        </div>
-
-                        {/* Strategy Radar Chart */}
-                        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                            <h3 className="text-xl font-semibold text-gray-900 mb-6">Strategy Profile</h3>
-                            <div className="h-[350px]">
-                                <ResponsiveContainer width="100%" height="100%">
-                                    <RadarChart cx="50%" cy="50%" outerRadius="80%" data={radarData}>
-                                        <PolarGrid />
-                                        <PolarAngleAxis dataKey="subject" />
-                                        <PolarRadiusAxis angle={30} domain={[0, 100]} tick={false} />
-                                        <Radar name={teamA.name} dataKey="A" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.3} />
-                                        <Radar name={teamB.name} dataKey="B" stroke="#f97316" fill="#f97316" fillOpacity={0.3} />
-                                        <Legend />
-                                        <Tooltip formatter={(val: number) => val.toFixed(0)} />
-                                    </RadarChart>
-                                </ResponsiveContainer>
+                            {/* Region Tabs */}
+                            <div className="flex bg-gray-100 p-1 rounded-lg">
+                                {['USA', 'Asia', 'Europe'].map(r => (
+                                    <button
+                                        key={r}
+                                        onClick={() => setSelectedRegion(r.toLowerCase() as any)}
+                                        className={clsx(
+                                            "px-4 py-1.5 text-base font-medium rounded-md transition-all",
+                                            selectedRegion === r.toLowerCase()
+                                                ? "bg-white text-gray-900 shadow-sm"
+                                                : "text-gray-500 hover:text-gray-700"
+                                        )}
+                                    >
+                                        {r}
+                                    </button>
+                                ))}
                             </div>
                         </div>
                     </div>
 
-                    {/* NEW: Manufacturing & Logistics Comparison */}
-                    <div className="space-y-6">
-                        <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-wrap gap-4 items-center justify-between">
-                            <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                                <Truck className="w-6 h-6 text-indigo-500" />
-                                Supply Chain & Manufacturing Comparison
-                            </h3>
-                            <div className="flex gap-4">
-                                {/* Region Selector */}
-                                <select
-                                    value={manufRegion}
-                                    onChange={(e) => setManufRegion(e.target.value as any)}
-                                    className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 focus:ring-blue-500 focus:border-blue-500"
-                                >
-                                    <option value="global">Global</option>
-                                    <option value="usa">USA</option>
-                                    <option value="asia">Asia</option>
-                                    <option value="europe">Europe</option>
-                                </select>
-
-                                {/* Tech Selector */}
-                                <select
-                                    value={manufTech}
-                                    onChange={(e) => setManufTech(e.target.value)}
-                                    className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 focus:ring-blue-500 focus:border-blue-500"
-                                >
-                                    <option value="All">All Technologies</option>
-                                    <option value="Tech 1">Tech 1</option>
-                                    <option value="Tech 2">Tech 2</option>
-                                    <option value="Tech 3">Tech 3</option>
-                                    <option value="Tech 4">Tech 4</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <ManufacturingPieCharts
-                            teamA={teamA}
-                            teamB={teamB}
-                            region={manufRegion}
-                            tech={manufTech}
-                        />
+                    {/* Regional Strategy Table (Static Analysis) */}
+                    <div className="mb-8">
+                        <RegionalStrategyTable teams={teams} region={selectedRegion === 'global' ? 'usa' : selectedRegion} />
                     </div>
 
-                    {/* Detailed Market Share Table */}
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                        <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
-                            <h4 className="font-semibold text-gray-900">Global Market Share Comparison</h4>
-                        </div>
-                        <div className="overflow-x-auto">
-                            <table className="w-full text-base text-left">
-                                <thead className="text-sm text-gray-500 uppercase bg-gray-50">
-                                    <tr>
-                                        <th className="px-6 py-3">Technology</th>
-                                        <th className="px-6 py-3 text-right text-blue-600">{teamA.name}</th>
-                                        <th className="px-6 py-3 text-right text-orange-600">{teamB.name}</th>
-                                        <th className="px-6 py-3 text-right">Diff</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {['Tech 1', 'Tech 2', 'Tech 3', 'Tech 4'].map(tech => {
-                                        const shareA = teamA.marketShare.global[tech] || 0;
-                                        const shareB = teamB.marketShare.global[tech] || 0;
-                                        const diff = shareA - shareB;
-
-                                        return (
-                                            <tr key={tech} className="border-b border-gray-100 last:border-0 hover:bg-gray-50">
-                                                <td className="px-6 py-4 font-medium text-gray-900">{tech}</td>
-                                                <td className="px-6 py-4 text-right font-medium">{shareA.toFixed(2)}%</td>
-                                                <td className="px-6 py-4 text-right font-medium">{shareB.toFixed(2)}%</td>
-                                                <td className={clsx("px-6 py-4 text-right font-bold", diff > 0 ? "text-green-600" : "text-red-600")}>
-                                                    {diff > 0 ? '+' : ''}{diff.toFixed(2)}%
-                                                </td>
-                                            </tr>
-                                        );
-                                    })}
-                                </tbody>
-                            </table>
-                        </div>
+                    {/* Hidden Insights Table */}
+                    <div className="mb-8">
+                        <HiddenInsightsTable teams={teams} />
                     </div>
 
-
-                </>
+                    {/* Logistics Comparison Table */}
+                    <div className="mb-8">
+                        <LogisticsComparisonTable teams={teams} />
+                    </div>
+                </div>
             )}
 
         </div>

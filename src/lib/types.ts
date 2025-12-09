@@ -1,5 +1,11 @@
 export interface FinancialMetrics {
-    [key: string]: number;
+    [key: string]: number | undefined;
+    transportationAndTariffs?: number;
+    incomeTax?: number;
+    netProfit?: number;
+    ebitda?: number;
+    ebit?: number;
+    profitBeforeTax?: number;
 }
 
 export interface TechMetrics {
@@ -9,7 +15,9 @@ export interface TechMetrics {
 export interface RegionManufacturing {
     inHouse: TechMetrics;
     contract: TechMetrics;
-    capacityUsage: TechMetrics;
+    capacityUsage?: Record<string, number>;
+    productionCost?: Record<string, number>;
+    factories?: number;
 }
 
 export interface LogisticsData {

@@ -19,7 +19,7 @@ export function MarketView({ teams }: MarketViewProps) {
         const data = team.market[activeRegion.toLowerCase() as 'global' | 'usa' | 'asia' | 'europe'] || {};
         if (activeTech === 'All') return data;
 
-        const filtered: Record<string, number> = {};
+        const filtered: Record<string, number | undefined> = {};
         Object.entries(data).forEach(([key, val]) => {
             if (key.includes(activeTech)) {
                 filtered[key] = val;

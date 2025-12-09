@@ -4,7 +4,7 @@ import { TeamData } from '@/lib/types';
 interface DataTableProps {
     title: string;
     teams: TeamData[];
-    dataExtractor: (team: TeamData) => Record<string, number>;
+    dataExtractor: (team: TeamData) => Record<string, number | undefined>;
     formatValue?: (val: number, key: string) => string | React.ReactNode;
 }
 

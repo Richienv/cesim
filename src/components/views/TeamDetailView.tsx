@@ -162,7 +162,22 @@ export function TeamDetailView({ teams, initialTeam }: TeamDetailViewProps) {
             featureDiffPct,
             overallScore,
             revenueScore,
-            profitScore
+            profitScore,
+            // New Global Financials
+            globalGrossProfit: ['usa', 'asia', 'europe'].reduce((acc, r) => {
+                const m = selectedTeam.margins[r as 'usa' | 'asia' | 'europe'];
+                return acc + Object.values(m).reduce((sum, item) => sum + item.grossProfit, 0);
+            }, 0),
+            globalVariableCosts: ['usa', 'asia', 'europe'].reduce((acc, r) => {
+                const m = selectedTeam.margins[r as 'usa' | 'asia' | 'europe'];
+                return acc + Object.values(m).reduce((sum, item) => sum + item.variableCosts, 0);
+            }, 0),
+            transportation: selectedTeam.financials.incomeStatement.global.transportationAndTariffs || 0,
+            tax: selectedTeam.financials.incomeStatement.global.incomeTax || 0,
+            netProfit: selectedTeam.financials.incomeStatement.global.netProfit || 0,
+            ebitda: selectedTeam.financials.incomeStatement.global.ebitda || 0,
+            ebit: selectedTeam.financials.incomeStatement.global.ebit || 0,
+            profitBeforeTax: selectedTeam.financials.incomeStatement.global.profitBeforeTax || 0
         };
     }, [selectedTeam, marketStats]);
 
@@ -277,6 +292,77 @@ export function TeamDetailView({ teams, initialTeam }: TeamDetailViewProps) {
                 </div>
             </div>
 
+            {/* SECTION 0: GLOBAL FINANCIAL OVERVIEW (NEW) */}
+            <div>
+                <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                    <DollarSign className="w-5 h-5 text-green-600" />
+                    Global Financial Overview
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <MetricCard
+                        title="Sales Revenue"
+                        value={`$${(teamMetrics.revenue / 1000).toFixed(1)}k`}
+                        icon={<DollarSign className="text-blue-500" />}
+                    />
+                    <MetricCard
+                        title="Variable Costs"
+                        value={`$${(teamMetrics.globalVariableCosts / 1000).toFixed(1)}k`}
+                        icon={<Minus className="text-red-400" />}
+                        subtext="Production & Logistics"
+                    />
+                    <MetricCard
+                        title="Gross Profit"
+                        value={`$${(teamMetrics.globalGrossProfit / 1000).toFixed(1)}k`}
+                        icon={<TrendingUp className="text-green-500" />}
+                        subtext={`${((teamMetrics.globalGrossProfit / teamMetrics.revenue) * 100).toFixed(1)}% Margin`}
+                    />
+                    <MetricCard
+                        title="Marketing"
+                        value={`$${(teamMetrics.promo / 1000).toFixed(1)}k`}
+                        icon={<Target className="text-pink-500" />}
+                    />
+                    <MetricCard
+                        title="Transport & Tariffs"
+                        value={`$${(teamMetrics.transportation / 1000).toFixed(1)}k`}
+                        icon={<Truck className="text-orange-500" />}
+                    />
+                    <MetricCard
+                        title="R&D & Admin"
+                        value={`$${((teamMetrics.rnd + (selectedTeam.financials.incomeStatement.global["Administration"] || 0)) / 1000).toFixed(1)}k`}
+                        icon={<Lightbulb className="text-indigo-500" />}
+                    />
+                    <MetricCard
+                        title="Taxes"
+                        value={`$${(teamMetrics.tax / 1000).toFixed(1)}k`}
+                        icon={<Scale className="text-gray-500" />}
+                    />
+                    <MetricCard
+                        title="EBITDA"
+                        value={`$${(teamMetrics.ebitda / 1000).toFixed(1)}k`}
+                        icon={<Activity className="text-purple-600" />}
+                        subtext={`${((teamMetrics.ebitda / teamMetrics.revenue) * 100).toFixed(1)}% Margin`}
+                    />
+                    <MetricCard
+                        title="EBIT"
+                        value={`$${(teamMetrics.ebit / 1000).toFixed(1)}k`}
+                        icon={<Activity className="text-indigo-600" />}
+                        subtext={`${((teamMetrics.ebit / teamMetrics.revenue) * 100).toFixed(1)}% Margin`}
+                    />
+                    <MetricCard
+                        title="Profit Before Tax"
+                        value={`$${(teamMetrics.profitBeforeTax / 1000).toFixed(1)}k`}
+                        icon={<Wallet className="text-orange-600" />}
+                        subtext={`${((teamMetrics.profitBeforeTax / teamMetrics.revenue) * 100).toFixed(1)}% Margin`}
+                    />
+                    <MetricCard
+                        title="Net Profit"
+                        value={`$${(teamMetrics.netProfit / 1000).toFixed(1)}k`}
+                        icon={<Wallet className="text-green-600" />}
+                        subtext={`${((teamMetrics.netProfit / teamMetrics.revenue) * 100).toFixed(1)}% Net Margin`}
+                    />
+                </div>
+            </div>
+
             {/* SECTION 1: REGIONAL BREAKDOWN (TOP) */}
             <div>
                 <h3 className="text-xl font-bold text-gray-900 mb-6">Regional Breakdown</h3>
@@ -286,6 +372,7 @@ export function TeamDetailView({ teams, initialTeam }: TeamDetailViewProps) {
                         const rMargins = selectedTeam.margins[regionKey];
                         const rLogistics = selectedTeam.logistics[regionKey];
                         const rFeatures = selectedTeam.features[regionKey];
+                        const rPrices = selectedTeam.prices[regionKey]; // Get direct prices
                         const rMarketShare = selectedTeam.marketShare[regionKey];
                         const rDemand = selectedTeam.demand[regionKey];
                         const techs = ['Tech 1', 'Tech 2', 'Tech 3', 'Tech 4'];
@@ -304,12 +391,16 @@ export function TeamDetailView({ teams, initialTeam }: TeamDetailViewProps) {
                                         <thead className="text-sm text-gray-500 uppercase bg-gray-50/50">
                                             <tr>
                                                 <th className="px-4 py-3">Tech</th>
+                                                <th className="px-4 py-3 text-right">Unit Cost</th>
                                                 <th className="px-4 py-3 text-right">Price</th>
                                                 <th className="px-4 py-3 text-right">Feat</th>
                                                 <th className="px-4 py-3 text-right">Share</th>
                                                 <th className="px-4 py-3 text-right">Demand</th>
                                                 <th className="px-4 py-3 text-right">Sales</th>
-                                                <th className="px-4 py-3 text-right">Profit</th>
+                                                <th className="px-4 py-3 text-right">Marketing</th>
+                                                <th className="px-4 py-3 text-right">(Profit-E)</th>
+                                                <th className="px-4 py-3 text-right">EBITDA</th>
+                                                <th className="px-4 py-3 text-right">Net Profit</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -321,7 +412,8 @@ export function TeamDetailView({ teams, initialTeam }: TeamDetailViewProps) {
                                                 const qty = Math.abs(lData?.sales || 0);
                                                 const rev = mData?.sales || 0;
                                                 const profit = mData?.grossProfit || 0;
-                                                const price = qty > 0 ? rev / qty : 0;
+                                                const promotion = mData?.promotion || 0;
+                                                const price = rPrices?.[tech] || 0; // Use direct price
                                                 const features = rFeatures?.[tech] || 0;
                                                 const share = rMarketShare?.[tech] || 0;
                                                 const demand = rDemand?.[tech] || 0;
@@ -331,9 +423,39 @@ export function TeamDetailView({ teams, initialTeam }: TeamDetailViewProps) {
 
                                                 if (qty === 0 && rev === 0) return null;
 
+                                                // Allocation Logic
+                                                const regionTotalSales = Object.values(rMargins || {}).reduce((sum, item) => sum + item.sales, 0);
+                                                const revShare = regionTotalSales > 0 ? rev / regionTotalSales : 0;
+
+                                                const regionEBITDA = selectedTeam.financials.incomeStatement[regionKey].ebitda || 0;
+                                                const regionEBIT = selectedTeam.financials.incomeStatement[regionKey].ebit || 0;
+                                                const regionNetProfit = selectedTeam.financials.incomeStatement[regionKey].netProfit || 0;
+
+                                                // Calculate Regional Contribution (Gross - Marketing)
+                                                const regionContribution = Object.values(rMargins || {}).reduce((sum, item) => sum + (item.grossProfit - item.promotion), 0);
+
+                                                // Fixed Costs = Contribution - EBITDA
+                                                const regionFixedCosts = regionContribution - regionEBITDA;
+
+                                                // Non-Operating Costs = EBITDA - Net Profit
+                                                const regionNonOpCosts = regionEBITDA - regionNetProfit;
+
+                                                // Allocated Costs
+                                                const allocatedFixed = regionFixedCosts * revShare;
+                                                const allocatedNonOp = regionNonOpCosts * revShare;
+
+                                                // Tech Metrics
+                                                const techContribution = profit - promotion;
+                                                const techEBITDA = techContribution - allocatedFixed;
+                                                const techNetProfit = techEBITDA - allocatedNonOp;
+                                                const unitCost = qty > 0 ? (mData?.variableCosts || 0) / qty : 0;
+
                                                 return (
                                                     <tr key={tech} className="border-b border-gray-50 last:border-0 hover:bg-gray-50 transition-colors">
                                                         <td className="px-4 py-3 font-medium text-gray-900">{tech}</td>
+                                                        <td className="px-4 py-3 text-right text-gray-600">
+                                                            {currency}{unitCost.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                                                        </td>
                                                         <td className="px-4 py-3 text-right font-bold text-blue-600 bg-blue-50/30">
                                                             {currency}{price.toFixed(0)}
                                                         </td>
@@ -344,13 +466,61 @@ export function TeamDetailView({ teams, initialTeam }: TeamDetailViewProps) {
                                                             {qty.toLocaleString()}
                                                             {missedOpp && <AlertCircle className="w-3 h-3 inline ml-1 text-orange-500" />}
                                                         </td>
-                                                        <td className={clsx("px-4 py-3 text-right font-bold", profit >= 0 ? "text-green-600" : "text-red-600")}>
-                                                            {currency}{(profit / 1000).toFixed(0)}k
+                                                        <td className="px-4 py-3 text-right text-gray-600">
+                                                            {regionName === 'Asia'
+                                                                ? `${currency}${promotion.toLocaleString()}`
+                                                                : `${currency}${(promotion / 1000).toFixed(0)}k`
+                                                            }
+                                                        </td>
+                                                        <td className={clsx("px-4 py-3 text-right font-bold", techContribution >= 0 ? "text-green-600" : "text-red-600")}>
+                                                            {regionName === 'Asia'
+                                                                ? `${currency}${techContribution.toLocaleString()}`
+                                                                : `${currency}${(techContribution / 1000).toFixed(0)}k`
+                                                            }
+                                                        </td>
+                                                        <td className={clsx("px-4 py-3 text-right font-bold", techEBITDA >= 0 ? "text-purple-600" : "text-red-600")}>
+                                                            {regionName === 'Asia'
+                                                                ? `${currency}${techEBITDA.toLocaleString(undefined, { maximumFractionDigits: 0 })}`
+                                                                : `${currency}${(techEBITDA / 1000).toFixed(0)}k`
+                                                            }
+                                                        </td>
+                                                        <td className={clsx("px-4 py-3 text-right font-bold", techNetProfit >= 0 ? "text-green-600" : "text-red-600")}>
+                                                            {regionName === 'Asia'
+                                                                ? `${currency}${techNetProfit.toLocaleString(undefined, { maximumFractionDigits: 0 })}`
+                                                                : `${currency}${(techNetProfit / 1000).toFixed(0)}k`
+                                                            }
                                                         </td>
                                                     </tr>
                                                 );
                                             })}
                                         </tbody>
+                                        {/* Regional Financial Summary Footer */}
+                                        <tfoot className="bg-gray-50 border-t border-gray-200">
+                                            <tr>
+                                                <td colSpan={9} className="px-6 py-4">
+                                                    <div className="flex justify-end items-center gap-6 text-sm">
+                                                        <div className="text-gray-500">
+                                                            <span className="font-medium">EBIT:</span>
+                                                            <span className={clsx("ml-2 font-bold", (selectedTeam.financials.incomeStatement[regionKey].ebit || 0) >= 0 ? "text-gray-900" : "text-red-600")}>
+                                                                {regionName === 'Asia'
+                                                                    ? `${currency}${(selectedTeam.financials.incomeStatement[regionKey].ebit || 0).toLocaleString()}`
+                                                                    : `${currency}${((selectedTeam.financials.incomeStatement[regionKey].ebit || 0) / 1000).toFixed(0)}k`
+                                                                }
+                                                            </span>
+                                                        </div>
+                                                        <div className="text-gray-500">
+                                                            <span className="font-medium">Net Profit:</span>
+                                                            <span className={clsx("ml-2 font-bold", (selectedTeam.financials.incomeStatement[regionKey].netProfit || 0) >= 0 ? "text-green-600" : "text-red-600")}>
+                                                                {regionName === 'Asia'
+                                                                    ? `${currency}${(selectedTeam.financials.incomeStatement[regionKey].netProfit || 0).toLocaleString()}`
+                                                                    : `${currency}${((selectedTeam.financials.incomeStatement[regionKey].netProfit || 0) / 1000).toFixed(0)}k`
+                                                                }
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tfoot>
                                     </table>
                                 </div>
                             </div>
