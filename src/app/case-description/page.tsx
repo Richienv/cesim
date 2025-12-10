@@ -25,7 +25,7 @@ export default function CaseDescriptionPage() {
         <div className="min-h-screen bg-gray-50">
             <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
 
-            <main className="md:pl-64 transition-all duration-300">
+            <main className="md:pl-[var(--sidebar-width)] transition-all duration-300">
                 {/* Top Header */}
                 <header className="bg-white border-b border-gray-200 sticky top-0 z-40 px-4 md:px-8 py-4 flex items-center justify-between">
                     <div className="flex items-center gap-4">

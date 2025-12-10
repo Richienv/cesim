@@ -177,7 +177,7 @@ export function ComparisonView({ teams }: ComparisonViewProps) {
                                 <div className="absolute -top-4 bg-gray-200 text-gray-600 w-8 h-8 rounded-full flex items-center justify-center font-bold border-2 border-white shadow-sm">2</div>
                                 <div className="text-3xl mb-2">🥈</div>
                                 <h3 className="font-bold text-gray-900 text-xl text-center">{rankings[1].teamName}</h3>
-                                <div className="text-base text-gray-500 font-medium">Score: {rankings[1].totalScore}</div>
+                                <div className="text-base text-gray-500 font-medium">TSR: {rankings[1].metrics.tsr.toFixed(2)}%</div>
                             </div>
                         )}
 
@@ -187,7 +187,7 @@ export function ComparisonView({ teams }: ComparisonViewProps) {
                                 <div className="absolute -top-5 bg-yellow-400 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold border-4 border-white shadow-sm text-xl">1</div>
                                 <div className="text-5xl mb-3">🏆</div>
                                 <h3 className="font-bold text-gray-900 text-2xl text-center">{rankings[0].teamName}</h3>
-                                <div className="text-lg text-yellow-700 font-bold bg-yellow-100 px-3 py-1 rounded-full mt-2">Score: {rankings[0].totalScore}</div>
+                                <div className="text-lg text-yellow-700 font-bold bg-yellow-100 px-3 py-1 rounded-full mt-2">TSR: {rankings[0].metrics.tsr.toFixed(2)}%</div>
                             </div>
                         )}
 
@@ -197,7 +197,7 @@ export function ComparisonView({ teams }: ComparisonViewProps) {
                                 <div className="absolute -top-4 bg-orange-100 text-orange-600 w-8 h-8 rounded-full flex items-center justify-center font-bold border-2 border-white shadow-sm">3</div>
                                 <div className="text-3xl mb-2">🥉</div>
                                 <h3 className="font-bold text-gray-900 text-xl text-center">{rankings[2].teamName}</h3>
-                                <div className="text-base text-gray-500 font-medium">Score: {rankings[2].totalScore}</div>
+                                <div className="text-base text-gray-500 font-medium">TSR: {rankings[2].metrics.tsr.toFixed(2)}%</div>
                             </div>
                         )}
                     </div>
@@ -210,7 +210,7 @@ export function ComparisonView({ teams }: ComparisonViewProps) {
                                 Comprehensive Rankings
                             </h4>
                             <div className="text-sm text-gray-500 bg-white px-3 py-1 rounded-full border border-gray-200">
-                                Weighted: TSR (3x), Others (1x)
+                                Rankings based on Total Shareholder Return (TSR)
                             </div>
                         </div>
                         <div className="overflow-x-auto">
@@ -224,7 +224,9 @@ export function ComparisonView({ teams }: ComparisonViewProps) {
                                         <th className="px-6 py-3 text-right">ROE %</th>
                                         <th className="px-6 py-3 text-right">Net Profit</th>
                                         <th className="px-6 py-3 text-right">EPS</th>
-                                        <th className="px-6 py-3 text-right">Mkt Share</th>
+                                        <th className="px-6 py-3 text-right text-gray-400 font-normal">USA</th>
+                                        <th className="px-6 py-3 text-right text-gray-400 font-normal">Asia</th>
+                                        <th className="px-6 py-3 text-right text-gray-400 font-normal">Europe</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-100">
@@ -239,7 +241,9 @@ export function ComparisonView({ teams }: ComparisonViewProps) {
                                             <td className="px-6 py-4 text-right text-gray-600">{team.metrics.roe.toFixed(2)}%</td>
                                             <td className="px-6 py-4 text-right text-gray-600">${(team.metrics.netProfit / 1000).toFixed(0)}k</td>
                                             <td className="px-6 py-4 text-right text-gray-600">${team.metrics.eps.toFixed(2)}</td>
-                                            <td className="px-6 py-4 text-right text-gray-600">{team.metrics.marketShare.toFixed(1)}%</td>
+                                            <td className="px-6 py-4 text-right text-gray-500 text-sm">{team.metrics.marketShareUSA.toFixed(1)}%</td>
+                                            <td className="px-6 py-4 text-right text-gray-500 text-sm">{team.metrics.marketShareAsia.toFixed(1)}%</td>
+                                            <td className="px-6 py-4 text-right text-gray-500 text-sm">{team.metrics.marketShareEurope.toFixed(1)}%</td>
                                         </tr>
                                     ))}
                                 </tbody>

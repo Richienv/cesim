@@ -344,7 +344,7 @@ export const parseCesimData = (fileBuffer: ArrayBuffer): RoundData => {
                             if (!team.manufacturing[currentRegion].capacityUsage) {
                                 team.manufacturing[currentRegion].capacityUsage = {};
                             }
-                            team.manufacturing[currentRegion].capacityUsage[label] = val;
+                            team.manufacturing[currentRegion].capacityUsage![label] = val;
                         }
                     }
                 });

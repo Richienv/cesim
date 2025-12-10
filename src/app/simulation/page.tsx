@@ -721,7 +721,7 @@ export default function SimulationPage() {
     return (
         <div className="min-h-screen bg-gray-50">
             <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
-            <main className="md:pl-64 transition-all duration-300">
+            <main className="md:pl-[var(--sidebar-width)] transition-all duration-300">
                 {/* Header */}
                 <header className="bg-white/80 backdrop-blur-md border-b border-gray-100 sticky top-0 z-40">
                     <div className="px-8 py-4 flex items-center justify-between">

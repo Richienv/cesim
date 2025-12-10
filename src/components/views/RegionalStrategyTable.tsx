@@ -8,7 +8,7 @@ interface RegionalStrategyTableProps {
     region: 'usa' | 'asia' | 'europe';
 }
 
-type SortKey = 'name' | 'unitCost' | 'price' | 'features' | 'share' | 'sales' | 'marketing' | 'contribution' | 'ebitda' | 'netProfit';
+type SortKey = 'name' | 'unitCost' | 'price' | 'features' | 'share' | 'demand' | 'sales' | 'marketing' | 'contribution' | 'ebitda' | 'netProfit';
 type SortDirection = 'asc' | 'desc';
 
 export function RegionalStrategyTable({ teams, region }: RegionalStrategyTableProps) {
@@ -158,6 +158,7 @@ export function RegionalStrategyTable({ teams, region }: RegionalStrategyTablePr
                     const actualPromotionUSD = mData?.promotion || 0;
                     const actualPriceLocal = rPrices?.[tech] || 0;
                     const actualFeatures = rFeatures?.[tech] || 0;
+                    const actualDemand = team.demand[region]?.[tech] || 0;
                     const share = rMarketShare?.[tech] || 0;
                     const unitCostUSD = actualQty > 0 ? (mData?.variableCosts || 0) / actualQty : 0;
 
@@ -224,11 +225,15 @@ export function RegionalStrategyTable({ teams, region }: RegionalStrategyTablePr
                         predKey,
 
                         unitCost: unitCostLocal, // Display in Local
-                        price: priceLocal,       // Display in Local
-                        features,
+                        price: priceLocal,       // Calculation (Predicted)
+                        actualPrice: actualPriceLocal, // Display (Actual)
+                        features,                // Calculation (Predicted)
+                        actualFeatures,          // Display (Actual)
                         share,
+                        demand: actualDemand,
                         sales,
-                        marketing: marketingUSD, // Display in USD
+                        marketing: marketingUSD, // Calculation (Predicted)
+                        actualMarketing: actualPromotionUSD, // Display (Actual)
                         contribution: techContributionUSD, // Display in USD
                         ebitda: techEBITDA_USD,           // Display in USD
                         netProfit: techNetProfit_USD      // Display in USD
@@ -242,141 +247,116 @@ export function RegionalStrategyTable({ teams, region }: RegionalStrategyTablePr
                     return true;
                 });
 
-                // Sort data
+                // Sort filtered data
                 const sortedData = [...filteredData].sort((a, b) => {
-                    const aVal = a[sortKey as keyof typeof a]; // Fix type error
-                    const bVal = b[sortKey as keyof typeof b];
-
-                    if (typeof aVal === 'string' && typeof bVal === 'string') {
-                        return sortDirection === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+                    const modifier = sortDirection === 'asc' ? 1 : -1;
+                    switch (sortKey) {
+                        case 'name': return a.name.localeCompare(b.name) * modifier;
+                        case 'unitCost': return (a.unitCost - b.unitCost) * modifier;
+                        case 'price': return (a.price - b.price) * modifier;
+                        case 'features': return (a.features - b.features) * modifier;
+                        case 'share': return (a.share - b.share) * modifier;
+                        case 'demand': return (a.demand - b.demand) * modifier;
+                        case 'sales': return (a.sales - b.sales) * modifier;
+                        case 'marketing': return (a.marketing - b.marketing) * modifier;
+                        case 'contribution': return (a.contribution - b.contribution) * modifier;
+                        case 'ebitda': return (a.ebitda - b.ebitda) * modifier;
+                        case 'netProfit': return (a.netProfit - b.netProfit) * modifier;
+                        default: return 0;
                     }
-
-                    // Handle numeric sort
-                    const numA = Number(aVal);
-                    const numB = Number(bVal);
-                    return sortDirection === 'asc' ? numA - numB : numB - numA;
                 });
 
                 if (sortedData.length === 0) return null;
 
                 return (
                     <div key={tech} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                        <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
-                            <h4 className="font-bold text-xl text-gray-900 flex items-center gap-2">
-                                [{tech.toUpperCase()} - {region.toUpperCase()} {flag}]
+                        <div className="bg-gray-50 px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                            <h4 className="font-bold text-gray-900 uppercase tracking-wider text-lg">
+                                [{tech.toUpperCase()} - {region.toUpperCase()} {region === 'usa' ? '🇺🇸' : region === 'asia' ? '🇨🇳' : '🇪🇺'}]
                             </h4>
+                            <span className="text-base font-medium bg-white px-2 py-1 rounded border border-gray-200 text-gray-500">
+                                {currency}
+                            </span>
                         </div>
                         <div className="overflow-x-auto">
                             <table className="w-full text-base text-left">
-                                <thead className="text-sm text-gray-500 uppercase bg-gray-50 cursor-pointer select-none">
+                                <thead className="text-sm text-gray-500 uppercase bg-gray-50/50">
                                     <tr>
-                                        <th className="px-4 py-3" onClick={() => handleSort('name')}>
-                                            <div className="flex items-center">Team <SortIcon column="name" /></div>
-                                        </th>
-                                        <th className="px-4 py-3 text-right" onClick={() => handleSort('unitCost')}>
-                                            <div className="flex items-center justify-end">Unit Cost <SortIcon column="unitCost" /></div>
-                                        </th>
-
-                                        <th className="px-4 py-3 text-right" onClick={() => handleSort('price')}>
-                                            <div className="flex items-center justify-end">Price <SortIcon column="price" /></div>
-                                        </th>
-                                        <th className="px-4 py-3 text-right" onClick={() => handleSort('features')}>
-                                            <div className="flex items-center justify-end">Feat <SortIcon column="features" /></div>
-                                        </th>
-                                        <th className="px-4 py-3 text-right" onClick={() => handleSort('share')}>
-                                            <div className="flex items-center justify-end">Share <SortIcon column="share" /></div>
-                                        </th>
-                                        <th className="px-4 py-3 text-right" onClick={() => handleSort('sales')}>
-                                            <div className="flex items-center justify-end">Sales <SortIcon column="sales" /></div>
-                                        </th>
-                                        <th className="px-4 py-3 text-right" onClick={() => handleSort('marketing')}>
-                                            <div className="flex items-center justify-end">Marketing <SortIcon column="marketing" /></div>
-                                        </th>
-                                        <th className="px-4 py-3 text-right" onClick={() => handleSort('contribution')}>
-                                            <div className="flex items-center justify-end">(Profit-E) <SortIcon column="contribution" /></div>
-                                        </th>
-                                        <th className="px-4 py-3 text-right" onClick={() => handleSort('ebitda')}>
-                                            <div className="flex items-center justify-end">EBITDA <SortIcon column="ebitda" /></div>
-                                        </th>
-                                        <th className="px-4 py-3 text-right" onClick={() => handleSort('netProfit')}>
-                                            <div className="flex items-center justify-end">Net Profit <SortIcon column="netProfit" /></div>
-                                        </th>
+                                        <th className="px-4 py-3 cursor-pointer hover:bg-gray-100" onClick={() => handleSort('name')}>TEAM <SortIcon column="name" /></th>
+                                        <th className="px-4 py-3 text-right cursor-pointer hover:bg-gray-100" onClick={() => handleSort('unitCost')}>UNIT COST <SortIcon column="unitCost" /></th>
+                                        <th className="px-4 py-3 text-right cursor-pointer hover:bg-gray-100" onClick={() => handleSort('price')}>PRICE <SortIcon column="price" /></th>
+                                        <th className="px-4 py-3 text-right cursor-pointer hover:bg-gray-100" onClick={() => handleSort('features')}>FEAT <SortIcon column="features" /></th>
+                                        <th className="px-4 py-3 text-right cursor-pointer hover:bg-gray-100" onClick={() => handleSort('share')}>SHARE <SortIcon column="share" /></th>
+                                        <th className="px-4 py-3 text-right cursor-pointer hover:bg-gray-100" onClick={() => handleSort('demand')}>DEMAND <SortIcon column="demand" /></th>
+                                        <th className="px-4 py-3 text-right cursor-pointer hover:bg-gray-100" onClick={() => handleSort('sales')}>SALES UNIT <SortIcon column="sales" /></th>
+                                        <th className="px-4 py-3 text-right cursor-pointer hover:bg-gray-100" onClick={() => handleSort('marketing')}>MARKETING <SortIcon column="marketing" /></th>
+                                        <th className="px-4 py-3 text-right cursor-pointer hover:bg-gray-100" onClick={() => handleSort('contribution')}>(PROFIT-E) <SortIcon column="contribution" /></th>
+                                        <th className="px-4 py-3 text-right cursor-pointer hover:bg-gray-100" onClick={() => handleSort('ebitda')}>EBITDA <SortIcon column="ebitda" /></th>
+                                        <th className="px-4 py-3 text-right cursor-pointer hover:bg-gray-100" onClick={() => handleSort('netProfit')}>NET PROFIT <SortIcon column="netProfit" /></th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-100">
-                                    {sortedData.map((row) => {
-                                        const isMomentum = row.name === 'Momentum';
-                                        return (
-                                            <tr key={row.name} className={clsx(
-                                                "hover:bg-gray-50 transition-colors",
-                                                row.isPredicted ? "bg-red-50" : (isMomentum ? "bg-blue-50/30" : "")
-                                            )}>
-                                                <td className={clsx("px-4 py-3 font-medium", isMomentum ? "text-blue-700 font-bold" : "text-gray-900")}>
-                                                    {row.name}
-                                                </td>
-                                                <td className="px-4 py-3 text-right text-gray-600">
-                                                    {currency}{row.unitCost.toFixed(0)}
-                                                </td>
-                                                <td className="px-4 py-3 text-right">
-                                                    <div className="flex items-center justify-end gap-2">
-                                                        <span className="text-gray-500 text-xs">{currency}{row.price.toFixed(0)}</span>
-                                                        <span className="text-gray-400">→</span>
-                                                        <input
-                                                            type="number"
-                                                            className="w-20 text-right p-1 border border-gray-200 rounded text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-300"
-                                                            placeholder={row.price.toFixed(0)}
-                                                            value={predictions[row.predKey]?.price ?? ''}
-                                                            onChange={(e) => handlePredictionChange(row.name, tech, 'price', e.target.value)}
-                                                        />
-                                                    </div>
-                                                </td>
-                                                <td className="px-4 py-3 text-right">
-                                                    <div className="flex items-center justify-end gap-2">
-                                                        <span className="text-gray-500 text-xs">{row.features}</span>
-                                                        <span className="text-gray-400">→</span>
-                                                        <input
-                                                            type="number"
-                                                            className="w-16 text-right p-1 border border-gray-200 rounded text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-300"
-                                                            placeholder={row.features.toString()}
-                                                            value={predictions[row.predKey]?.features ?? ''}
-                                                            onChange={(e) => handlePredictionChange(row.name, tech, 'features', e.target.value)}
-                                                        />
-                                                    </div>
-                                                </td>
-                                                <td className="px-4 py-3 text-right text-gray-600">
-                                                    {row.share.toFixed(1)}%
-                                                </td>
-                                                <td className="px-4 py-3 text-right text-gray-600">
-                                                    {(row.sales / 1000).toFixed(0)}k
-                                                </td>
-                                                <td className="px-4 py-3 text-right">
-                                                    <div className="flex items-center justify-end gap-2">
-                                                        <span className="text-gray-500 text-xs">{currency}{(row.marketing / 1000).toFixed(0)}k</span>
-                                                        <span className="text-gray-400">→</span>
-                                                        <div className="flex items-center">
-                                                            <input
-                                                                type="number"
-                                                                className="w-16 text-right p-1 border border-gray-200 rounded text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-300"
-                                                                placeholder={(row.marketing / 1000).toFixed(0)}
-                                                                value={predictions[row.predKey]?.marketing ? (predictions[row.predKey]!.marketing! / 1000).toString() : ''}
-                                                                onChange={(e) => handlePredictionChange(row.name, tech, 'marketing', (parseFloat(e.target.value) * 1000).toString())}
-                                                            />
-                                                            <span className="text-xs text-gray-400 ml-1">k</span>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td className={clsx("px-4 py-3 text-right font-bold", row.contribution >= 0 ? "text-green-600" : "text-red-600")}>
-                                                    {currency}{(row.contribution / 1000).toFixed(0)}k
-                                                </td>
-                                                <td className={clsx("px-4 py-3 text-right font-bold", row.ebitda >= 0 ? "text-purple-600" : "text-red-600")}>
-                                                    {currency}{(row.ebitda / 1000).toFixed(0)}k
-                                                </td>
-                                                <td className={clsx("px-4 py-3 text-right font-bold", row.netProfit >= 0 ? "text-green-600" : "text-red-600")}>
-                                                    {currency}{(row.netProfit / 1000).toFixed(0)}k
-                                                </td>
-                                            </tr>
-                                        );
-                                    })}
+                                    {sortedData.map((row) => (
+                                        <tr key={row.name} className={clsx("hover:bg-gray-50 transition-colors", row.isPredicted ? "bg-red-50" : "", row.name === 'Momentum' ? "bg-blue-50/30" : "")}>
+                                            <td className={clsx("px-4 py-3 font-medium", row.name === 'Momentum' ? "text-blue-700 font-bold" : "text-gray-900")}>
+                                                {row.name}
+                                            </td>
+                                            <td className="px-4 py-3 text-right text-gray-600">
+                                                {currency}{row.unitCost.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                                            </td>
+                                            <td className="px-4 py-3 text-right font-bold text-blue-600 bg-blue-50/30">
+                                                <div className="flex items-center justify-end gap-2">
+                                                    <span>{currency}{row.actualPrice.toFixed(0)}</span>
+                                                    <input
+                                                        type="number"
+                                                        className="w-20 px-1 py-0.5 text-base border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-right"
+                                                        placeholder={row.actualPrice.toFixed(0)}
+                                                        value={predictions[row.predKey]?.price ?? ''}
+                                                        onChange={(e) => handlePredictionChange(row.name, tech, 'price', e.target.value)}
+                                                    />
+                                                </div>
+                                            </td>
+                                            <td className="px-4 py-3 text-right text-gray-600">
+                                                <div className="flex items-center justify-end gap-2">
+                                                    <span>{row.actualFeatures}</span>
+                                                    <input
+                                                        type="number"
+                                                        className="w-16 px-1 py-0.5 text-base border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-right"
+                                                        placeholder={row.actualFeatures.toString()}
+                                                        value={predictions[row.predKey]?.features ?? ''}
+                                                        onChange={(e) => handlePredictionChange(row.name, tech, 'features', e.target.value)}
+                                                    />
+                                                </div>
+                                            </td>
+                                            <td className="px-4 py-3 text-right text-gray-600">{row.share.toFixed(1)}%</td>
+                                            <td className="px-4 py-3 text-right text-gray-600">{row.demand.toLocaleString()}</td>
+                                            <td className="px-4 py-3 text-right font-medium text-gray-900">
+                                                {row.sales.toLocaleString()}
+                                            </td>
+                                            <td className="px-4 py-3 text-right text-gray-600">
+                                                <div className="flex items-center justify-end gap-2">
+                                                    <span>${(row.actualMarketing / 1000).toFixed(0)}k</span>
+                                                    <input
+                                                        type="number"
+                                                        className="w-20 px-1 py-0.5 text-base border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-right"
+                                                        placeholder={(row.actualMarketing / 1000).toFixed(0)}
+                                                        value={predictions[row.predKey]?.marketing ? (predictions[row.predKey]!.marketing! / 1000).toString() : ''}
+                                                        onChange={(e) => handlePredictionChange(row.name, tech, 'marketing', (parseFloat(e.target.value) * 1000).toString())}
+                                                    />
+                                                    <span className="text-sm text-gray-400 ml-1">k</span>
+                                                </div>
+                                            </td>
+                                            <td className={clsx("px-4 py-3 text-right font-bold", row.contribution >= 0 ? "text-green-600" : "text-red-600")}>
+                                                ${(row.contribution / 1000).toFixed(0)}k
+                                            </td>
+                                            <td className={clsx("px-4 py-3 text-right font-bold", row.ebitda >= 0 ? "text-purple-600" : "text-red-600")}>
+                                                ${(row.ebitda / 1000).toFixed(0)}k
+                                            </td>
+                                            <td className={clsx("px-4 py-3 text-right font-bold", row.netProfit >= 0 ? "text-green-600" : "text-red-600")}>
+                                                ${(row.netProfit / 1000).toFixed(0)}k
+                                            </td>
+                                        </tr>
+                                    ))}
                                 </tbody>
                             </table>
                         </div>

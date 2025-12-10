@@ -1320,8 +1320,8 @@ export function Dashboard({ data }: DashboardProps) {
                                             <BarChart
                                                 data={teams.map(t => ({
                                                     name: t.name,
-                                                    usa: t.manufacturing.usa.capacityUsage["Total"] || 0,
-                                                    asia: t.manufacturing.asia.capacityUsage["Total"] || 0,
+                                                    usa: t.manufacturing.usa.capacityUsage?.["Total"] ?? 0,
+                                                    asia: t.manufacturing.asia.capacityUsage?.["Total"] ?? 0,
                                                 }))}
                                                 margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
                                             >

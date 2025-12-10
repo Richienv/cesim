@@ -8,6 +8,7 @@
 :root {
   --foreground-rgb: 17, 24, 39;
   --background-rgb: 249, 250, 251;
+  --sidebar-width: 16rem;
 }
 
 body {

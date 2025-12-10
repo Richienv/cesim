@@ -11,6 +11,9 @@ export interface TeamRank {
         eps: number;
         marketShare: number;
         salesGrowth: number;
+        marketShareUSA: number;
+        marketShareAsia: number;
+        marketShareEurope: number;
     };
     metricRanks: {
         tsr: number;
@@ -73,7 +76,38 @@ export const calculateRankings = (teams: TeamData[]): TeamRank[] => {
     const salesGrowthRanks = rankMetric('salesGrowth');
 
     // 3. Calculate Weighted Score
+    // 3. Calculate Regional Market Shares (Weighted)
+    const regions = ['usa', 'asia', 'europe'] as const;
+    const totalMarketSalesString: Record<string, number> = { usa: 0, asia: 0, europe: 0 };
+
+    // First pass: Calculate total market volume (sum of all teams' sales)
+    teams.forEach(team => {
+        regions.forEach(region => {
+            if (team.logistics && team.logistics[region]) {
+                Object.values(team.logistics[region]).forEach(techData => {
+                    totalMarketSalesString[region] += Math.abs(techData.sales || 0);
+                });
+            }
+        });
+    });
+
     const rankings: TeamRank[] = rawData.map(team => {
+        const fullTeamData = teams.find(t => t.name === team.name)!;
+
+        // Calculate Team's Total Sales per Region
+        const teamSales: Record<string, number> = { usa: 0, asia: 0, europe: 0 };
+        regions.forEach(region => {
+            if (fullTeamData.logistics && fullTeamData.logistics[region]) {
+                Object.values(fullTeamData.logistics[region]).forEach(techData => {
+                    teamSales[region] += Math.abs(techData.sales || 0);
+                });
+            }
+        });
+
+        const marketShareUSA = totalMarketSalesString.usa > 0 ? (teamSales.usa / totalMarketSalesString.usa) * 100 : 0;
+        const marketShareAsia = totalMarketSalesString.asia > 0 ? (teamSales.asia / totalMarketSalesString.asia) * 100 : 0;
+        const marketShareEurope = totalMarketSalesString.europe > 0 ? (teamSales.europe / totalMarketSalesString.europe) * 100 : 0;
+
         const getPoints = (ranks: { name: string, points: number }[]) => ranks.find(r => r.name === team.name)?.points || 0;
         const getRank = (ranks: { name: string, rank: number }[]) => ranks.find(r => r.name === team.name)?.rank || 0;
 
@@ -97,7 +131,10 @@ export const calculateRankings = (teams: TeamData[]): TeamRank[] => {
                 netProfit: team.netProfit,
                 eps: team.eps,
                 marketShare: team.marketShare,
-                salesGrowth: team.salesGrowth
+                salesGrowth: team.salesGrowth,
+                marketShareUSA,
+                marketShareAsia,
+                marketShareEurope
             },
             metricRanks: {
                 tsr: getRank(tsrRanks),
@@ -110,8 +147,8 @@ export const calculateRankings = (teams: TeamData[]): TeamRank[] => {
         };
     });
 
-    // 4. Sort by Total Score
-    rankings.sort((a, b) => b.totalScore - a.totalScore);
+    // 4. Sort by TSR (Highest TSR is #1)
+    rankings.sort((a, b) => b.metrics.tsr - a.metrics.tsr);
 
     // 5. Assign Final Rank
     rankings.forEach((r, i) => r.rank = i + 1);
