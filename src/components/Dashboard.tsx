@@ -1163,6 +1163,36 @@ export function Dashboard({ data }: DashboardProps) {
                                     </BarChart>
                                 </ResponsiveContainer>
                             </div>
+                            {/* Shares Issued */}
+                            <div className="h-[300px]">
+                                <h4 className="text-sm font-medium text-gray-500 mb-4 text-center">Shares Issued (k)</h4>
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <BarChart data={teams.map(t => ({ name: t.name, value: t.financials.ratios["Shares outstanding at the end of round, k shares"] || 0 }))} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                                        <XAxis dataKey="name" tick={{ fontSize: 10 }} interval={0} angle={-45} textAnchor="end" height={60} />
+                                        <YAxis />
+                                        <Tooltip formatter={(val: number) => val.toLocaleString()} />
+                                        <Bar dataKey="value" radius={[4, 4, 0, 0]}>
+                                            {teams.map((entry, index) => {
+                                                const isHighlighted = highlightedTeams.includes(entry.name);
+                                                const isDimmed = highlightedTeams.length > 0 && !isHighlighted;
+                                                return (
+                                                    <Cell
+                                                        key={`cell-${index}`}
+                                                        fill="#f59e0b"
+                                                        onClick={() => handleChartClick(entry.name)}
+                                                        cursor="pointer"
+                                                        opacity={isDimmed ? 0.1 : 1}
+                                                        stroke={isHighlighted ? "#000" : "none"}
+                                                        strokeWidth={isHighlighted ? 2 : 0}
+                                                    />
+                                                );
+                                            })}
+                                            <LabelList dataKey="value" position="top" formatter={(val: any) => val.toLocaleString()} style={{ fontSize: '10px', fill: '#6b7280' }} />
+                                        </Bar>
+                                    </BarChart>
+                                </ResponsiveContainer>
+                            </div>
                             {/* Average Share Price */}
                             <div className="h-[300px]">
                                 <h4 className="text-sm font-medium text-gray-500 mb-4 text-center">Average Share Price (USD)</h4>
@@ -1219,36 +1249,6 @@ export function Dashboard({ data }: DashboardProps) {
                                                 );
                                             })}
                                             <LabelList dataKey="value" position="top" formatter={(val: any) => `$${val.toFixed(0)}`} style={{ fontSize: '10px', fill: '#6b7280' }} />
-                                        </Bar>
-                                    </BarChart>
-                                </ResponsiveContainer>
-                            </div>
-                            {/* Shares Issued */}
-                            <div className="h-[300px]">
-                                <h4 className="text-sm font-medium text-gray-500 mb-4 text-center">Shares Issued (k)</h4>
-                                <ResponsiveContainer width="100%" height="100%">
-                                    <BarChart data={teams.map(t => ({ name: t.name, value: t.financials.ratios["Shares outstanding at the end of round, k shares"] || 0 }))} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                                        <XAxis dataKey="name" tick={{ fontSize: 10 }} interval={0} angle={-45} textAnchor="end" height={60} />
-                                        <YAxis />
-                                        <Tooltip formatter={(val: number) => val.toLocaleString()} />
-                                        <Bar dataKey="value" radius={[4, 4, 0, 0]}>
-                                            {teams.map((entry, index) => {
-                                                const isHighlighted = highlightedTeams.includes(entry.name);
-                                                const isDimmed = highlightedTeams.length > 0 && !isHighlighted;
-                                                return (
-                                                    <Cell
-                                                        key={`cell-${index}`}
-                                                        fill="#f59e0b"
-                                                        onClick={() => handleChartClick(entry.name)}
-                                                        cursor="pointer"
-                                                        opacity={isDimmed ? 0.1 : 1}
-                                                        stroke={isHighlighted ? "#000" : "none"}
-                                                        strokeWidth={isHighlighted ? 2 : 0}
-                                                    />
-                                                );
-                                            })}
-                                            <LabelList dataKey="value" position="top" formatter={(val: any) => val.toLocaleString()} style={{ fontSize: '10px', fill: '#6b7280' }} />
                                         </Bar>
                                     </BarChart>
                                 </ResponsiveContainer>

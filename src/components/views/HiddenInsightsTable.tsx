@@ -14,10 +14,10 @@ export function HiddenInsightsTable({ teams }: HiddenInsightsTableProps) {
     const [sortKey, setSortKey] = useState<SortKey>('factories');
     const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
 
-    // 1. Identify Momentum
-    const momentum = teams.find(t => t.name === 'Momentum');
+    // 1. Identify Momentum or Target Team
+    const heroTeam = teams.find(t => t.name === 'Momentum') || teams.find(t => t.name === '多财多亿');
 
-    if (!momentum) return null;
+    if (!heroTeam) return null;
 
     const handleSort = (key: SortKey) => {
         if (sortKey === key) {
@@ -149,11 +149,11 @@ export function HiddenInsightsTable({ teams }: HiddenInsightsTableProps) {
                         </thead>
                         <tbody className="divide-y divide-gray-100">
                             {sortedData.map((row) => {
-                                const isMomentum = row.name === 'Momentum';
+                                const isHero = row.name === heroTeam.name;
 
                                 return (
-                                    <tr key={row.name} className={clsx("hover:bg-gray-50", isMomentum ? "bg-blue-50/30" : "")}>
-                                        <td className={clsx("px-6 py-4 font-medium", isMomentum ? "text-blue-700 font-bold" : "text-gray-900")}>
+                                    <tr key={row.name} className={clsx("hover:bg-gray-50", isHero ? "bg-blue-50/30" : "")}>
+                                        <td className={clsx("px-6 py-4 font-medium", isHero ? "text-blue-700 font-bold" : "text-gray-900")}>
                                             {row.name}
                                         </td>
                                         <td className="px-6 py-4 text-right text-gray-700">

@@ -20,16 +20,9 @@ interface ComparisonViewProps {
 
 export function ComparisonView({ teams }: ComparisonViewProps) {
     const [activeTab, setActiveTab] = useState<'comparison' | 'leaderboard'>('leaderboard');
-    const [teamAId, setTeamAId] = useState<string>(teams[0]?.name || "");
-    const [teamBId, setTeamBId] = useState<string>(teams[1]?.name || "");
     const [selectedRegion, setSelectedRegion] = useState<'global' | 'usa' | 'asia' | 'europe'>('global');
 
-    const teamA = useMemo(() => teams.find(t => t.name === teamAId), [teams, teamAId]);
-    const teamB = useMemo(() => teams.find(t => t.name === teamBId), [teams, teamBId]);
-
     const rankings = useMemo(() => calculateRankings(teams), [teams]);
-
-    if (!teamA || !teamB) return <div>Select teams to compare</div>;
 
     // --- Metrics Calculation ---
 
@@ -99,8 +92,7 @@ export function ComparisonView({ teams }: ComparisonViewProps) {
         };
     };
 
-    const metricsA = getMetrics(teamA);
-    const metricsB = getMetrics(teamB);
+    const capacityData = teams.map(t => ({ name: t.name, value: getMetrics(t).avgCapacityUsage }));
 
     return (
         <div className="space-y-8 animate-in fade-in duration-500 pb-10">
@@ -214,32 +206,6 @@ export function ComparisonView({ teams }: ComparisonViewProps) {
                 </div>
             ) : (
                 <div className="space-y-6">
-                    {/* Team Selection for Comparison */}
-                    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-6">
-                        <h3 className="text-lg font-semibold text-gray-900 mb-4">Select Teams to Compare</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Team A</label>
-                                <select
-                                    value={teamAId}
-                                    onChange={(e) => setTeamAId(e.target.value)}
-                                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border"
-                                >
-                                    {teams.map(t => <option key={t.name} value={t.name}>{t.name}</option>)}
-                                </select>
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Team B</label>
-                                <select
-                                    value={teamBId}
-                                    onChange={(e) => setTeamBId(e.target.value)}
-                                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border"
-                                >
-                                    {teams.map(t => <option key={t.name} value={t.name}>{t.name}</option>)}
-                                </select>
-                            </div>
-                        </div>
-                    </div>
 
                     {/* Regional Deep Dive */}
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -286,23 +252,27 @@ export function ComparisonView({ teams }: ComparisonViewProps) {
                                     <thead className="text-xs text-gray-500 uppercase bg-gray-50">
                                         <tr>
                                             <th className="px-4 py-3">Metric</th>
-                                            <th className="px-4 py-3 text-right">{teamAId}</th>
-                                            <th className="px-4 py-3 text-right">{teamBId}</th>
+                                            {teams.map(t => (
+                                                <th key={t.name} className="px-4 py-3 text-right">{t.name}</th>
+                                            ))}
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-gray-100">
                                         {[
-                                            { key: 'Salary', label: 'Salary', format: (val: any) => val },
-                                            { key: 'Training Budget', label: 'Training Budget', format: (val: any) => val },
-                                            { key: 'Efficiency', label: 'Efficiency', format: (val: any) => `${val}%` },
-                                            { key: 'Turnover Rate', label: 'Turnover Rate', format: (val: any) => `${val}%` },
-                                            { key: 'Staffing Level', label: 'Staffing Level', format: (val: any) => `${val}%` },
-                                            { key: 'HR Costs', label: 'HR Costs', format: (val: any) => val.toLocaleString() },
+                                            { key: 'salary', label: 'Salary', format: (val: any) => val ? `$${val.toLocaleString()}` : '-' },
+                                            { key: 'trainingBudget', label: 'Training Budget', format: (val: any) => val ? `$${val.toLocaleString()}` : '-' },
+                                            { key: 'efficiency', label: 'Efficiency', format: (val: any) => val ? `${val.toFixed(3)}` : '-' },
+                                            { key: 'turnoverRate', label: 'Turnover Rate', format: (val: any) => val !== undefined ? `${val.toFixed(1)}%` : '-' },
+                                            { key: 'staffingLevel', label: 'Staffing Level', format: (val: any) => val ? val.toLocaleString() : '-' },
+                                            { key: 'totalCost', label: 'HR Costs (Total)', format: (val: any) => val ? `$${val.toLocaleString()}` : '-' },
                                         ].map(metric => (
                                             <tr key={metric.key}>
                                                 <td className="px-4 py-2 font-medium text-gray-900">{metric.label}</td>
-                                                <td className="px-4 py-2 text-right text-gray-600">{(teamA.hr as any)[metric.key] !== undefined ? metric.format((teamA.hr as any)[metric.key]) : '-'}</td>
-                                                <td className="px-4 py-2 text-right text-gray-600">{(teamB.hr as any)[metric.key] !== undefined ? metric.format((teamB.hr as any)[metric.key]) : '-'}</td>
+                                                {teams.map(t => (
+                                                    <td key={t.name} className="px-4 py-2 text-right text-gray-600">
+                                                        {(t.hr as any)[metric.key] !== undefined ? metric.format((t.hr as any)[metric.key]) : '-'}
+                                                    </td>
+                                                ))}
                                             </tr>
                                         ))}
                                     </tbody>
@@ -314,16 +284,13 @@ export function ComparisonView({ teams }: ComparisonViewProps) {
                                 <div className="h-[200px]">
                                     <h4 className="text-sm font-medium text-gray-500 mb-4 text-center">Total Production Output (Units)</h4>
                                     <ResponsiveContainer width="100%" height="100%">
-                                        <BarChart data={[
-                                            { name: teamAId, value: metricsA.totalOutput, fill: '#3b82f6' },
-                                            { name: teamBId, value: metricsB.totalOutput, fill: '#f97316' }
-                                        ]}>
+                                        <BarChart data={teams.map(t => ({ name: t.name, value: getMetrics(t).totalOutput }))}>
                                             <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                                            <XAxis dataKey="name" tick={{ fontSize: 10 }} />
+                                            <XAxis dataKey="name" tick={{ fontSize: 10 }} interval={0} angle={-45} textAnchor="end" height={60} />
                                             <YAxis tickFormatter={(val) => `${(val / 1000).toFixed(0)}k`} />
                                             <Tooltip formatter={(val: number) => [`${val.toLocaleString()}`, 'Output']} />
-                                            <Bar dataKey="value" radius={[4, 4, 0, 0]}>
-                                                <LabelList dataKey="value" position="top" formatter={(val: any) => val.toLocaleString()} style={{ fontSize: '10px', fill: '#6b7280' }} />
+                                            <Bar dataKey="value" fill="#3b82f6" radius={[4, 4, 0, 0]}>
+                                                <LabelList dataKey="value" position="top" formatter={(val: any) => (val / 1000).toFixed(1) + 'k'} style={{ fontSize: '10px', fill: '#6b7280' }} />
                                             </Bar>
                                         </BarChart>
                                     </ResponsiveContainer>
@@ -331,15 +298,15 @@ export function ComparisonView({ teams }: ComparisonViewProps) {
                                 <div className="h-[200px]">
                                     <h4 className="text-sm font-medium text-gray-500 mb-4 text-center">Avg. Capacity Usage (%)</h4>
                                     <ResponsiveContainer width="100%" height="100%">
-                                        <BarChart data={[
-                                            { name: teamAId, value: metricsA.avgCapacityUsage, fill: metricsA.avgCapacityUsage > 90 ? '#ef4444' : '#22c55e' },
-                                            { name: teamBId, value: metricsB.avgCapacityUsage, fill: metricsB.avgCapacityUsage > 90 ? '#ef4444' : '#22c55e' }
-                                        ]}>
+                                        <BarChart data={capacityData}>
                                             <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                                            <XAxis dataKey="name" tick={{ fontSize: 10 }} />
+                                            <XAxis dataKey="name" tick={{ fontSize: 10 }} interval={0} angle={-45} textAnchor="end" height={60} />
                                             <YAxis domain={[0, 100]} />
                                             <Tooltip formatter={(val: number) => [`${val.toFixed(1)}%`, 'Usage']} />
                                             <Bar dataKey="value" radius={[4, 4, 0, 0]}>
+                                                {capacityData.map((entry, index) => (
+                                                    <Cell key={`cell-${index}`} fill={entry.value > 90 ? '#ef4444' : '#22c55e'} />
+                                                ))}
                                                 <LabelList dataKey="value" position="top" formatter={(val: any) => `${val.toFixed(1)}%`} style={{ fontSize: '10px', fill: '#6b7280' }} />
                                             </Bar>
                                         </BarChart>

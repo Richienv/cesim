@@ -7,8 +7,8 @@ interface LogisticsComparisonTableProps {
 }
 
 export function LogisticsComparisonTable({ teams }: LogisticsComparisonTableProps) {
-    // 1. Identify Momentum and its Strategy
-    const momentum = teams.find(t => t.name === 'Momentum');
+    // 1. Identify Momentum or Target Team
+    const heroTeam = teams.find(t => t.name === 'Momentum') || teams.find(t => t.name === '多财多亿');
 
     // Helper to calculate strategy (same as RegionalStrategyTable)
     const getStrategy = (team: TeamData, allTeams: TeamData[]) => {
@@ -45,7 +45,7 @@ export function LogisticsComparisonTable({ teams }: LogisticsComparisonTableProp
         return "Balanced Competitor";
     };
 
-    const momentumStrategy = momentum ? getStrategy(momentum, teams) : "Balanced Competitor";
+    const heroStrategy = heroTeam ? getStrategy(heroTeam, teams) : "Balanced Competitor";
 
     // 2. Use All Teams (No Filtering)
     const relevantTeams = teams;
@@ -65,7 +65,7 @@ export function LogisticsComparisonTable({ teams }: LogisticsComparisonTableProp
         { key: 'unsatisfiedDemand', label: 'Unsatisfied Demand' },
     ];
 
-    if (!momentum) return null;
+    if (!heroTeam) return null;
 
     return (
         <div className="space-y-8">
@@ -101,7 +101,7 @@ export function LogisticsComparisonTable({ teams }: LogisticsComparisonTableProp
                                                 <tr>
                                                     <th className="px-3 py-2">Metric</th>
                                                     {relevantTeams.map(t => (
-                                                        <th key={t.name} className={clsx("px-3 py-2 text-right", t.name === 'Momentum' ? "text-blue-700 font-bold" : "")}>
+                                                        <th key={t.name} className={clsx("px-3 py-2 text-right", t.name === heroTeam.name ? "text-blue-700 font-bold" : "")}>
                                                             {t.name}
                                                         </th>
                                                     ))}
@@ -114,7 +114,7 @@ export function LogisticsComparisonTable({ teams }: LogisticsComparisonTableProp
                                                         {relevantTeams.map(t => {
                                                             const val = t.logistics[region as 'usa' | 'asia' | 'europe']?.[tech]?.[metric.key as keyof typeof t.logistics.usa.Tech1] || 0;
                                                             return (
-                                                                <td key={t.name} className={clsx("px-3 py-2 text-right", t.name === 'Momentum' ? "font-medium" : "text-gray-500")}>
+                                                                <td key={t.name} className={clsx("px-3 py-2 text-right", t.name === heroTeam.name ? "font-medium" : "text-gray-500")}>
                                                                     {val !== 0 ? (val / 1000).toFixed(1) + 'k' : '-'}
                                                                 </td>
                                                             );

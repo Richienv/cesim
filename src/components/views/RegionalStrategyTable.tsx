@@ -37,8 +37,8 @@ export function RegionalStrategyTable({ teams, region }: RegionalStrategyTablePr
         return sortDirection === 'asc' ? <ArrowUp className="w-3 h-3 ml-1 text-blue-600" /> : <ArrowDown className="w-3 h-3 ml-1 text-blue-600" />;
     };
 
-    // 1. Identify Momentum and its Strategy
-    const momentum = teams.find(t => t.name === 'Momentum');
+    // 1. Identify Momentum or Target Team (support '多财多亿')
+    const heroTeam = teams.find(t => t.name === 'Momentum') || teams.find(t => t.name === '多财多亿');
 
     // Helper to calculate strategy (simplified version of TeamDetailView logic)
     const getStrategy = (team: TeamData, allTeams: TeamData[]) => {
@@ -77,19 +77,19 @@ export function RegionalStrategyTable({ teams, region }: RegionalStrategyTablePr
         return "Balanced Competitor";
     };
 
-    const momentumStrategy = momentum ? getStrategy(momentum, teams) : "Balanced Competitor";
+    const heroStrategy = heroTeam ? getStrategy(heroTeam, teams) : "Balanced Competitor";
 
     // 2. Use All Teams (No Filtering)
     const relevantTeams = teams;
 
-    if (!momentum) return <div>Momentum team not found.</div>;
+    if (!heroTeam) return <div>Momentum/"多财多亿" team not found.</div>;
 
     return (
         <div className="space-y-8">
             <div className="flex items-center justify-between bg-blue-50 p-4 rounded-lg border border-blue-100 mb-4">
                 <div>
                     <h4 className="font-bold text-blue-900">Strategy Focus: All Teams</h4>
-                    <p className="text-sm text-blue-700">Comparing Momentum with <strong>all teams</strong>. Your strategy: <strong>{momentumStrategy}</strong>.</p>
+                    <p className="text-sm text-blue-700">Comparing <strong>{heroTeam.name}</strong> with <strong>all teams</strong>. Your strategy: <strong>{heroStrategy}</strong>.</p>
                 </div>
                 <div className="flex items-center gap-4">
                     <label className="flex items-center gap-2 cursor-pointer select-none">
@@ -99,7 +99,7 @@ export function RegionalStrategyTable({ teams, region }: RegionalStrategyTablePr
                             onChange={(e) => setOnlyMomentum(e.target.checked)}
                             className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
                         />
-                        <span className="text-sm font-medium text-blue-900">Only Momentum</span>
+                        <span className="text-sm font-medium text-blue-900">Only {heroTeam.name}</span>
                     </label>
                     <label className="flex items-center gap-2 cursor-pointer select-none">
                         <input
@@ -202,7 +202,7 @@ export function RegionalStrategyTable({ teams, region }: RegionalStrategyTablePr
 
                 // Filter data
                 const filteredData = tableData.filter(row => {
-                    if (onlyMomentum && row.name !== 'Momentum') return false;
+                    if (onlyMomentum && row.name !== heroTeam.name) return false;
                     if (hideZeroProfit && Math.abs(row.netProfit) < 1) return false;
                     return true;
                 });
@@ -259,8 +259,8 @@ export function RegionalStrategyTable({ teams, region }: RegionalStrategyTablePr
                                 </thead>
                                 <tbody className="divide-y divide-gray-100">
                                     {sortedData.map((row) => (
-                                        <tr key={row.name} className={clsx("hover:bg-gray-50 transition-colors", row.name === 'Momentum' ? "bg-blue-50/30" : "")}>
-                                            <td className={clsx("px-4 py-3 font-medium", row.name === 'Momentum' ? "text-blue-700 font-bold" : "text-gray-900")}>
+                                        <tr key={row.name} className={clsx("hover:bg-gray-50 transition-colors", row.name === heroTeam.name ? "bg-blue-50/30" : "")}>
+                                            <td className={clsx("px-4 py-3 font-medium", row.name === heroTeam.name ? "text-blue-700 font-bold" : "text-gray-900")}>
                                                 {row.name}
                                             </td>
                                             <td className="px-4 py-3 text-right text-gray-600">

@@ -79,7 +79,7 @@ export const parseCesimData = (fileBuffer: ArrayBuffer): RoundData => {
         metrics: { "Financials": {}, "Production": {}, "Market": {}, "R&D": {}, "Other": {} },
         hr: {
             turnoverRate: 0, staffingLevel: 0, trainingCost: 0, hiringOneOffCost: 0, firingOneOffCost: 0,
-            efficiency: 0, salary: 0, trainingBudget: 0, totalTurnover: 0, availableWorkdays: 0, allocatedWorkdays: 0
+            efficiency: 0, salary: 0, trainingBudget: 0, totalTurnover: 0, availableWorkdays: 0, allocatedWorkdays: 0, totalCost: 0
         },
         marketingFocus: { usa: {}, asia: {}, europe: {} }
     }));
@@ -568,6 +568,7 @@ function parseHR(start: number, end: number, data: any[][], teams: TeamData[], t
         const rawLabel = row && row[0] ? String(row[0]).trim() : "";
         if (!rawLabel) continue;
 
+        // Use raw label for specific Chinese matches first, then translate
         const label = translate(rawLabel);
 
         teams.forEach((team, idx) => {
@@ -576,17 +577,23 @@ function parseHR(start: number, end: number, data: any[][], teams: TeamData[], t
             if (typeof val === 'string') numVal = parseFloat(val.replace(/,/g, ''));
             else if (typeof val === 'number') numVal = val;
 
-            if (label.includes("Voluntary turnover rate")) team.hr.turnoverRate = numVal;
+            // Updated Mapping logic to catch Chinese headers explicitly
+            if (label.includes("Voluntary turnover rate") || rawLabel.includes("人员自愿流动率")) team.hr.turnoverRate = numVal;
             if (label.includes("Total turnover rate")) team.hr.totalTurnover = numVal;
-            if (label.includes("Staffing level, this round") || label.includes("R&D personnel, this round")) team.hr.staffingLevel = numVal;
-            if (label.includes("Training costs")) team.hr.trainingCost = numVal;
-            if (label.includes("Training budget")) team.hr.trainingBudget = numVal;
-            if (label.includes("Recruitment costs")) team.hr.hiringOneOffCost = numVal;
-            if (label.includes("Redundancy costs")) team.hr.firingOneOffCost = numVal;
-            if (label.includes("Efficiency multiplier")) team.hr.efficiency = numVal;
-            if (label.includes("Salary/month")) team.hr.salary = numVal;
+            if (label.includes("Staffing level, this round") || rawLabel.includes("本回合员工规模")) team.hr.staffingLevel = numVal;
+            if (label.includes("Training costs") || rawLabel.includes("培训成本")) team.hr.trainingCost = numVal;
+            if (label.includes("Training budget") || rawLabel.includes("培训预算")) team.hr.trainingBudget = numVal;
+            if (label.includes("Recruitment costs") || rawLabel.includes("招聘成本")) team.hr.hiringOneOffCost = numVal;
+            if (label.includes("Redundancy costs") || rawLabel.includes("裁员成本")) team.hr.firingOneOffCost = numVal;
+            if (label.includes("Efficiency multiplier") || rawLabel.includes("工作效率乘数")) team.hr.efficiency = numVal;
+            if (label.includes("Salary/month") || rawLabel.includes("工资/月")) team.hr.salary = numVal;
             if (label.includes("Total available man-days")) team.hr.availableWorkdays = numVal;
             if (label.includes("Total allocated man-days")) team.hr.allocatedWorkdays = numVal;
+
+            // New Total Cost Mapping
+            if (rawLabel.includes("成本总计") || label.includes("Total costs") || label === "Costs and expenses total") {
+                team.hr.totalCost = numVal;
+            }
         });
     }
 }

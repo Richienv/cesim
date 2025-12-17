@@ -125,6 +125,7 @@ export interface TeamData {
         totalTurnover: number;
         availableWorkdays: number;
         allocatedWorkdays: number;
+        totalCost: number;
     };
     marketingFocus: {
         usa: Record<string, string>; // tech -> strategy
