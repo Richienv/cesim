@@ -12,6 +12,7 @@ import { DetailedMarketAnalysis } from './DetailedMarketAnalysis';
 import { RegionalStrategyTable } from './RegionalStrategyTable';
 import { HiddenInsightsTable } from './HiddenInsightsTable';
 import { LogisticsComparisonTable } from './LogisticsComparisonTable';
+import { getTechLabel, TECH_NAME_MAP } from '@/lib/constants';
 
 interface ComparisonViewProps {
     teams: TeamData[];
@@ -21,18 +22,7 @@ export function ComparisonView({ teams }: ComparisonViewProps) {
     const [activeTab, setActiveTab] = useState<'comparison' | 'leaderboard'>('leaderboard');
     const [teamAId, setTeamAId] = useState<string>(teams[0]?.name || "");
     const [teamBId, setTeamBId] = useState<string>(teams[1]?.name || "");
-    const [cardOrder, setCardOrder] = useState<string[]>(['commercial', 'marketing', 'operations']);
-    const [selectedTech, setSelectedTech] = useState<string>('All');
     const [selectedRegion, setSelectedRegion] = useState<'global' | 'usa' | 'asia' | 'europe'>('global');
-    const [manufRegion, setManufRegion] = useState<'global' | 'usa' | 'asia' | 'europe'>('global');
-    const [manufTech, setManufTech] = useState<string>('All');
-
-    const handleMoveCard = (dragIndex: number, hoverIndex: number) => {
-        const newOrder = [...cardOrder];
-        const [removed] = newOrder.splice(dragIndex, 1);
-        newOrder.splice(hoverIndex, 0, removed);
-        setCardOrder(newOrder);
-    };
 
     const teamA = useMemo(() => teams.find(t => t.name === teamAId), [teams, teamAId]);
     const teamB = useMemo(() => teams.find(t => t.name === teamBId), [teams, teamBId]);
@@ -88,6 +78,10 @@ export function ComparisonView({ teams }: ComparisonViewProps) {
         });
         const avgCapacityUsage = capCount > 0 ? totalCapUsage / capCount : 0;
 
+        // Total Output (In-House)
+        const totalOutput = Object.values(team.manufacturing.usa.inHouse).reduce((a, b) => a + b, 0) +
+            Object.values(team.manufacturing.asia.inHouse).reduce((a, b) => a + b, 0);
+
         return {
             revenue,
             profit,
@@ -100,46 +94,13 @@ export function ComparisonView({ teams }: ComparisonViewProps) {
             totalExports,
             totalBuffer,
             totalUnsatisfied,
-            avgCapacityUsage
+            avgCapacityUsage,
+            totalOutput
         };
     };
 
     const metricsA = getMetrics(teamA);
     const metricsB = getMetrics(teamB);
-
-    // --- Chart Data ---
-
-    const financialComparisonData = [
-        { name: 'Revenue', A: metricsA.revenue, B: metricsB.revenue },
-        { name: 'Gross Profit', A: metricsA.grossProfit, B: metricsB.grossProfit },
-        { name: 'EBITDA', A: metricsA.ebitda, B: metricsB.ebitda },
-        { name: 'Net Profit', A: metricsA.profit, B: metricsB.profit },
-    ];
-
-    const manufacturingComparisonData = [
-        { name: 'In-House', A: metricsA.totalInHouse, B: metricsB.totalInHouse },
-        { name: 'Contract', A: metricsA.totalContract, B: metricsB.totalContract },
-        { name: 'Buffer Stock', A: metricsA.totalBuffer, B: metricsB.totalBuffer },
-    ];
-
-    // Radar Chart Data (Normalized 0-100 for visualization)
-    const normalize = (valA: number, valB: number) => {
-        const max = Math.max(valA, valB) || 1;
-        return {
-            A: (valA / max) * 100,
-            B: (valB / max) * 100,
-            rawA: valA,
-            rawB: valB
-        };
-    };
-
-    const radarData = [
-        { subject: 'Revenue', ...normalize(metricsA.revenue, metricsB.revenue), fullMark: 100 },
-        { subject: 'Profit', ...normalize(metricsA.profit, metricsB.profit), fullMark: 100 },
-        { subject: 'Market Share', ...normalize(metricsA.avgMarketShare, metricsB.avgMarketShare), fullMark: 100 },
-        { subject: 'Efficiency', ...normalize(100 - (metricsA.totalUnsatisfied > 0 ? 20 : 0), 100 - (metricsB.totalUnsatisfied > 0 ? 20 : 0)), fullMark: 100 }, // Rough proxy
-        { subject: 'Gross Profit', ...normalize(metricsA.grossProfit, metricsB.grossProfit), fullMark: 100 },
-    ];
 
     return (
         <div className="space-y-8 animate-in fade-in duration-500 pb-10">
@@ -253,6 +214,33 @@ export function ComparisonView({ teams }: ComparisonViewProps) {
                 </div>
             ) : (
                 <div className="space-y-6">
+                    {/* Team Selection for Comparison */}
+                    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-6">
+                        <h3 className="text-lg font-semibold text-gray-900 mb-4">Select Teams to Compare</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">Team A</label>
+                                <select
+                                    value={teamAId}
+                                    onChange={(e) => setTeamAId(e.target.value)}
+                                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border"
+                                >
+                                    {teams.map(t => <option key={t.name} value={t.name}>{t.name}</option>)}
+                                </select>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">Team B</label>
+                                <select
+                                    value={teamBId}
+                                    onChange={(e) => setTeamBId(e.target.value)}
+                                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border"
+                                >
+                                    {teams.map(t => <option key={t.name} value={t.name}>{t.name}</option>)}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
                     {/* Regional Deep Dive */}
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                         <h3 className="text-2xl font-bold text-gray-900">Regional Deep Dive (Momentum)</h3>
@@ -283,6 +271,84 @@ export function ComparisonView({ teams }: ComparisonViewProps) {
                         <RegionalStrategyTable teams={teams} region={selectedRegion === 'global' ? 'usa' : selectedRegion} />
                     </div>
 
+                    {/* HR Comparison Section (New) */}
+                    <div className="mb-8 bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                        <h3 className="text-xl font-semibold text-gray-900 mb-6 flex items-center gap-2">
+                            <Users className="w-5 h-5 text-purple-600" />
+                            HR & Production Analysis
+                        </h3>
+
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                            {/* HR Metrics Table */}
+                            <div className="overflow-x-auto">
+                                <h4 className="text-sm font-medium text-gray-500 mb-4">HR Metrics Comparison</h4>
+                                <table className="w-full text-sm text-left">
+                                    <thead className="text-xs text-gray-500 uppercase bg-gray-50">
+                                        <tr>
+                                            <th className="px-4 py-3">Metric</th>
+                                            <th className="px-4 py-3 text-right">{teamAId}</th>
+                                            <th className="px-4 py-3 text-right">{teamBId}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-gray-100">
+                                        {[
+                                            { key: 'Salary', label: 'Salary', format: (val: any) => val },
+                                            { key: 'Training Budget', label: 'Training Budget', format: (val: any) => val },
+                                            { key: 'Efficiency', label: 'Efficiency', format: (val: any) => `${val}%` },
+                                            { key: 'Turnover Rate', label: 'Turnover Rate', format: (val: any) => `${val}%` },
+                                            { key: 'Staffing Level', label: 'Staffing Level', format: (val: any) => `${val}%` },
+                                            { key: 'HR Costs', label: 'HR Costs', format: (val: any) => val.toLocaleString() },
+                                        ].map(metric => (
+                                            <tr key={metric.key}>
+                                                <td className="px-4 py-2 font-medium text-gray-900">{metric.label}</td>
+                                                <td className="px-4 py-2 text-right text-gray-600">{(teamA.hr as any)[metric.key] !== undefined ? metric.format((teamA.hr as any)[metric.key]) : '-'}</td>
+                                                <td className="px-4 py-2 text-right text-gray-600">{(teamB.hr as any)[metric.key] !== undefined ? metric.format((teamB.hr as any)[metric.key]) : '-'}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            {/* Production Charts */}
+                            <div className="space-y-6">
+                                <div className="h-[200px]">
+                                    <h4 className="text-sm font-medium text-gray-500 mb-4 text-center">Total Production Output (Units)</h4>
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <BarChart data={[
+                                            { name: teamAId, value: metricsA.totalOutput, fill: '#3b82f6' },
+                                            { name: teamBId, value: metricsB.totalOutput, fill: '#f97316' }
+                                        ]}>
+                                            <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                                            <XAxis dataKey="name" tick={{ fontSize: 10 }} />
+                                            <YAxis tickFormatter={(val) => `${(val / 1000).toFixed(0)}k`} />
+                                            <Tooltip formatter={(val: number) => [`${val.toLocaleString()}`, 'Output']} />
+                                            <Bar dataKey="value" radius={[4, 4, 0, 0]}>
+                                                <LabelList dataKey="value" position="top" formatter={(val: any) => val.toLocaleString()} style={{ fontSize: '10px', fill: '#6b7280' }} />
+                                            </Bar>
+                                        </BarChart>
+                                    </ResponsiveContainer>
+                                </div>
+                                <div className="h-[200px]">
+                                    <h4 className="text-sm font-medium text-gray-500 mb-4 text-center">Avg. Capacity Usage (%)</h4>
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <BarChart data={[
+                                            { name: teamAId, value: metricsA.avgCapacityUsage, fill: metricsA.avgCapacityUsage > 90 ? '#ef4444' : '#22c55e' },
+                                            { name: teamBId, value: metricsB.avgCapacityUsage, fill: metricsB.avgCapacityUsage > 90 ? '#ef4444' : '#22c55e' }
+                                        ]}>
+                                            <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                                            <XAxis dataKey="name" tick={{ fontSize: 10 }} />
+                                            <YAxis domain={[0, 100]} />
+                                            <Tooltip formatter={(val: number) => [`${val.toFixed(1)}%`, 'Usage']} />
+                                            <Bar dataKey="value" radius={[4, 4, 0, 0]}>
+                                                <LabelList dataKey="value" position="top" formatter={(val: any) => `${val.toFixed(1)}%`} style={{ fontSize: '10px', fill: '#6b7280' }} />
+                                            </Bar>
+                                        </BarChart>
+                                    </ResponsiveContainer>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     {/* Hidden Insights Table */}
                     <div className="mb-8">
                         <HiddenInsightsTable teams={teams} />
@@ -300,8 +366,13 @@ export function ComparisonView({ teams }: ComparisonViewProps) {
 }
 
 function RegionalAnalysis({ region, teamA, teamB, selectedTech }: { region: 'usa' | 'asia' | 'europe', teamA: TeamData, teamB: TeamData, selectedTech: string }) {
-    const allTechs = ['Tech 1', 'Tech 2', 'Tech 3', 'Tech 4'];
-    const techs = selectedTech === 'All' ? allTechs : [selectedTech];
+    const allTechs = Object.keys(TECH_NAME_MAP).filter(k => k.startsWith('Tech'));
+    // Fallback if TECH_NAME_MAP is not consistent with usage (e.g. if we want the Translated Names as the list?)
+    // Actually, allTechs usually iterates over the internal keys 'Tech 1'...'Tech 4' to access data objects.
+    // The data objects (prices, margins) are keyed by 'Tech 1' etc in `TeamData`.
+    // So `allTechs` should be ['Tech 1', 'Tech 2', 'Tech 3', 'Tech 4'].
+    const techKeys = ['Tech 1', 'Tech 2', 'Tech 3', 'Tech 4'];
+    const techs = selectedTech === 'All' ? techKeys : [selectedTech];
 
     let currency = '$';
     if (region === 'asia') currency = '¥';
@@ -331,7 +402,7 @@ function RegionalAnalysis({ region, teamA, teamB, selectedTech }: { region: 'usa
         const promoB = marginB?.promotion || 0;
 
         return {
-            name: tech,
+            name: getTechLabel(tech), // Use translated name for display
             priceA, priceB,
             costA, costB,
             profitA, profitB,

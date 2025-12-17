@@ -15,6 +15,7 @@ const translate = (key: string): string => {
 };
 
 export const parseCesimData = (fileBuffer: ArrayBuffer): RoundData => {
+    console.log("[Parser] Entry point reached");
     const workbook = XLSX.read(fileBuffer, { type: 'array' });
     const sheetName = workbook.SheetNames[0];
     const worksheet = workbook.Sheets[sheetName];
@@ -26,13 +27,20 @@ export const parseCesimData = (fileBuffer: ArrayBuffer): RoundData => {
             const cell = data[i][0];
             if (cell) {
                 const cellStr = String(cell).trim();
+                const trans = translate(cellStr);
+                // if (keyword === "Margin breakdown") {
+                // console.log(`[Scanning ${i}] Raw: ${cellStr} Trans: ${trans} Keyword: ${keyword}`);
+                // }
+
                 // Check if cell matches keyword directly or if its translation matches
                 if (cellStr.toLowerCase().includes(keyword.toLowerCase()) ||
-                    translate(cellStr).toLowerCase().includes(keyword.toLowerCase())) {
+                    trans.toLowerCase().includes(keyword.toLowerCase())) {
+                    if (keyword === "Margin breakdown") console.log(`[Found Margin] at ${i}:Raw: ${cellStr} Trans: ${trans}`);
                     return i;
                 }
             }
         }
+        if (keyword === "Margin breakdown") console.log(`[Failed Margin] Not found`);
         return -1;
     };
 
@@ -68,7 +76,12 @@ export const parseCesimData = (fileBuffer: ArrayBuffer): RoundData => {
         features: { usa: {}, asia: {}, europe: {} },
         demand: { usa: {}, asia: {}, europe: {} },
         prices: { usa: {}, asia: {}, europe: {} },
-        metrics: { "Financials": {}, "Production": {}, "Market": {}, "R&D": {}, "Other": {} }
+        metrics: { "Financials": {}, "Production": {}, "Market": {}, "R&D": {}, "Other": {} },
+        hr: {
+            turnoverRate: 0, staffingLevel: 0, trainingCost: 0, hiringOneOffCost: 0, firingOneOffCost: 0,
+            efficiency: 0, salary: 0, trainingBudget: 0, totalTurnover: 0, availableWorkdays: 0, allocatedWorkdays: 0
+        },
+        marketingFocus: { usa: {}, asia: {}, europe: {} }
     }));
 
     // Define all section headers we care about
@@ -93,7 +106,10 @@ export const parseCesimData = (fileBuffer: ArrayBuffer): RoundData => {
         { key: "Manufacturing details", type: "special", subtype: "manufacturing" },
         { key: "Logistics details", type: "special", subtype: "logistics" },
         { key: "Cost report", type: "special", subtype: "costs" },
-        { key: "Margin breakdown", type: "special", subtype: "margins" }
+        { key: "Margin breakdown by tech, k USD, USA", type: "special", subtype: "margins", region: "usa" },
+        { key: "Margin breakdown by tech, k USD, Asia", type: "special", subtype: "margins", region: "asia" },
+        { key: "Margin breakdown by tech, k USD, Europe", type: "special", subtype: "margins", region: "europe" },
+        { key: "Human Resources", type: "special", subtype: "hr" } // New HR Section
     ];
 
     // Find indices for all sections
@@ -101,6 +117,8 @@ export const parseCesimData = (fileBuffer: ArrayBuffer): RoundData => {
         ...h,
         index: findRowIndex(h.key)
     })).filter(h => h.index !== -1).sort((a, b) => a.index - b.index);
+
+    console.log("[Parser] Found Sections:", foundSections.map(s => `${s.key} @ ${s.index}`));
 
     // Helper to extract simple key-value pairs
     const extractSimpleBlock = (startRow: number, endRow: number, target: (team: TeamData, key: string, val: number) => void) => {
@@ -171,7 +189,9 @@ export const parseCesimData = (fileBuffer: ArrayBuffer): RoundData => {
             } else if (section.subtype === "costs") {
                 parseCosts(section.index, endIndex);
             } else if (section.subtype === "margins") {
-                parseMargins(section.index, endIndex);
+                parseMargins(section.index, endIndex, section.region);
+            } else if (section.subtype === "hr") {
+                parseHR(section.index, endIndex, data, teams, translate);
             }
         }
     }
@@ -239,6 +259,21 @@ export const parseCesimData = (fileBuffer: ArrayBuffer): RoundData => {
                         }
                     });
                 }
+            }
+
+            // Marketing Focus
+            if (label.includes("Marketing focus")) {
+                teams.forEach((team, idx) => {
+                    const val = row[idx + 1];
+                    if (val && typeof val === 'string') {
+                        const strategy = translate(val.trim());
+                        if (region !== 'global') {
+                            if (currentTech) {
+                                team.marketingFocus[region][currentTech] = strategy;
+                            }
+                        }
+                    }
+                });
             }
 
             // Legacy / Other Market Data
@@ -455,8 +490,8 @@ export const parseCesimData = (fileBuffer: ArrayBuffer): RoundData => {
         }
     }
 
-    function parseMargins(start: number, end: number) {
-        let currentRegion = "";
+    function parseMargins(start: number, end: number, regionOverride?: string) {
+        let currentRegion = regionOverride || "";
         let currentTech = "";
 
         for (let i = start; i < end; i++) {
@@ -467,27 +502,43 @@ export const parseCesimData = (fileBuffer: ArrayBuffer): RoundData => {
             const label = translate(rawLabel);
 
             if (label.includes("Margin breakdown")) {
+                console.log(`[Margin Parse] Header at ${i}: ${label}`);
                 if (label.includes("USA")) currentRegion = "usa";
                 else if (label.includes("Asia")) currentRegion = "asia";
                 else if (label.includes("Europe")) currentRegion = "europe";
                 continue;
             }
 
-            if (label.startsWith("Tech")) { currentTech = label; continue; }
+            if (label.startsWith("Tech")) {
+                currentTech = label.split(",")[0].trim(); // Ensure only Tech Name is used "Tech 1" not "Tech 1, k units"
+                console.log(`[Margin Parse] Tech at ${i}: ${currentTech} (Reg: ${currentRegion})`);
+                continue;
+            }
 
             if (currentRegion && currentTech) {
                 teams.forEach((team, idx) => {
                     let val = row[idx + 1];
-                    if (typeof val === 'string') val = parseFloat(val.replace(/,/g, ''));
+                    if (typeof val === 'string') {
+                        val = val.trim();
+                        if (val === '') return; // Skip empty strings
+                        val = parseFloat(val.replace(/,/g, ''));
+                    }
+
                     if (typeof val === 'number' && !isNaN(val)) {
                         const regionMargins = team.margins[currentRegion as "usa" | "asia" | "europe"];
                         if (!regionMargins[currentTech]) {
                             regionMargins[currentTech] = { sales: 0, variableCosts: 0, grossProfit: 0, margin: 0, promotion: 0 };
                         }
-                        if (label === "Sales revenue") regionMargins[currentTech].sales = val;
+                        // Normalize label for comparison to handle slight variations if any
+                        const nLabel = label.toLowerCase();
+
+                        if (nLabel === "sales revenue" || label === "Sales revenue") {
+                            console.log(`   Assigning Sales: ${val} to ${team.name}`);
+                            regionMargins[currentTech].sales = val;
+                        }
                         if (label === "Variable production costs" || label === "Total costs of unit sold") regionMargins[currentTech].variableCosts = val;
-                        if (label === "Gross profit") regionMargins[currentTech].grossProfit = val;
-                        if (label === "Gross margin %") regionMargins[currentTech].margin = val;
+                        if (label === "Gross profit" || label === "Sales profit") regionMargins[currentTech].grossProfit = val;
+                        if (label.includes("Gross margin") || label.includes("Contribution margin")) regionMargins[currentTech].margin = val;
                         if (label === "Promotion") regionMargins[currentTech].promotion = val;
                     }
                 });
@@ -510,3 +561,32 @@ export const parseCesimData = (fileBuffer: ArrayBuffer): RoundData => {
         teams
     };
 };
+
+function parseHR(start: number, end: number, data: any[][], teams: TeamData[], translate: (key: string) => string) {
+    for (let i = start + 1; i < end; i++) {
+        const row = data[i];
+        const rawLabel = row && row[0] ? String(row[0]).trim() : "";
+        if (!rawLabel) continue;
+
+        const label = translate(rawLabel);
+
+        teams.forEach((team, idx) => {
+            let val = row[idx + 1];
+            let numVal = 0;
+            if (typeof val === 'string') numVal = parseFloat(val.replace(/,/g, ''));
+            else if (typeof val === 'number') numVal = val;
+
+            if (label.includes("Voluntary turnover rate")) team.hr.turnoverRate = numVal;
+            if (label.includes("Total turnover rate")) team.hr.totalTurnover = numVal;
+            if (label.includes("Staffing level, this round") || label.includes("R&D personnel, this round")) team.hr.staffingLevel = numVal;
+            if (label.includes("Training costs")) team.hr.trainingCost = numVal;
+            if (label.includes("Training budget")) team.hr.trainingBudget = numVal;
+            if (label.includes("Recruitment costs")) team.hr.hiringOneOffCost = numVal;
+            if (label.includes("Redundancy costs")) team.hr.firingOneOffCost = numVal;
+            if (label.includes("Efficiency multiplier")) team.hr.efficiency = numVal;
+            if (label.includes("Salary/month")) team.hr.salary = numVal;
+            if (label.includes("Total available man-days")) team.hr.availableWorkdays = numVal;
+            if (label.includes("Total allocated man-days")) team.hr.allocatedWorkdays = numVal;
+        });
+    }
+}

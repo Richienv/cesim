@@ -169,4 +169,53 @@ export const TRANSLATION_MAP: Record<string, string> = {
     "销售利润": "Gross profit",
     "边际收益明细（按技术划分）, 千 USD, 亚洲": "Margin breakdown by tech, k USD, Asia",
     "边际收益明细（按技术划分）, 千 USD, 欧洲": "Margin breakdown by tech, k USD, Europe",
+    // Semifinal / Initial Round Mappings
+    "中国": "Asia", // Map China to Asia for compatibility
+    "中国 市场份额, %": "Asia market shares, %",
+    "中国, 短期": "Asia, short",
+    "出口到 中国": "Exported to Asia",
+    "在中国销售": "Sales in Asia",
+    "市场报告, 中国": "Market report, Asia",
+    "损益表, 千 USD, 中国": "Income statement, k USD, Asia",
+    "现金流量表, 千 USD, 中国": "Cash flow statement, k USD, Asia",
+    "资产负债表, 千 USD, 中国": "Balance sheet, k USD, Asia",
+    "边际收益明细（按技术划分）, 千 USD, 中国": "Margin breakdown by tech, k USD, Asia",
+    "进口自中国": "Imported from Asia",
+    // Tech Mappings
+    "内燃机技术": "Tech 1",
+    "内燃机技术, 千件": "Tech 1, k units",
+    "混合动力技术": "Tech 2",
+    "混合动力技术, 千件": "Tech 2, k units",
+    "电动技术": "Tech 3",
+    "电动技术, 千件": "Tech 3, k units",
+    "氢动力技术": "Tech 4",
+    "氢动力技术, 千件": "Tech 4, k units",
+    // HR Mappings
+    "人力资源": "Human Resources",
+    "人员自愿流动率, %": "Voluntary turnover rate, %",
+    "总流动率, %": "Total turnover rate, %",
+    "招聘+ / 裁员-": "Hiring / Firing", // Will likely need custom parsing logic for +/- handling
+    "培训成本": "Training costs",
+    "培训预算/月, USD": "Training budget/month, USD",
+    "工作效率乘数": "Efficiency multiplier",
+    "工资/月, USD": "Salary/month, USD",
+    "研发人员数量，上回合": "R&D personnel, last round",
+    "研发人员数量，本回合": "R&D personnel, this round",
+    "薪资和雇用成本": "Salaries and hiring costs", // Likely "Payroll and headcount costs"
+    "裁员成本": "Redundancy costs",
+    "招聘成本": "Recruitment costs",
+    "本回合员工规模": "Staffing level, this round",
+    "人工日数分配, %": "Man-day allocation, %",
+    "可用人工日数的总计": "Total available man-days", // Verify exact translation
+    "可用人工日数总计": "Total available man-days",
+    "已分配人工日数总计": "Total allocated man-days",
+    // Marketing Focus
+    "营销重点": "Marketing focus",
+    "平衡策略": "Balanced",
+    "低价策略": "Low price",
+    "功能": "Features",
+    "扩大用户群": "Broaden user base",
+    "品牌营销": "Brand marketing",
+    // Other new keys found
+    "回合结果，初始回合0": "Round results, Initial round 0",
 };

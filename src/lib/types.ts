@@ -113,6 +113,24 @@ export interface TeamData {
         asia: TechMetrics;
         europe: TechMetrics;
     };
+    hr: {
+        turnoverRate: number;
+        staffingLevel: number;
+        trainingCost: number;
+        hiringOneOffCost: number;
+        firingOneOffCost: number;
+        efficiency: number;
+        salary: number;
+        trainingBudget: number;
+        totalTurnover: number;
+        availableWorkdays: number;
+        allocatedWorkdays: number;
+    };
+    marketingFocus: {
+        usa: Record<string, string>; // tech -> strategy
+        asia: Record<string, string>;
+        europe: Record<string, string>;
+    };
     // Legacy support for existing components until fully migrated
     metrics: {
         [category: string]: {

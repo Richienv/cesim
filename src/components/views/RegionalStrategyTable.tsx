@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { clsx } from 'clsx';
 import { TeamData } from '@/lib/types';
 import { AlertCircle, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
+import { getTechLabel } from '@/lib/constants';
 
 interface RegionalStrategyTableProps {
     teams: TeamData[];
@@ -14,33 +15,13 @@ type SortDirection = 'asc' | 'desc';
 export function RegionalStrategyTable({ teams, region }: RegionalStrategyTableProps) {
     const techs = ['Tech 1', 'Tech 2', 'Tech 3', 'Tech 4'];
     const currency = region === 'usa' ? '$' : region === 'asia' ? '¥' : '€';
-    const flag = region === 'usa' ? '🇺🇸' : region === 'asia' ? '🌏' : '🇪🇺';
+    // const flag = region === 'usa' ? '🇺🇸' : region === 'asia' ? '🌏' : '🇪🇺'; // Unused
 
     const [sortKey, setSortKey] = useState<SortKey>('netProfit');
     const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
 
     const [hideZeroProfit, setHideZeroProfit] = useState(false);
     const [onlyMomentum, setOnlyMomentum] = useState(false);
-
-    const [predictions, setPredictions] = useState<Record<string, { price?: number; marketing?: number; features?: number }>>({});
-
-    const handlePredictionChange = (teamName: string, tech: string, field: 'price' | 'marketing' | 'features', value: string) => {
-        const key = `${teamName}-${tech}`;
-        const numValue = parseFloat(value);
-
-        setPredictions(prev => {
-            const current = prev[key] || {};
-            const updated = { ...current, [field]: isNaN(numValue) ? undefined : numValue };
-
-            // Clean up empty predictions
-            if (updated.price === undefined && updated.marketing === undefined && updated.features === undefined) {
-                const { [key]: _, ...rest } = prev;
-                return rest;
-            }
-
-            return { ...prev, [key]: updated };
-        });
-    };
 
     const handleSort = (key: SortKey) => {
         if (sortKey === key) {
@@ -111,13 +92,6 @@ export function RegionalStrategyTable({ teams, region }: RegionalStrategyTablePr
                     <p className="text-sm text-blue-700">Comparing Momentum with <strong>all teams</strong>. Your strategy: <strong>{momentumStrategy}</strong>.</p>
                 </div>
                 <div className="flex items-center gap-4">
-                    <button
-                        onClick={() => setPredictions({})}
-                        className="px-3 py-1 text-sm font-medium text-red-600 bg-red-50 hover:bg-red-100 rounded-md border border-red-200 transition-colors"
-                        disabled={Object.keys(predictions).length === 0}
-                    >
-                        Reset Predictions
-                    </button>
                     <label className="flex items-center gap-2 cursor-pointer select-none">
                         <input
                             type="checkbox"
@@ -154,7 +128,7 @@ export function RegionalStrategyTable({ teams, region }: RegionalStrategyTablePr
                     // Actual Values (Raw USD from Parser)
                     const actualQty = Math.abs(lData?.sales || 0);
                     const actualRevUSD = mData?.sales || 0;
-                    const actualProfitUSD = mData?.grossProfit || 0;
+                    // const actualProfitUSD = mData?.grossProfit || 0; // Unused
                     const actualPromotionUSD = mData?.promotion || 0;
                     const actualPriceLocal = rPrices?.[tech] || 0;
                     const actualFeatures = rFeatures?.[tech] || 0;
@@ -186,22 +160,10 @@ export function RegionalStrategyTable({ teams, region }: RegionalStrategyTablePr
                     const allocatedFixedUSD = regionFixedCostsUSD * revShare;
                     const allocatedNonOpUSD = regionNonOpCostsUSD * revShare;
 
-                    // Prediction Logic
-                    const predKey = `${team.name}-${tech}`;
-                    const pred = predictions[predKey];
-                    const isPredicted = !!pred;
-
-                    // Inputs are in Local Currency (Price) or USD (Marketing? No, Marketing is usually USD in parser)
-                    // Wait, Marketing (Promotion) in Parser is USD.
-                    // User input for Marketing should probably be USD to match Dashboard?
-                    // But if Price is RMB, maybe Marketing should be RMB?
-                    // Let's assume Marketing Input is USD (since it was 100k, not 800k).
-                    // Actually, let's keep Marketing in USD for consistency with Profit.
-
-                    const priceLocal = pred?.price !== undefined ? pred.price : actualPriceLocal;
-                    const marketingUSD = pred?.marketing !== undefined ? pred.marketing : actualPromotionUSD;
-                    const features = pred?.features !== undefined ? pred.features : actualFeatures;
-                    const sales = actualQty; // Sales is no longer an input
+                    const priceLocal = actualPriceLocal;
+                    const marketingUSD = actualPromotionUSD;
+                    // const features = actualFeatures; // Unused
+                    const sales = actualQty;
 
                     // Recalculate derived metrics
                     // We need to calculate in one currency, then convert if needed.
@@ -221,18 +183,16 @@ export function RegionalStrategyTable({ teams, region }: RegionalStrategyTablePr
                     return {
                         team,
                         name: team.name,
-                        isPredicted,
-                        predKey,
 
                         unitCost: unitCostLocal, // Display in Local
-                        price: priceLocal,       // Calculation (Predicted)
+                        price: priceLocal,       // Display (Actual)
                         actualPrice: actualPriceLocal, // Display (Actual)
-                        features,                // Calculation (Predicted)
+                        features: actualFeatures,                // Display (Actual)
                         actualFeatures,          // Display (Actual)
                         share,
                         demand: actualDemand,
                         sales,
-                        marketing: marketingUSD, // Calculation (Predicted)
+                        marketing: marketingUSD, // Display (Actual)
                         actualMarketing: actualPromotionUSD, // Display (Actual)
                         contribution: techContributionUSD, // Display in USD
                         ebitda: techEBITDA_USD,           // Display in USD
@@ -268,11 +228,13 @@ export function RegionalStrategyTable({ teams, region }: RegionalStrategyTablePr
 
                 if (sortedData.length === 0) return null;
 
+                const techName = getTechLabel(tech);
+
                 return (
                     <div key={tech} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                         <div className="bg-gray-50 px-6 py-4 border-b border-gray-200 flex justify-between items-center">
                             <h4 className="font-bold text-gray-900 uppercase tracking-wider text-lg">
-                                [{tech.toUpperCase()} - {region.toUpperCase()} {region === 'usa' ? '🇺🇸' : region === 'asia' ? '🇨🇳' : '🇪🇺'}]
+                                [{techName} - {region.toUpperCase()} {region === 'usa' ? '🇺🇸' : region === 'asia' ? '🇨🇳' : '🇪🇺'}]
                             </h4>
                             <span className="text-base font-medium bg-white px-2 py-1 rounded border border-gray-200 text-gray-500">
                                 {currency}
@@ -297,7 +259,7 @@ export function RegionalStrategyTable({ teams, region }: RegionalStrategyTablePr
                                 </thead>
                                 <tbody className="divide-y divide-gray-100">
                                     {sortedData.map((row) => (
-                                        <tr key={row.name} className={clsx("hover:bg-gray-50 transition-colors", row.isPredicted ? "bg-red-50" : "", row.name === 'Momentum' ? "bg-blue-50/30" : "")}>
+                                        <tr key={row.name} className={clsx("hover:bg-gray-50 transition-colors", row.name === 'Momentum' ? "bg-blue-50/30" : "")}>
                                             <td className={clsx("px-4 py-3 font-medium", row.name === 'Momentum' ? "text-blue-700 font-bold" : "text-gray-900")}>
                                                 {row.name}
                                             </td>
@@ -305,28 +267,10 @@ export function RegionalStrategyTable({ teams, region }: RegionalStrategyTablePr
                                                 {currency}{row.unitCost.toLocaleString(undefined, { maximumFractionDigits: 0 })}
                                             </td>
                                             <td className="px-4 py-3 text-right font-bold text-blue-600 bg-blue-50/30">
-                                                <div className="flex items-center justify-end gap-2">
-                                                    <span>{currency}{row.actualPrice.toFixed(0)}</span>
-                                                    <input
-                                                        type="number"
-                                                        className="w-20 px-1 py-0.5 text-base border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-right"
-                                                        placeholder={row.actualPrice.toFixed(0)}
-                                                        value={predictions[row.predKey]?.price ?? ''}
-                                                        onChange={(e) => handlePredictionChange(row.name, tech, 'price', e.target.value)}
-                                                    />
-                                                </div>
+                                                <span>{currency}{row.actualPrice.toLocaleString(undefined, { maximumFractionDigits: 0 })}</span>
                                             </td>
                                             <td className="px-4 py-3 text-right text-gray-600">
-                                                <div className="flex items-center justify-end gap-2">
-                                                    <span>{row.actualFeatures}</span>
-                                                    <input
-                                                        type="number"
-                                                        className="w-16 px-1 py-0.5 text-base border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-right"
-                                                        placeholder={row.actualFeatures.toString()}
-                                                        value={predictions[row.predKey]?.features ?? ''}
-                                                        onChange={(e) => handlePredictionChange(row.name, tech, 'features', e.target.value)}
-                                                    />
-                                                </div>
+                                                <span>{row.actualFeatures}</span>
                                             </td>
                                             <td className="px-4 py-3 text-right text-gray-600">{row.share.toFixed(1)}%</td>
                                             <td className="px-4 py-3 text-right text-gray-600">{row.demand.toLocaleString()}</td>
@@ -334,17 +278,7 @@ export function RegionalStrategyTable({ teams, region }: RegionalStrategyTablePr
                                                 {row.sales.toLocaleString()}
                                             </td>
                                             <td className="px-4 py-3 text-right text-gray-600">
-                                                <div className="flex items-center justify-end gap-2">
-                                                    <span>${(row.actualMarketing / 1000).toFixed(0)}k</span>
-                                                    <input
-                                                        type="number"
-                                                        className="w-20 px-1 py-0.5 text-base border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-right"
-                                                        placeholder={(row.actualMarketing / 1000).toFixed(0)}
-                                                        value={predictions[row.predKey]?.marketing ? (predictions[row.predKey]!.marketing! / 1000).toString() : ''}
-                                                        onChange={(e) => handlePredictionChange(row.name, tech, 'marketing', (parseFloat(e.target.value) * 1000).toString())}
-                                                    />
-                                                    <span className="text-sm text-gray-400 ml-1">k</span>
-                                                </div>
+                                                <span>${(row.actualMarketing / 1000).toLocaleString(undefined, { maximumFractionDigits: 0 })}k</span>
                                             </td>
                                             <td className={clsx("px-4 py-3 text-right font-bold", row.contribution >= 0 ? "text-green-600" : "text-red-600")}>
                                                 ${(row.contribution / 1000).toFixed(0)}k
