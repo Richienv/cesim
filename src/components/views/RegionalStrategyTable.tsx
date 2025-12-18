@@ -267,7 +267,14 @@ export function RegionalStrategyTable({ teams, region }: RegionalStrategyTablePr
                                                 {currency}{row.unitCost.toLocaleString(undefined, { maximumFractionDigits: 0 })}
                                             </td>
                                             <td className="px-4 py-3 text-right font-bold text-blue-600 bg-blue-50/30">
-                                                <span>{currency}{row.actualPrice.toLocaleString(undefined, { maximumFractionDigits: 0 })}</span>
+                                                <div className="flex flex-col items-end">
+                                                    <span>{currency}{row.actualPrice.toLocaleString(undefined, { maximumFractionDigits: 0 })}</span>
+                                                    {row.unitCost > 0 && (
+                                                        <span className="text-xs font-normal text-blue-400">
+                                                            ({(((row.actualPrice - row.unitCost) / row.unitCost) * 100).toFixed(1)}%)
+                                                        </span>
+                                                    )}
+                                                </div>
                                             </td>
                                             <td className="px-4 py-3 text-right text-gray-600">
                                                 <span>{row.actualFeatures}</span>
@@ -278,16 +285,135 @@ export function RegionalStrategyTable({ teams, region }: RegionalStrategyTablePr
                                                 {row.sales.toLocaleString()}
                                             </td>
                                             <td className="px-4 py-3 text-right text-gray-600">
-                                                <span>${(row.actualMarketing / 1000).toLocaleString(undefined, { maximumFractionDigits: 0 })}k</span>
+                                                {(() => {
+                                                    const val = row.actualMarketing;
+                                                    const absVal = Math.abs(val);
+                                                    if (absVal >= 1000000) {
+                                                        return (
+                                                            <span className="bg-gradient-to-r from-emerald-600 via-emerald-400 to-emerald-600 bg-clip-text text-transparent font-extrabold animate-shimmer bg-[length:200%_auto]">
+                                                                ${(absVal / 1000000).toFixed(1)}M
+                                                            </span>
+                                                        );
+                                                    } else if (absVal >= 100000) {
+                                                        return (
+                                                            <span className="bg-gradient-to-r from-yellow-600 via-yellow-400 to-yellow-600 bg-clip-text text-transparent font-extrabold animate-shimmer bg-[length:200%_auto]">
+                                                                ${(absVal / 1000).toFixed(0)}K
+                                                            </span>
+                                                        );
+                                                    }
+                                                    return <span>${(absVal / 1000).toFixed(0)}K</span>;
+                                                })()}
                                             </td>
-                                            <td className={clsx("px-4 py-3 text-right font-bold", row.contribution >= 0 ? "text-green-600" : "text-red-600")}>
-                                                ${(row.contribution / 1000).toFixed(0)}k
+                                            <td className="px-4 py-3 text-right font-bold">
+                                                {(() => {
+                                                    const val = row.contribution;
+                                                    const absVal = Math.abs(val);
+                                                    const isSemanticallyNegative = val < 0;
+
+                                                    let content = "";
+                                                    if (absVal >= 1000000) content = `$${(absVal / 1000000).toFixed(1)}M`;
+                                                    else content = `$${(absVal / 1000).toFixed(0)}K`;
+
+                                                    if (isSemanticallyNegative) {
+                                                        return (
+                                                            <span className="bg-gradient-to-r from-red-600 via-red-400 to-red-600 bg-clip-text text-transparent font-extrabold animate-shimmer bg-[length:200%_auto]">
+                                                                -{content}
+                                                            </span>
+                                                        );
+                                                    } else if (absVal >= 1000000) { // Jade for >1M
+                                                        return (
+                                                            <span className="bg-gradient-to-r from-emerald-600 via-emerald-400 to-emerald-600 bg-clip-text text-transparent font-extrabold animate-shimmer bg-[length:200%_auto]">
+                                                                {content}
+                                                            </span>
+                                                        );
+                                                    } else if (absVal >= 100000) { // Gold for >100K
+                                                        return (
+                                                            <span className="bg-gradient-to-r from-yellow-600 via-yellow-400 to-yellow-600 bg-clip-text text-transparent font-extrabold animate-shimmer bg-[length:200%_auto]">
+                                                                {content}
+                                                            </span>
+                                                        );
+                                                    } else { // Green for others
+                                                        return (
+                                                            <span className="bg-gradient-to-r from-green-600 via-green-400 to-green-600 bg-clip-text text-transparent font-extrabold animate-shimmer bg-[length:200%_auto]">
+                                                                {content}
+                                                            </span>
+                                                        );
+                                                    }
+                                                })()}
                                             </td>
-                                            <td className={clsx("px-4 py-3 text-right font-bold", row.ebitda >= 0 ? "text-purple-600" : "text-red-600")}>
-                                                ${(row.ebitda / 1000).toFixed(0)}k
+                                            <td className="px-4 py-3 text-right font-bold">
+                                                {(() => {
+                                                    const val = row.ebitda;
+                                                    const absVal = Math.abs(val);
+                                                    const isSemanticallyNegative = val < 0;
+
+                                                    let content = "";
+                                                    if (absVal >= 1000000) content = `$${(absVal / 1000000).toFixed(1)}M`;
+                                                    else content = `$${(absVal / 1000).toFixed(0)}K`;
+
+                                                    if (isSemanticallyNegative) {
+                                                        return (
+                                                            <span className="bg-gradient-to-r from-red-600 via-red-400 to-red-600 bg-clip-text text-transparent font-extrabold animate-shimmer bg-[length:200%_auto]">
+                                                                -{content}
+                                                            </span>
+                                                        );
+                                                    } else if (absVal >= 1000000) {
+                                                        return (
+                                                            <span className="bg-gradient-to-r from-emerald-600 via-emerald-400 to-emerald-600 bg-clip-text text-transparent font-extrabold animate-shimmer bg-[length:200%_auto]">
+                                                                {content}
+                                                            </span>
+                                                        );
+                                                    } else if (absVal >= 100000) {
+                                                        return (
+                                                            <span className="bg-gradient-to-r from-yellow-600 via-yellow-400 to-yellow-600 bg-clip-text text-transparent font-extrabold animate-shimmer bg-[length:200%_auto]">
+                                                                {content}
+                                                            </span>
+                                                        );
+                                                    } else {
+                                                        return (
+                                                            <span className="bg-gradient-to-r from-purple-600 via-purple-400 to-purple-600 bg-clip-text text-transparent font-extrabold animate-shimmer bg-[length:200%_auto]">
+                                                                {content}
+                                                            </span>
+                                                        );
+                                                    }
+                                                })()}
                                             </td>
-                                            <td className={clsx("px-4 py-3 text-right font-bold", row.netProfit >= 0 ? "text-green-600" : "text-red-600")}>
-                                                ${(row.netProfit / 1000).toFixed(0)}k
+                                            <td className="px-4 py-3 text-right font-bold">
+                                                {(() => {
+                                                    const val = row.netProfit;
+                                                    const absVal = Math.abs(val);
+                                                    const isSemanticallyNegative = val < 0;
+
+                                                    let content = "";
+                                                    if (absVal >= 1000000) content = `$${(absVal / 1000000).toFixed(1)}M`;
+                                                    else content = `$${(absVal / 1000).toFixed(0)}K`;
+
+                                                    if (isSemanticallyNegative) {
+                                                        return (
+                                                            <span className="bg-gradient-to-r from-red-600 via-red-400 to-red-600 bg-clip-text text-transparent font-extrabold animate-shimmer bg-[length:200%_auto]">
+                                                                -{content}
+                                                            </span>
+                                                        );
+                                                    } else if (absVal >= 1000000) {
+                                                        return (
+                                                            <span className="bg-gradient-to-r from-emerald-600 via-emerald-400 to-emerald-600 bg-clip-text text-transparent font-extrabold animate-shimmer bg-[length:200%_auto]">
+                                                                {content}
+                                                            </span>
+                                                        );
+                                                    } else if (absVal >= 100000) {
+                                                        return (
+                                                            <span className="bg-gradient-to-r from-yellow-600 via-yellow-400 to-yellow-600 bg-clip-text text-transparent font-extrabold animate-shimmer bg-[length:200%_auto]">
+                                                                {content}
+                                                            </span>
+                                                        );
+                                                    } else {
+                                                        return (
+                                                            <span className="bg-gradient-to-r from-green-600 via-green-400 to-green-600 bg-clip-text text-transparent font-extrabold animate-shimmer bg-[length:200%_auto]">
+                                                                {content}
+                                                            </span>
+                                                        );
+                                                    }
+                                                })()}
                                             </td>
                                         </tr>
                                     ))}
