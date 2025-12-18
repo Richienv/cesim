@@ -1,7 +1,7 @@
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { clsx } from 'clsx';
 import { TeamData } from '@/lib/types';
-import { AlertCircle, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
+import { ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
 import { getTechLabel } from '@/lib/constants';
 
 interface RegionalStrategyTableProps {
@@ -82,7 +82,7 @@ export function RegionalStrategyTable({ teams, region }: RegionalStrategyTablePr
     // 2. Use All Teams (No Filtering)
     const relevantTeams = teams;
 
-    if (!heroTeam) return <div>Momentum/"多财多亿" team not found.</div>;
+    if (!heroTeam) return <div>Momentum/&quot;多财多亿&quot; team not found.</div>;
 
     return (
         <div className="space-y-8">
