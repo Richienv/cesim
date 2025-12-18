@@ -23,7 +23,7 @@ allFiles.forEach(f => {
                 }
             }
         }
-    } catch (e) {
+    } catch (e: any) {
         console.log(`Error reading ${f}: ${e.message}`);
     }
 });
