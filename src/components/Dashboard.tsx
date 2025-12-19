@@ -235,72 +235,7 @@ export function Dashboard({ data }: DashboardProps) {
                             );
                         })}
                     </div>
-                    {/* Production Overview Section */}
-                    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-6">
-                        <h3 className="text-xl font-semibold text-gray-900 mb-6 flex items-center gap-2">
-                            <Factory className="w-5 h-5 text-gray-600" />
-                            Production Overview
-                        </h3>
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                            {/* Total Production Output */}
-                            <div className="h-[300px]">
-                                <h4 className="text-base font-medium text-gray-500 mb-4 text-center">Total Production Output (Units)</h4>
-                                <ResponsiveContainer width="100%" height="100%">
-                                    <BarChart
-                                        data={teams.map(t => {
-                                            const totalOutput = Object.values(t.manufacturing.usa.inHouse).reduce((a, b) => a + b, 0) +
-                                                Object.values(t.manufacturing.asia.inHouse).reduce((a, b) => a + b, 0);
-                                            return { name: t.name, value: totalOutput };
-                                        })}
-                                        margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-                                    >
-                                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                                        <XAxis dataKey="name" tick={{ fontSize: 10 }} interval={0} angle={-45} textAnchor="end" height={60} />
-                                        <YAxis tickFormatter={(val) => `${(val / 1000).toFixed(0)}k`} />
-                                        <Tooltip formatter={(val: number) => [`${val.toLocaleString()} units`, 'Output']} />
-                                        <Bar dataKey="value" name="Output" radius={[4, 4, 0, 0]}>
-                                            {teams.map((entry, index) => (
-                                                <Cell key={`cell-${index}`} fill="#3b82f6" />
-                                            ))}
-                                        </Bar>
-                                    </BarChart>
-                                </ResponsiveContainer>
-                            </div>
 
-                            {/* Avg Capacity Usage */}
-                            <div className="h-[300px]">
-                                <h4 className="text-base font-medium text-gray-500 mb-4 text-center">Avg. Capacity Usage (%)</h4>
-                                <ResponsiveContainer width="100%" height="100%">
-                                    <BarChart
-                                        data={teams.map(t => {
-                                            const caps = [
-                                                ...Object.values(t.manufacturing.usa.capacityUsage || {}),
-                                                ...Object.values(t.manufacturing.asia.capacityUsage || {})
-                                            ];
-                                            const avg = caps.length ? caps.reduce((a, b) => a + b, 0) / caps.length : 0;
-                                            return { name: t.name, value: avg };
-                                        })}
-                                        margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-                                    >
-                                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                                        <XAxis dataKey="name" tick={{ fontSize: 10 }} interval={0} angle={-45} textAnchor="end" height={60} />
-                                        <YAxis domain={[0, 100]} />
-                                        <Tooltip formatter={(val: number) => [`${val.toFixed(1)}%`, 'Usage']} />
-                                        <Bar dataKey="value" name="Capacity" radius={[4, 4, 0, 0]}>
-                                            {teams.map((entry, index) => {
-                                                const caps = [
-                                                    ...Object.values(entry.manufacturing.usa.capacityUsage || {}),
-                                                    ...Object.values(entry.manufacturing.asia.capacityUsage || {})
-                                                ];
-                                                const avg = caps.length ? caps.reduce((a, b) => a + b, 0) / caps.length : 0;
-                                                return <Cell key={`cell-${index}`} fill={avg > 90 ? "#ef4444" : "#22c55e"} />;
-                                            })}
-                                        </Bar>
-                                    </BarChart>
-                                </ResponsiveContainer>
-                            </div>
-                        </div>
-                    </div>
                     {/* Competitive Strategy Analysis */}
                     <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-6">
                         <div className="flex flex-col gap-6 mb-8">
@@ -1249,6 +1184,73 @@ export function Dashboard({ data }: DashboardProps) {
                                                 );
                                             })}
                                             <LabelList dataKey="value" position="top" formatter={(val: any) => `$${val.toFixed(0)}`} style={{ fontSize: '10px', fill: '#6b7280' }} />
+                                        </Bar>
+                                    </BarChart>
+                                </ResponsiveContainer>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Production Overview Section */}
+                    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-6">
+                        <h3 className="text-xl font-semibold text-gray-900 mb-6 flex items-center gap-2">
+                            <Factory className="w-5 h-5 text-gray-600" />
+                            Production Overview
+                        </h3>
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            {/* Total Production Output */}
+                            <div className="h-[300px]">
+                                <h4 className="text-base font-medium text-gray-500 mb-4 text-center">Total Production Output (Units)</h4>
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <BarChart
+                                        data={teams.map(t => {
+                                            const totalOutput = Object.values(t.manufacturing.usa.inHouse).reduce((a, b) => a + b, 0) +
+                                                Object.values(t.manufacturing.asia.inHouse).reduce((a, b) => a + b, 0);
+                                            return { name: t.name, value: totalOutput };
+                                        })}
+                                        margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                                    >
+                                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                                        <XAxis dataKey="name" tick={{ fontSize: 10 }} interval={0} angle={-45} textAnchor="end" height={60} />
+                                        <YAxis tickFormatter={(val) => `${(val / 1000).toFixed(0)}k`} />
+                                        <Tooltip formatter={(val: number) => [`${val.toLocaleString()} units`, 'Output']} />
+                                        <Bar dataKey="value" name="Output" radius={[4, 4, 0, 0]}>
+                                            {teams.map((entry, index) => (
+                                                <Cell key={`cell-${index}`} fill="#3b82f6" />
+                                            ))}
+                                        </Bar>
+                                    </BarChart>
+                                </ResponsiveContainer>
+                            </div>
+
+                            {/* Avg Capacity Usage */}
+                            <div className="h-[300px]">
+                                <h4 className="text-base font-medium text-gray-500 mb-4 text-center">Avg. Capacity Usage (%)</h4>
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <BarChart
+                                        data={teams.map(t => {
+                                            const caps = [
+                                                ...Object.values(t.manufacturing.usa.capacityUsage || {}),
+                                                ...Object.values(t.manufacturing.asia.capacityUsage || {})
+                                            ];
+                                            const avg = caps.length ? caps.reduce((a, b) => a + b, 0) / caps.length : 0;
+                                            return { name: t.name, value: avg };
+                                        })}
+                                        margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                                    >
+                                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                                        <XAxis dataKey="name" tick={{ fontSize: 10 }} interval={0} angle={-45} textAnchor="end" height={60} />
+                                        <YAxis domain={[0, 100]} />
+                                        <Tooltip formatter={(val: number) => [`${val.toFixed(1)}%`, 'Usage']} />
+                                        <Bar dataKey="value" name="Capacity" radius={[4, 4, 0, 0]}>
+                                            {teams.map((entry, index) => {
+                                                const caps = [
+                                                    ...Object.values(entry.manufacturing.usa.capacityUsage || {}),
+                                                    ...Object.values(entry.manufacturing.asia.capacityUsage || {})
+                                                ];
+                                                const avg = caps.length ? caps.reduce((a, b) => a + b, 0) / caps.length : 0;
+                                                return <Cell key={`cell-${index}`} fill={avg > 90 ? "#ef4444" : "#22c55e"} />;
+                                            })}
                                         </Bar>
                                     </BarChart>
                                 </ResponsiveContainer>

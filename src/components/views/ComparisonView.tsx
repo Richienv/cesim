@@ -12,7 +12,19 @@ import { DetailedMarketAnalysis } from './DetailedMarketAnalysis';
 import { RegionalStrategyTable } from './RegionalStrategyTable';
 import { HiddenInsightsTable } from './HiddenInsightsTable';
 import { LogisticsComparisonTable } from './LogisticsComparisonTable';
+import { ComparativeScatterPlot } from '../charts/ComparativeScatterPlot';
 import { getTechLabel, TECH_NAME_MAP } from '@/lib/constants';
+
+const TEAM_COLORS = [
+    '#3b82f6', // bright blue
+    '#ef4444', // red
+    '#10b981', // emerald
+    '#f59e0b', // amber
+    '#8b5cf6', // violet
+    '#ec4899', // pink
+    '#06b6d4', // cyan
+    '#84cc16', // lime
+];
 
 interface ComparisonViewProps {
     teams: TeamData[];
@@ -21,6 +33,13 @@ interface ComparisonViewProps {
 export function ComparisonView({ teams }: ComparisonViewProps) {
     const [activeTab, setActiveTab] = useState<'comparison' | 'leaderboard'>('leaderboard');
     const [selectedRegion, setSelectedRegion] = useState<'global' | 'usa' | 'asia' | 'europe'>('global');
+    const [activeTech, setActiveTech] = useState<string>('Tech 1');
+    const [scatterRegion, setScatterRegion] = useState<'usa' | 'asia' | 'europe'>('usa');
+    const [focusedTeam, setFocusedTeam] = useState<string | null>(null);
+
+    const handleTeamClick = (team: string) => {
+        setFocusedTeam(prev => prev === team ? null : team);
+    };
 
     const rankings = useMemo(() => calculateRankings(teams), [teams]);
 
@@ -313,6 +332,200 @@ export function ComparisonView({ teams }: ComparisonViewProps) {
                                     </ResponsiveContainer>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+
+                    {/* Competitive Landscape (Scatter Analysis) */}
+                    <div className="mb-8 bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                        <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 mb-6">
+                            <h3 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
+                                <Target className="w-5 h-5 text-indigo-600" />
+                                Competitive Landscape <span className="text-base font-normal text-gray-500">(Scatter Analysis)</span>
+                            </h3>
+
+                            <div className="flex flex-col sm:flex-row gap-4 w-full xl:w-auto">
+                                {/* Region Selector */}
+                                <div className="flex bg-gray-100 p-1 rounded-lg self-start sm:self-auto">
+                                    {['USA', 'Asia', 'Europe'].map((r) => (
+                                        <button
+                                            key={r}
+                                            onClick={() => setScatterRegion(r.toLowerCase() as any)}
+                                            className={clsx(
+                                                "px-3 py-1 text-sm font-medium rounded-md transition-all",
+                                                scatterRegion === r.toLowerCase()
+                                                    ? "bg-white text-gray-900 shadow-sm"
+                                                    : "text-gray-500 hover:text-gray-700"
+                                            )}
+                                        >
+                                            {r}
+                                        </button>
+                                    ))}
+                                </div>
+
+                                {/* Tech Selector */}
+                                <div className="flex bg-gray-100 p-1 rounded-lg self-start sm:self-auto overflow-x-auto max-w-full">
+                                    {['Tech 1', 'Tech 2', 'Tech 3', 'Tech 4'].map((tech) => (
+                                        <button
+                                            key={tech}
+                                            onClick={() => setActiveTech(tech)}
+                                            className={clsx(
+                                                "px-3 py-1 text-sm font-medium rounded-md transition-all whitespace-nowrap",
+                                                activeTech === tech
+                                                    ? "bg-white text-indigo-600 shadow-sm"
+                                                    : "text-gray-500 hover:text-gray-700"
+                                            )}
+                                        >
+                                            {tech}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="space-y-12">
+                            {[activeTech].map((tech) => {
+                                const rKey = scatterRegion;
+                                let currency = '$';
+                                if (rKey === 'asia') currency = '¥';
+                                if (rKey === 'europe') currency = '€';
+
+                                const scatterData = teams.map((t, idx) => {
+                                    const mData = t.margins[rKey]?.[tech];
+                                    const lData = t.logistics[rKey];
+                                    const price = t.prices[rKey]?.[tech] || 0;
+                                    const features = t.features[rKey]?.[tech] || 0;
+                                    const marketShare = t.marketShare[rKey]?.[tech] || 0;
+
+                                    // Financial Calculations
+                                    const rev = mData?.sales || 0;
+                                    const profit = mData?.grossProfit || 0;
+                                    const promotion = mData?.promotion || 0;
+
+                                    // Region Totals for Allocation
+                                    const regionTotalSales = Object.values(t.margins[rKey] || {}).reduce((sum, item) => sum + item.sales, 0);
+                                    const revShare = regionTotalSales > 0 ? rev / regionTotalSales : 0;
+                                    const regionEBITDA = t.financials.incomeStatement[rKey].ebitda || 0;
+                                    const regionNetProfit = t.financials.incomeStatement[rKey].netProfit || 0;
+
+                                    const regionContribution = Object.values(t.margins[rKey] || {}).reduce((sum, item) => sum + (item.grossProfit - item.promotion), 0);
+                                    const regionFixedCosts = regionContribution - regionEBITDA;
+                                    const regionNonOpCosts = regionEBITDA - regionNetProfit;
+
+                                    const allocatedFixed = regionFixedCosts * revShare;
+                                    const allocatedNonOp = regionNonOpCosts * revShare;
+
+                                    const techContribution = profit - promotion;
+                                    const techEBITDA = techContribution - allocatedFixed;
+                                    const techNetProfit = techEBITDA - allocatedNonOp;
+
+                                    return {
+                                        name: t.name,
+                                        price,
+                                        features,
+                                        marketShare,
+                                        netProfit: techNetProfit,
+                                        promotion, // Includes promotion in data
+                                        fill: TEAM_COLORS[idx % TEAM_COLORS.length] // Consistent color assignment
+                                    };
+                                });
+
+                                return (
+                                    <div key={tech} className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+                                        <div className="flex items-center gap-2 mb-4">
+                                            <div className="px-3 py-1 bg-indigo-50 text-indigo-700 rounded-lg font-bold text-sm border border-indigo-100">
+                                                {tech}
+                                            </div>
+                                            <span className="text-sm text-gray-400">in {scatterRegion.toUpperCase()}</span>
+                                        </div>
+
+                                        {/* Grid Layout: 3 Rows (Strategies) x 2 Columns (Outcomes) */}
+                                        <div className="space-y-12">
+
+                                            {/* Row 1: Price Strategy */}
+                                            <div>
+                                                <h4 className="text-lg font-semibold text-gray-800 mb-4 border-l-4 border-indigo-500 pl-3">Price Strategy Impact</h4>
+                                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                                    <ComparativeScatterPlot
+                                                        title="Price vs Market Share"
+                                                        xLabel={`Price (${currency})`}
+                                                        yLabel="Market Share (%)"
+                                                        data={scatterData.map(d => ({ name: d.name, x: d.price, y: d.marketShare, fill: d.fill }))}
+                                                        xFormatter={(val) => `${currency}${val}`}
+                                                        yFormatter={(val) => `${val.toFixed(1)}%`}
+                                                        focusedTeam={focusedTeam}
+                                                        onTeamClick={handleTeamClick}
+                                                    />
+                                                    <ComparativeScatterPlot
+                                                        title="Price vs Profit"
+                                                        xLabel={`Price (${currency})`}
+                                                        yLabel={`Net Profit (${currency})`}
+                                                        data={scatterData.map(d => ({ name: d.name, x: d.price, y: d.netProfit, fill: d.fill }))}
+                                                        xFormatter={(val) => `${currency}${val}`}
+                                                        yFormatter={(val) => `${currency}${(val / 1000).toFixed(0)}k`}
+                                                        focusedTeam={focusedTeam}
+                                                        onTeamClick={handleTeamClick}
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            {/* Row 2: Product Strategy (Features) */}
+                                            <div>
+                                                <h4 className="text-lg font-semibold text-gray-800 mb-4 border-l-4 border-indigo-500 pl-3">Product Strategy Impact (Features)</h4>
+                                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                                    <ComparativeScatterPlot
+                                                        title="Features vs Market Share"
+                                                        xLabel="Features (Count)"
+                                                        yLabel="Market Share (%)"
+                                                        data={scatterData.map(d => ({ name: d.name, x: d.features, y: d.marketShare, fill: d.fill }))}
+                                                        xFormatter={(val) => val.toFixed(1)}
+                                                        yFormatter={(val) => `${val.toFixed(1)}%`}
+                                                        focusedTeam={focusedTeam}
+                                                        onTeamClick={handleTeamClick}
+                                                    />
+                                                    <ComparativeScatterPlot
+                                                        title="Features vs Profit"
+                                                        xLabel="Features (Count)"
+                                                        yLabel={`Net Profit (${currency})`}
+                                                        data={scatterData.map(d => ({ name: d.name, x: d.features, y: d.netProfit, fill: d.fill }))}
+                                                        xFormatter={(val) => val.toFixed(1)}
+                                                        yFormatter={(val) => `${currency}${(val / 1000).toFixed(0)}k`}
+                                                        focusedTeam={focusedTeam}
+                                                        onTeamClick={handleTeamClick}
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            {/* Row 3: Marketing Strategy */}
+                                            <div>
+                                                <h4 className="text-lg font-semibold text-gray-800 mb-4 border-l-4 border-indigo-500 pl-3">Marketing Strategy Impact</h4>
+                                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                                    <ComparativeScatterPlot
+                                                        title="Marketing vs Market Share"
+                                                        xLabel={`Marketing Spend (${currency})`}
+                                                        yLabel="Market Share (%)"
+                                                        data={scatterData.map(d => ({ name: d.name, x: d.promotion, y: d.marketShare, fill: d.fill }))}
+                                                        xFormatter={(val) => `${currency}${(val / 1000).toFixed(0)}k`}
+                                                        yFormatter={(val) => `${val.toFixed(1)}%`}
+                                                        focusedTeam={focusedTeam}
+                                                        onTeamClick={handleTeamClick}
+                                                    />
+                                                    <ComparativeScatterPlot
+                                                        title="Marketing vs Profit"
+                                                        xLabel={`Marketing Spend (${currency})`}
+                                                        yLabel={`Net Profit (${currency})`}
+                                                        data={scatterData.map(d => ({ name: d.name, x: d.promotion, y: d.netProfit, fill: d.fill }))}
+                                                        xFormatter={(val) => `${currency}${(val / 1000).toFixed(0)}k`}
+                                                        yFormatter={(val) => `${currency}${(val / 1000).toFixed(0)}k`}
+                                                        focusedTeam={focusedTeam}
+                                                        onTeamClick={handleTeamClick}
+                                                    />
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                );
+                            })}
                         </div>
                     </div>
 
