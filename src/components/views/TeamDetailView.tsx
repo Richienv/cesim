@@ -301,64 +301,77 @@ export function TeamDetailView({ teams, initialTeam }: TeamDetailViewProps) {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     <MetricCard
                         title="Sales Revenue"
-                        value={`$${(teamMetrics.revenue / 1000).toFixed(1)}k`}
-                        icon={<DollarSign className="text-blue-500" />}
+                        value={teamMetrics.revenue >= 1000000 ? `$${(teamMetrics.revenue / 1000000).toFixed(2)}M` : `$${(teamMetrics.revenue / 1000).toFixed(0)}k`}
+                        gradient="from-amber-100 via-yellow-100 to-amber-200"
+                        borderColor="border-amber-200"
                     />
                     <MetricCard
                         title="Variable Costs"
-                        value={`$${(teamMetrics.globalVariableCosts / 1000).toFixed(1)}k`}
-                        icon={<Minus className="text-red-400" />}
+                        value={teamMetrics.globalVariableCosts >= 1000000 ? `$${(teamMetrics.globalVariableCosts / 1000000).toFixed(2)}M` : `$${(teamMetrics.globalVariableCosts / 1000).toFixed(0)}k`}
                         subtext="Production & Logistics"
+                        gradient="from-red-50 via-red-100 to-red-200"
+                        borderColor="border-red-200"
                     />
                     <MetricCard
                         title="Gross Profit"
-                        value={`$${(teamMetrics.globalGrossProfit / 1000).toFixed(1)}k`}
-                        icon={<TrendingUp className="text-green-500" />}
+                        value={teamMetrics.globalGrossProfit >= 1000000 ? `$${(teamMetrics.globalGrossProfit / 1000000).toFixed(2)}M` : `$${(teamMetrics.globalGrossProfit / 1000).toFixed(0)}k`}
                         subtext={`${((teamMetrics.globalGrossProfit / teamMetrics.revenue) * 100).toFixed(1)}% Margin`}
+                        gradient="from-emerald-50 via-emerald-100 to-emerald-200"
+                        borderColor="border-emerald-200"
                     />
                     <MetricCard
                         title="Marketing"
-                        value={`$${(teamMetrics.promo / 1000).toFixed(1)}k`}
-                        icon={<Target className="text-pink-500" />}
+                        value={teamMetrics.promo >= 1000000 ? `$${(teamMetrics.promo / 1000000).toFixed(2)}M` : `$${(teamMetrics.promo / 1000).toFixed(0)}k`}
+                        gradient="from-rose-50 via-rose-100 to-rose-200"
+                        borderColor="border-rose-200"
                     />
                     <MetricCard
                         title="Transport & Tariffs"
-                        value={`$${(teamMetrics.transportation / 1000).toFixed(1)}k`}
-                        icon={<Truck className="text-orange-500" />}
+                        value={teamMetrics.transportation >= 1000000 ? `$${(teamMetrics.transportation / 1000000).toFixed(2)}M` : `$${(teamMetrics.transportation / 1000).toFixed(0)}k`}
+                        gradient="from-orange-50 via-orange-100 to-orange-200"
+                        borderColor="border-orange-200"
                     />
                     <MetricCard
                         title="R&D & Admin"
-                        value={`$${((teamMetrics.rnd + (selectedTeam.financials.incomeStatement.global["Administration"] || 0)) / 1000).toFixed(1)}k`}
-                        icon={<Lightbulb className="text-indigo-500" />}
+                        value={(teamMetrics.rnd + (selectedTeam.financials.incomeStatement.global["Administration"] || 0)) >= 1000000
+                            ? `$${((teamMetrics.rnd + (selectedTeam.financials.incomeStatement.global["Administration"] || 0)) / 1000000).toFixed(2)}M`
+                            : `$${((teamMetrics.rnd + (selectedTeam.financials.incomeStatement.global["Administration"] || 0)) / 1000).toFixed(0)}k`}
+                        gradient="from-indigo-50 via-indigo-100 to-indigo-200"
+                        borderColor="border-indigo-200"
                     />
                     <MetricCard
                         title="Taxes"
-                        value={`$${(teamMetrics.tax / 1000).toFixed(1)}k`}
-                        icon={<Scale className="text-gray-500" />}
+                        value={teamMetrics.tax >= 1000000 ? `$${(teamMetrics.tax / 1000000).toFixed(2)}M` : `$${(teamMetrics.tax / 1000).toFixed(0)}k`}
+                        gradient="from-slate-100 via-slate-200 to-slate-300"
+                        borderColor="border-slate-300"
                     />
                     <MetricCard
                         title="EBITDA"
-                        value={`$${(teamMetrics.ebitda / 1000).toFixed(1)}k`}
-                        icon={<Activity className="text-purple-600" />}
+                        value={teamMetrics.ebitda >= 1000000 ? `$${(teamMetrics.ebitda / 1000000).toFixed(2)}M` : `$${(teamMetrics.ebitda / 1000).toFixed(0)}k`}
                         subtext={`${((teamMetrics.ebitda / teamMetrics.revenue) * 100).toFixed(1)}% Margin`}
+                        gradient="from-purple-50 via-purple-100 to-purple-200"
+                        borderColor="border-purple-200"
                     />
                     <MetricCard
                         title="EBIT"
-                        value={`$${(teamMetrics.ebit / 1000).toFixed(1)}k`}
-                        icon={<Activity className="text-indigo-600" />}
+                        value={teamMetrics.ebit >= 1000000 ? `$${(teamMetrics.ebit / 1000000).toFixed(2)}M` : `$${(teamMetrics.ebit / 1000).toFixed(0)}k`}
                         subtext={`${((teamMetrics.ebit / teamMetrics.revenue) * 100).toFixed(1)}% Margin`}
+                        gradient="from-violet-50 via-violet-100 to-violet-200"
+                        borderColor="border-violet-200"
                     />
                     <MetricCard
                         title="Profit Before Tax"
-                        value={`$${(teamMetrics.profitBeforeTax / 1000).toFixed(1)}k`}
-                        icon={<Wallet className="text-orange-600" />}
+                        value={teamMetrics.profitBeforeTax >= 1000000 ? `$${(teamMetrics.profitBeforeTax / 1000000).toFixed(2)}M` : `$${(teamMetrics.profitBeforeTax / 1000).toFixed(0)}k`}
                         subtext={`${((teamMetrics.profitBeforeTax / teamMetrics.revenue) * 100).toFixed(1)}% Margin`}
+                        gradient="from-amber-50 via-orange-100 to-amber-100"
+                        borderColor="border-amber-200"
                     />
                     <MetricCard
                         title="Net Profit"
-                        value={`$${(teamMetrics.netProfit / 1000).toFixed(1)}k`}
-                        icon={<Wallet className="text-green-600" />}
-                        subtext={`${((teamMetrics.netProfit / teamMetrics.revenue) * 100).toFixed(1)}% Net Margin`}
+                        value={teamMetrics.netProfit >= 1000000 ? `$${(teamMetrics.netProfit / 1000000).toFixed(2)}M` : `$${(teamMetrics.netProfit / 1000).toFixed(0)}k`}
+                        subtext={`${((teamMetrics.netProfit / teamMetrics.revenue) * 100).toFixed(1)}% Net`}
+                        gradient="from-emerald-100 via-green-200 to-emerald-300"
+                        borderColor="border-emerald-300"
                     />
                 </div>
             </div>
@@ -875,15 +888,30 @@ export function TeamDetailView({ teams, initialTeam }: TeamDetailViewProps) {
     );
 }
 
-function MetricCard({ title, value, icon, subtext }: { title: string, value: string, icon: React.ReactNode, subtext?: string }) {
+function MetricCard({ title, value, icon, subtext, gradient, borderColor }: { title: string, value: string, icon?: React.ReactNode, subtext?: string, gradient?: string, borderColor?: string }) {
     return (
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 flex items-center gap-4">
-            <div className="p-3 bg-gray-50 rounded-lg">{icon}</div>
-            <div>
-                <p className="text-base text-gray-500 font-medium">{title}</p>
-                <h4 className="text-3xl font-bold text-gray-900">{value}</h4>
-                {subtext && <p className="text-sm text-gray-400 mt-0.5">{subtext}</p>}
+        <div className={clsx(
+            "rounded-xl p-4 shadow-sm border flex flex-col justify-between relative overflow-hidden transition-all hover:shadow-md",
+            gradient ? `bg-gradient-to-br ${gradient}` : "bg-white",
+            borderColor ? borderColor : "border-gray-100"
+        )}>
+            {/* Glossy Effect Overlay */}
+            {gradient && (
+                <div className="absolute inset-0 bg-white/30 pointer-events-none" style={{ backgroundImage: 'linear-gradient(45deg, rgba(255,255,255,0.4) 0%, transparent 40%, transparent 60%, rgba(255,255,255,0.4) 100%)' }}></div>
+            )}
+
+            <div className="relative z-10">
+                <p className="text-xs text-gray-700 font-semibold uppercase tracking-wider mb-1 opacity-80">{title}</p>
+                <h4 className="text-xl font-bold text-gray-900 leading-tight">{value}</h4>
+                {subtext && <p className="text-xs text-gray-600 mt-1 font-medium">{subtext}</p>}
             </div>
+
+            {/* Optional Icon (Rendered subtly if provided) */}
+            {icon && (
+                <div className="absolute top-3 right-3 opacity-20 transform scale-75">
+                    {React.cloneElement(icon as React.ReactElement<{ className?: string }>, { className: "w-6 h-6 text-gray-900" })}
+                </div>
+            )}
         </div>
     );
 }

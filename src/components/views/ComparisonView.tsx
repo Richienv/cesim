@@ -1,11 +1,12 @@
 import React, { useState, useMemo } from 'react';
-import { TeamData } from '@/lib/types';
+import { TeamData, RoundData } from '@/lib/types';
 import { calculateRankings, TeamRank } from '@/lib/ranking';
 import {
-    BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Legend, PieChart, Pie, Cell, LabelList
+    BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Legend, PieChart, Pie, Cell, LabelList, LineChart, Line
 } from 'recharts';
-import { ArrowRightLeft, TrendingUp, DollarSign, Activity, Target, Users, Factory, Truck, AlertCircle, Scale, Box, Trophy, Medal } from 'lucide-react';
+import { ArrowRightLeft, TrendingUp, DollarSign, Activity, Target, Users, Factory, Truck, AlertCircle, Scale, Box, Trophy, Medal, Upload } from 'lucide-react';
 import { clsx } from 'clsx';
+import { FileUpload } from '@/components/FileUpload';
 import { ComparisonPieCharts } from './ComparisonPieCharts';
 import { ManufacturingPieCharts } from './ManufacturingPieCharts';
 import { DetailedMarketAnalysis } from './DetailedMarketAnalysis';
@@ -16,29 +17,41 @@ import { ComparativeScatterPlot } from '../charts/ComparativeScatterPlot';
 import { getTechLabel, TECH_NAME_MAP } from '@/lib/constants';
 
 const TEAM_COLORS = [
-    '#3b82f6', // bright blue
-    '#ef4444', // red
-    '#10b981', // emerald
-    '#f59e0b', // amber
-    '#8b5cf6', // violet
-    '#ec4899', // pink
-    '#06b6d4', // cyan
-    '#84cc16', // lime
+    '#ef4444', // Red
+    '#3b82f6', // Bright Blue
+    '#22c55e', // Green
+    '#a855f7', // Purple
+    '#f97316', // Orange
+    '#000000', // Black
+    '#ec4899', // Pink
+    '#eab308', // Yellow
+    '#8b4513', // Brown
+    '#6b7280', // Grey
+    '#14b8a6', // Teal
+    '#6366f1', // Indigo
 ];
 
 interface ComparisonViewProps {
     teams: TeamData[];
+    roundData: RoundData[];
+    onFileUpload: (files: File[]) => Promise<void>;
 }
 
-export function ComparisonView({ teams }: ComparisonViewProps) {
-    const [activeTab, setActiveTab] = useState<'comparison' | 'leaderboard'>('leaderboard');
+export function ComparisonView({ teams, roundData, onFileUpload }: ComparisonViewProps) {
+    const [activeTab, setActiveTab] = useState<'comparison' | 'leaderboard' | 'trends'>('leaderboard');
     const [selectedRegion, setSelectedRegion] = useState<'global' | 'usa' | 'asia' | 'europe'>('global');
     const [activeTech, setActiveTech] = useState<string>('Tech 1');
     const [scatterRegion, setScatterRegion] = useState<'usa' | 'asia' | 'europe'>('usa');
-    const [focusedTeam, setFocusedTeam] = useState<string | null>(null);
+    const [focusedTeams, setFocusedTeams] = useState<string[]>([]);
+    const [hrMetric, setHrMetric] = useState<'totalCost' | 'salary' | 'trainingBudget' | 'efficiency' | 'turnoverRate' | 'staffingLevel'>('totalCost');
 
     const handleTeamClick = (team: string) => {
-        setFocusedTeam(prev => prev === team ? null : team);
+        setFocusedTeams(prev => {
+            if (prev.includes(team)) {
+                return prev.filter(t => t !== team);
+            }
+            return [...prev, team];
+        });
     };
 
     const rankings = useMemo(() => calculateRankings(teams), [teams]);
@@ -136,40 +149,49 @@ export function ComparisonView({ teams }: ComparisonViewProps) {
                     >
                         <ArrowRightLeft className="w-4 h-4" /> Comparison
                     </button>
+                    <button
+                        onClick={() => setActiveTab('trends')}
+                        className={clsx(
+                            "px-6 py-2 rounded-md text-base font-medium transition-all flex items-center gap-2",
+                            activeTab === 'trends' ? "bg-white text-blue-600 shadow-sm" : "text-gray-500 hover:text-gray-700"
+                        )}
+                    >
+                        <TrendingUp className="w-4 h-4" /> Trend Analysis
+                    </button>
                 </div>
             </div>
 
             {activeTab === 'leaderboard' ? (
                 <div className="space-y-6">
-                    {/* Top 3 Podium */}
+                    {/* Top 3 Podium - Glossy Metallic */}
                     <div className="grid grid-cols-3 gap-4 mb-8 items-end">
-                        {/* 2nd Place */}
+                        {/* 2nd Place - Silver */}
                         {rankings[1] && (
-                            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col items-center relative order-1">
-                                <div className="absolute -top-4 bg-gray-200 text-gray-600 w-8 h-8 rounded-full flex items-center justify-center font-bold border-2 border-white shadow-sm">2</div>
-                                <div className="text-3xl mb-2">🥈</div>
-                                <h3 className="font-bold text-gray-900 text-xl text-center">{rankings[1].teamName}</h3>
-                                <div className="text-base text-gray-500 font-medium">TSR: {rankings[1].metrics.tsr.toFixed(2)}%</div>
+                            <div className="bg-gradient-to-br from-slate-100 via-slate-200 to-slate-300 p-4 rounded-xl shadow-lg border border-slate-300 flex flex-col items-center relative order-1 transform scale-95 opacity-90 backdrop-blur-sm">
+                                <div className="absolute inset-0 bg-white/30 rounded-xl pointer-events-none" style={{ backgroundImage: 'linear-gradient(45deg, rgba(255,255,255,0.4) 0%, transparent 40%, transparent 60%, rgba(255,255,255,0.4) 100%)' }}></div>
+                                <div className="absolute -top-3 bg-slate-500 text-white w-6 h-6 rounded-full flex items-center justify-center font-bold text-sm border-2 border-white shadow-sm z-10">2</div>
+                                <h3 className="font-bold text-gray-800 text-lg text-center z-10 mb-1">{rankings[1].teamName}</h3>
+                                <div className="text-sm text-slate-700 font-medium z-10">TSR: {rankings[1].metrics.tsr.toFixed(2)}%</div>
                             </div>
                         )}
 
-                        {/* 1st Place */}
+                        {/* 1st Place - Gold */}
                         {rankings[0] && (
-                            <div className="bg-gradient-to-b from-yellow-50 to-white p-8 rounded-xl shadow-md border border-yellow-200 flex flex-col items-center relative order-2 transform -translate-y-4 z-10">
-                                <div className="absolute -top-5 bg-yellow-400 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold border-4 border-white shadow-sm text-xl">1</div>
-                                <div className="text-5xl mb-3">🏆</div>
-                                <h3 className="font-bold text-gray-900 text-2xl text-center">{rankings[0].teamName}</h3>
-                                <div className="text-lg text-yellow-700 font-bold bg-yellow-100 px-3 py-1 rounded-full mt-2">TSR: {rankings[0].metrics.tsr.toFixed(2)}%</div>
+                            <div className="bg-gradient-to-br from-amber-100 via-yellow-200 to-amber-300 p-6 rounded-xl shadow-xl border border-yellow-400 flex flex-col items-center relative order-2 z-10">
+                                <div className="absolute inset-0 bg-white/40 rounded-xl pointer-events-none" style={{ backgroundImage: 'linear-gradient(45deg, rgba(255,255,255,0.6) 0%, transparent 40%, transparent 60%, rgba(255,255,255,0.6) 100%)' }}></div>
+                                <div className="absolute -top-4 bg-yellow-600 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold text-lg border-2 border-white shadow-md z-20">1</div>
+                                <h3 className="font-bold text-yellow-900 text-xl text-center z-10 mb-1">{rankings[0].teamName}</h3>
+                                <div className="text-base text-yellow-800 font-bold bg-yellow-100/50 px-3 py-1 rounded-full z-10">TSR: {rankings[0].metrics.tsr.toFixed(2)}%</div>
                             </div>
                         )}
 
-                        {/* 3rd Place */}
+                        {/* 3rd Place - Bronze */}
                         {rankings[2] && (
-                            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col items-center relative order-3">
-                                <div className="absolute -top-4 bg-orange-100 text-orange-600 w-8 h-8 rounded-full flex items-center justify-center font-bold border-2 border-white shadow-sm">3</div>
-                                <div className="text-3xl mb-2">🥉</div>
-                                <h3 className="font-bold text-gray-900 text-xl text-center">{rankings[2].teamName}</h3>
-                                <div className="text-base text-gray-500 font-medium">TSR: {rankings[2].metrics.tsr.toFixed(2)}%</div>
+                            <div className="bg-gradient-to-br from-orange-100 via-orange-200 to-orange-300 p-4 rounded-xl shadow-lg border border-orange-300 flex flex-col items-center relative order-3 transform scale-95 opacity-90 backdrop-blur-sm">
+                                <div className="absolute inset-0 bg-white/30 rounded-xl pointer-events-none" style={{ backgroundImage: 'linear-gradient(45deg, rgba(255,255,255,0.4) 0%, transparent 40%, transparent 60%, rgba(255,255,255,0.4) 100%)' }}></div>
+                                <div className="absolute -top-3 bg-orange-700 text-white w-6 h-6 rounded-full flex items-center justify-center font-bold text-sm border-2 border-white shadow-sm z-10">3</div>
+                                <h3 className="font-bold text-gray-900 text-lg text-center z-10 mb-1">{rankings[2].teamName}</h3>
+                                <div className="text-sm text-orange-900 font-medium z-10">TSR: {rankings[2].metrics.tsr.toFixed(2)}%</div>
                             </div>
                         )}
                     </div>
@@ -228,7 +250,7 @@ export function ComparisonView({ teams }: ComparisonViewProps) {
 
                     {/* Regional Deep Dive */}
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                        <h3 className="text-2xl font-bold text-gray-900">Regional Deep Dive (Momentum)</h3>
+                        <h3 className="text-2xl font-bold text-gray-900">Regional Deep Dive</h3>
 
                         <div className="flex gap-4">
                             {/* Region Tabs */}
@@ -263,58 +285,102 @@ export function ComparisonView({ teams }: ComparisonViewProps) {
                             HR & Production Analysis
                         </h3>
 
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                            {/* HR Metrics Table */}
-                            <div className="overflow-x-auto">
-                                <h4 className="text-sm font-medium text-gray-500 mb-4">HR Metrics Comparison</h4>
-                                <table className="w-full text-sm text-left">
-                                    <thead className="text-xs text-gray-500 uppercase bg-gray-50">
-                                        <tr>
-                                            <th className="px-4 py-3">Metric</th>
-                                            {teams.map(t => (
-                                                <th key={t.name} className="px-4 py-3 text-right">{t.name}</th>
-                                            ))}
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-gray-100">
+                        <div className="flex flex-col space-y-12">
+                            {/* Row 1: HR Metrics Chart */}
+                            <div>
+                                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                                    <h4 className="text-lg font-semibold text-gray-800">HR Metrics Analysis</h4>
+                                    <div className="flex bg-gray-100 p-1 rounded-lg overflow-x-auto max-w-full">
                                         {[
-                                            { key: 'salary', label: 'Salary', format: (val: any) => val ? `$${val.toLocaleString()}` : '-' },
-                                            { key: 'trainingBudget', label: 'Training Budget', format: (val: any) => val ? `$${val.toLocaleString()}` : '-' },
-                                            { key: 'efficiency', label: 'Efficiency', format: (val: any) => val ? `${val.toFixed(3)}` : '-' },
-                                            { key: 'turnoverRate', label: 'Turnover Rate', format: (val: any) => val !== undefined ? `${val.toFixed(1)}%` : '-' },
-                                            { key: 'staffingLevel', label: 'Staffing Level', format: (val: any) => val ? val.toLocaleString() : '-' },
-                                            { key: 'totalCost', label: 'HR Costs (Total)', format: (val: any) => val ? `$${val.toLocaleString()}` : '-' },
-                                        ].map(metric => (
-                                            <tr key={metric.key}>
-                                                <td className="px-4 py-2 font-medium text-gray-900">{metric.label}</td>
-                                                {teams.map(t => (
-                                                    <td key={t.name} className="px-4 py-2 text-right text-gray-600">
-                                                        {(t.hr as any)[metric.key] !== undefined ? metric.format((t.hr as any)[metric.key]) : '-'}
-                                                    </td>
-                                                ))}
-                                            </tr>
+                                            { key: 'totalCost', label: 'Total Cost' },
+                                            { key: 'salary', label: 'Salary' },
+                                            { key: 'efficiency', label: 'Efficiency' },
+                                            { key: 'turnoverRate', label: 'Turnover' },
+                                            { key: 'trainingBudget', label: 'Training' },
+                                            { key: 'staffingLevel', label: 'Staffing' },
+                                        ].map((m) => (
+                                            <button
+                                                key={m.key}
+                                                onClick={() => setHrMetric(m.key as any)}
+                                                className={clsx(
+                                                    "px-3 py-1.5 text-sm font-medium rounded-md transition-all whitespace-nowrap",
+                                                    hrMetric === m.key
+                                                        ? "bg-white text-purple-600 shadow-sm"
+                                                        : "text-gray-500 hover:text-gray-700"
+                                                )}
+                                            >
+                                                {m.label}
+                                            </button>
                                         ))}
-                                    </tbody>
-                                </table>
+                                    </div>
+                                </div>
+                                <div className="h-[300px] w-full bg-gray-50/50 rounded-lg p-4 border border-gray-100">
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <BarChart data={teams.map(t => ({
+                                            name: t.name,
+                                            value: (t.hr as any)[hrMetric],
+                                            // Handle special formatting or validation if needed
+                                        }))}>
+                                            <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                                            <XAxis dataKey="name" tick={{ fontSize: 11 }} interval={0} height={30} />
+                                            <YAxis
+                                                tick={{ fontSize: 11 }}
+                                                tickFormatter={(val) => {
+                                                    if (hrMetric === 'efficiency') return val.toFixed(2);
+                                                    if (hrMetric === 'turnoverRate') return `${val}%`;
+                                                    if (hrMetric === 'staffingLevel') return `${val}`;
+                                                    return `$${(val / 1000).toFixed(0)}k`;
+                                                }}
+                                            />
+                                            <Tooltip
+                                                formatter={(val: number) => {
+                                                    if (hrMetric === 'efficiency') return val.toFixed(3);
+                                                    if (hrMetric === 'turnoverRate') return `${val.toFixed(1)}%`;
+                                                    if (hrMetric === 'staffingLevel') return val.toLocaleString();
+                                                    return `$${val.toLocaleString()}`;
+                                                }}
+                                                labelStyle={{ color: '#374151', fontWeight: 600 }}
+                                            />
+                                            <Bar dataKey="value" fill="#8b5cf6" radius={[4, 4, 0, 0]}>
+                                                <LabelList
+                                                    dataKey="value"
+                                                    position="top"
+                                                    formatter={(val: any) => {
+                                                        if (hrMetric === 'efficiency') return val.toFixed(2);
+                                                        if (hrMetric === 'turnoverRate') return `${val.toFixed(1)}%`;
+                                                        if (hrMetric === 'staffingLevel') return val.toLocaleString();
+                                                        return `$${(val / 1000).toFixed(0)}k`;
+                                                    }}
+                                                    style={{ fontSize: '10px', fill: '#6b7280' }}
+                                                />
+                                            </Bar>
+                                        </BarChart>
+                                    </ResponsiveContainer>
+                                </div>
                             </div>
 
-                            {/* Production Charts */}
-                            <div className="space-y-6">
-                                <div className="h-[200px]">
+                            {/* Row 2: Production Charts (Side by Side) */}
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                                <div className="h-[250px]">
                                     <h4 className="text-sm font-medium text-gray-500 mb-4 text-center">Total Production Output (Units)</h4>
                                     <ResponsiveContainer width="100%" height="100%">
                                         <BarChart data={teams.map(t => ({ name: t.name, value: getMetrics(t).totalOutput }))}>
                                             <CartesianGrid strokeDasharray="3 3" vertical={false} />
                                             <XAxis dataKey="name" tick={{ fontSize: 10 }} interval={0} angle={-45} textAnchor="end" height={60} />
-                                            <YAxis tickFormatter={(val) => `${(val / 1000).toFixed(0)}k`} />
-                                            <Tooltip formatter={(val: number) => [`${val.toLocaleString()}`, 'Output']} />
+                                            <YAxis tickFormatter={(val) => val >= 1000000 ? `${(val / 1000000).toFixed(1)}M` : `${(val / 1000).toFixed(0)}k`} />
+                                            <Tooltip formatter={(val: number) => [val >= 1000000 ? `${(val / 1000000).toFixed(2)}M` : `${(val / 1000).toFixed(0)}k`, 'Output']} />
                                             <Bar dataKey="value" fill="#3b82f6" radius={[4, 4, 0, 0]}>
-                                                <LabelList dataKey="value" position="top" formatter={(val: any) => (val / 1000).toFixed(1) + 'k'} style={{ fontSize: '10px', fill: '#6b7280' }} />
+                                                <LabelList
+                                                    dataKey="value"
+                                                    position="top"
+                                                    formatter={(val: any) => val >= 1000000 ? (val / 1000000).toFixed(1) + 'M' : (val / 1000).toFixed(1) + 'k'}
+                                                    style={{ fontSize: '10px', fill: '#6b7280' }}
+                                                />
                                             </Bar>
                                         </BarChart>
                                     </ResponsiveContainer>
                                 </div>
-                                <div className="h-[200px]">
+                                <div className="h-[250px]">
                                     <h4 className="text-sm font-medium text-gray-500 mb-4 text-center">Avg. Capacity Usage (%)</h4>
                                     <ResponsiveContainer width="100%" height="100%">
                                         <BarChart data={capacityData}>
@@ -424,6 +490,7 @@ export function ComparisonView({ teams }: ComparisonViewProps) {
                                         features,
                                         marketShare,
                                         netProfit: techNetProfit,
+                                        unitSales: Math.abs(t.logistics[rKey]?.[tech]?.sales || 0),
                                         promotion, // Includes promotion in data
                                         fill: TEAM_COLORS[idx % TEAM_COLORS.length] // Consistent color assignment
                                     };
@@ -438,13 +505,13 @@ export function ComparisonView({ teams }: ComparisonViewProps) {
                                             <span className="text-sm text-gray-400">in {scatterRegion.toUpperCase()}</span>
                                         </div>
 
-                                        {/* Grid Layout: 3 Rows (Strategies) x 2 Columns (Outcomes) */}
+                                        {/* Grid Layout: 3 Rows (Strategies) x 3 Columns (Outcomes) */}
                                         <div className="space-y-12">
 
                                             {/* Row 1: Price Strategy */}
                                             <div>
                                                 <h4 className="text-lg font-semibold text-gray-800 mb-4 border-l-4 border-indigo-500 pl-3">Price Strategy Impact</h4>
-                                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                                                     <ComparativeScatterPlot
                                                         title="Price vs Market Share"
                                                         xLabel={`Price (${currency})`}
@@ -452,7 +519,7 @@ export function ComparisonView({ teams }: ComparisonViewProps) {
                                                         data={scatterData.map(d => ({ name: d.name, x: d.price, y: d.marketShare, fill: d.fill }))}
                                                         xFormatter={(val) => `${currency}${val}`}
                                                         yFormatter={(val) => `${val.toFixed(1)}%`}
-                                                        focusedTeam={focusedTeam}
+                                                        focusedTeams={focusedTeams}
                                                         onTeamClick={handleTeamClick}
                                                     />
                                                     <ComparativeScatterPlot
@@ -462,7 +529,17 @@ export function ComparisonView({ teams }: ComparisonViewProps) {
                                                         data={scatterData.map(d => ({ name: d.name, x: d.price, y: d.netProfit, fill: d.fill }))}
                                                         xFormatter={(val) => `${currency}${val}`}
                                                         yFormatter={(val) => `${currency}${(val / 1000).toFixed(0)}k`}
-                                                        focusedTeam={focusedTeam}
+                                                        focusedTeams={focusedTeams}
+                                                        onTeamClick={handleTeamClick}
+                                                    />
+                                                    <ComparativeScatterPlot
+                                                        title="Price vs Unit Sales"
+                                                        xLabel={`Price (${currency})`}
+                                                        yLabel="Unit Sales"
+                                                        data={scatterData.map(d => ({ name: d.name, x: d.price, y: d.unitSales, fill: d.fill }))}
+                                                        xFormatter={(val) => `${currency}${val}`}
+                                                        yFormatter={(val) => val.toLocaleString()}
+                                                        focusedTeams={focusedTeams}
                                                         onTeamClick={handleTeamClick}
                                                     />
                                                 </div>
@@ -471,7 +548,7 @@ export function ComparisonView({ teams }: ComparisonViewProps) {
                                             {/* Row 2: Product Strategy (Features) */}
                                             <div>
                                                 <h4 className="text-lg font-semibold text-gray-800 mb-4 border-l-4 border-indigo-500 pl-3">Product Strategy Impact (Features)</h4>
-                                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                                                     <ComparativeScatterPlot
                                                         title="Features vs Market Share"
                                                         xLabel="Features (Count)"
@@ -479,7 +556,7 @@ export function ComparisonView({ teams }: ComparisonViewProps) {
                                                         data={scatterData.map(d => ({ name: d.name, x: d.features, y: d.marketShare, fill: d.fill }))}
                                                         xFormatter={(val) => val.toFixed(1)}
                                                         yFormatter={(val) => `${val.toFixed(1)}%`}
-                                                        focusedTeam={focusedTeam}
+                                                        focusedTeams={focusedTeams}
                                                         onTeamClick={handleTeamClick}
                                                     />
                                                     <ComparativeScatterPlot
@@ -489,7 +566,17 @@ export function ComparisonView({ teams }: ComparisonViewProps) {
                                                         data={scatterData.map(d => ({ name: d.name, x: d.features, y: d.netProfit, fill: d.fill }))}
                                                         xFormatter={(val) => val.toFixed(1)}
                                                         yFormatter={(val) => `${currency}${(val / 1000).toFixed(0)}k`}
-                                                        focusedTeam={focusedTeam}
+                                                        focusedTeams={focusedTeams}
+                                                        onTeamClick={handleTeamClick}
+                                                    />
+                                                    <ComparativeScatterPlot
+                                                        title="Features vs Unit Sales"
+                                                        xLabel="Features (Count)"
+                                                        yLabel="Unit Sales"
+                                                        data={scatterData.map(d => ({ name: d.name, x: d.features, y: d.unitSales, fill: d.fill }))}
+                                                        xFormatter={(val) => val.toFixed(1)}
+                                                        yFormatter={(val) => val.toLocaleString()}
+                                                        focusedTeams={focusedTeams}
                                                         onTeamClick={handleTeamClick}
                                                     />
                                                 </div>
@@ -498,7 +585,7 @@ export function ComparisonView({ teams }: ComparisonViewProps) {
                                             {/* Row 3: Marketing Strategy */}
                                             <div>
                                                 <h4 className="text-lg font-semibold text-gray-800 mb-4 border-l-4 border-indigo-500 pl-3">Marketing Strategy Impact</h4>
-                                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                                                     <ComparativeScatterPlot
                                                         title="Marketing vs Market Share"
                                                         xLabel={`Marketing Spend (${currency})`}
@@ -506,7 +593,7 @@ export function ComparisonView({ teams }: ComparisonViewProps) {
                                                         data={scatterData.map(d => ({ name: d.name, x: d.promotion, y: d.marketShare, fill: d.fill }))}
                                                         xFormatter={(val) => `${currency}${(val / 1000).toFixed(0)}k`}
                                                         yFormatter={(val) => `${val.toFixed(1)}%`}
-                                                        focusedTeam={focusedTeam}
+                                                        focusedTeams={focusedTeams}
                                                         onTeamClick={handleTeamClick}
                                                     />
                                                     <ComparativeScatterPlot
@@ -516,7 +603,17 @@ export function ComparisonView({ teams }: ComparisonViewProps) {
                                                         data={scatterData.map(d => ({ name: d.name, x: d.promotion, y: d.netProfit, fill: d.fill }))}
                                                         xFormatter={(val) => `${currency}${(val / 1000).toFixed(0)}k`}
                                                         yFormatter={(val) => `${currency}${(val / 1000).toFixed(0)}k`}
-                                                        focusedTeam={focusedTeam}
+                                                        focusedTeams={focusedTeams}
+                                                        onTeamClick={handleTeamClick}
+                                                    />
+                                                    <ComparativeScatterPlot
+                                                        title="Marketing vs Unit Sales"
+                                                        xLabel={`Marketing Spend (${currency})`}
+                                                        yLabel="Unit Sales"
+                                                        data={scatterData.map(d => ({ name: d.name, x: d.promotion, y: d.unitSales, fill: d.fill }))}
+                                                        xFormatter={(val) => `${currency}${(val / 1000).toFixed(0)}k`}
+                                                        yFormatter={(val) => val.toLocaleString()}
+                                                        focusedTeams={focusedTeams}
                                                         onTeamClick={handleTeamClick}
                                                     />
                                                 </div>
@@ -540,6 +637,11 @@ export function ComparisonView({ teams }: ComparisonViewProps) {
                     </div>
                 </div>
             )}
+
+            {activeTab === 'trends' && (
+                <TrendAnalysisView roundData={roundData} teams={teams} onFileUpload={onFileUpload} />
+            )}
+
 
         </div>
     );
@@ -569,11 +671,19 @@ function RegionalAnalysis({ region, teamA, teamB, selectedTech }: { region: 'usa
         const salesA = Math.abs(teamA.logistics[region]?.[tech]?.sales || 0);
         const salesB = Math.abs(teamB.logistics[region]?.[tech]?.sales || 0);
 
+        // Updated Formulas per User Request:
+        // Unit Cost = Total Variable Cost / Sales Volume
+        // Unit Profit = (Total Revenue / Sales Volume) - Unit Cost
+
+        const realizedPriceA = salesA > 0 ? (marginA?.sales || 0) / salesA : 0;
+        const realizedPriceB = salesB > 0 ? (marginB?.sales || 0) / salesB : 0;
+
         const costA = salesA > 0 ? (marginA?.variableCosts || 0) / salesA : 0;
         const costB = salesB > 0 ? (marginB?.variableCosts || 0) / salesB : 0;
 
-        const profitA = priceA - costA;
-        const profitB = priceB - costB;
+        // Use Realized Price for Profit Calculation (Outcome) but keep List Price for Strategy Chart
+        const profitA = realizedPriceA - costA;
+        const profitB = realizedPriceB - costB;
 
         const shareA = teamA.marketShare[region]?.[tech] || 0;
         const shareB = teamB.marketShare[region]?.[tech] || 0;
@@ -676,6 +786,453 @@ function ComparisonBarChart({ title, data, keys, teamNames, formatter }: {
                         </Bar>
                     </BarChart>
                 </ResponsiveContainer>
+            </div>
+        </div>
+    );
+}
+function TrendAnalysisView({ roundData, teams, onFileUpload }: {
+    roundData: RoundData[],
+    teams: TeamData[],
+    onFileUpload: (files: File[]) => Promise<void>
+}) {
+    const [selectedTech, setSelectedTech] = useState("Tech 1");
+    const [selectedRegion, setSelectedRegion] = useState<'usa' | 'asia' | 'europe'>('usa');
+    const [isUploadOpen, setIsUploadOpen] = useState(false);
+    const [focusedTeam, setFocusedTeam] = useState<string | null>(null);
+
+    const handleTeamClick = (teamName: string) => {
+        setFocusedTeam(prev => prev === teamName ? null : teamName);
+    };
+
+    // Extract unique team names from the latest round
+    const teamNames = teams.map(t => t.name);
+
+    // Prepare data structure for recharts
+    const prepareChartData = (metricExtractor: (team: TeamData) => number) => {
+        // Create template for 6 rounds
+        const templateRounds = Array.from({ length: 6 }, (_, i) => `Round ${i + 1}`);
+
+        return templateRounds.map((templateName, index) => {
+            // Find existing round by index (assuming chronological order in roundData)
+            const round = roundData[index];
+
+            const dataPoint: any = {
+                roundName: round ? round.roundName : templateName
+            };
+
+            if (round) {
+                round.teams.forEach(team => {
+                    if (teamNames.includes(team.name)) {
+                        dataPoint[team.name] = metricExtractor(team);
+                    }
+                });
+            }
+            return dataPoint;
+        });
+    };
+
+    const priceData = prepareChartData((team) => team.prices[selectedRegion]?.[selectedTech] || 0);
+    const marketingData = prepareChartData((team) => team.margins[selectedRegion]?.[selectedTech]?.promotion || 0);
+    const featureData = prepareChartData((team) => team.features[selectedRegion]?.[selectedTech] || 0);
+    const marketShareData = prepareChartData((team) => team.marketShare[selectedRegion]?.[selectedTech] || 0);
+    const unitSalesData = prepareChartData((team) => team.logistics[selectedRegion]?.[selectedTech]?.sales || 0);
+    const profitData = prepareChartData((team) => team.margins[selectedRegion]?.[selectedTech]?.grossProfit || 0);
+    const unitCostData = prepareChartData((team) => {
+        const costs = team.margins[selectedRegion]?.[selectedTech]?.variableCosts || 0;
+        const units = team.logistics[selectedRegion]?.[selectedTech]?.sales || 0;
+        return units > 0 ? costs / units : 0;
+    });
+
+    let currency = '$';
+    if (selectedRegion === 'asia') currency = '¥';
+    if (selectedRegion === 'europe') currency = '€';
+
+    const renderCustomTooltip = ({ active, payload, label, data, formatter }: any) => {
+        if (!active || !payload || !payload.length) return null;
+
+        // Find current index in data
+        const currentIndex = data.findIndex((d: any) => d.roundName === label);
+        const prevData = currentIndex > 0 ? data[currentIndex - 1] : null;
+
+        return (
+            <div className="bg-white/95 backdrop-blur-sm p-3 border border-gray-100 shadow-lg rounded-xl text-sm z-50">
+                <p className="font-bold text-gray-900 mb-2 pb-1 border-b border-gray-100">{label}</p>
+                <div className="space-y-1">
+                    {payload.map((entry: any) => {
+                        // Filter if focused
+                        if (focusedTeam && entry.name !== focusedTeam) return null;
+
+                        const teamName = entry.name;
+                        const currentVal = entry.value;
+                        const prevVal = prevData ? prevData[teamName] : null;
+
+                        // Determine change style
+                        let changeText = "";
+                        let changeColor = "text-gray-900"; // Default color
+
+                        if (prevVal !== null && prevVal !== undefined) {
+                            changeText = `${formatter(prevVal)} → ${formatter(currentVal)}`;
+                            if (currentVal > prevVal) {
+                                changeColor = "text-emerald-600"; // Jade/Green for increase
+                            } else if (currentVal < prevVal) {
+                                changeColor = "text-red-700"; // Maroon/Red for decrease
+                            }
+                        } else {
+                            changeText = `${formatter(currentVal)}`;
+                        }
+
+                        return (
+                            <div key={teamName} className="flex items-center gap-2">
+                                <span className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color }}></span>
+                                <span className="font-medium text-gray-700">{teamName}:</span>
+                                <span className={`font-mono font-semibold ${changeColor}`}>
+                                    {changeText}
+                                </span>
+                            </div>
+                        );
+                    })}
+                </div>
+            </div>
+        );
+    };
+
+    return (
+        <div className="space-y-8">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+                <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                    <TrendingUp className="w-6 h-6 text-blue-600" />
+                    Multi-Round Trend Analysis
+                </h3>
+
+                <div className="flex flex-col sm:flex-row gap-4 items-center">
+                    {/* Upload Button */}
+                    <button
+                        onClick={() => setIsUploadOpen(!isUploadOpen)}
+                        className={clsx(
+                            "px-4 py-1.5 text-sm font-medium rounded-md transition-all",
+                            isUploadOpen ? "bg-red-50 text-red-600" : "bg-blue-50 text-blue-600 hover:bg-blue-100"
+                        )}
+                    >
+                        <Upload className="w-4 h-4" />
+                        {isUploadOpen ? 'Close Upload' : 'Add More Data'}
+                    </button>
+
+                    {/* Region Selector */}
+                    <div className="flex bg-gray-100 p-1 rounded-lg">
+                        {['USA', 'Asia', 'Europe'].map(r => (
+                            <button
+                                key={r}
+                                onClick={() => setSelectedRegion(r.toLowerCase() as any)}
+                                className={clsx(
+                                    "px-4 py-1.5 text-sm font-medium rounded-md transition-all",
+                                    selectedRegion === r.toLowerCase()
+                                        ? "bg-white text-gray-900 shadow-sm"
+                                        : "text-gray-500 hover:text-gray-700"
+                                )}
+                            >
+                                {r}
+                            </button>
+                        ))}
+                    </div>
+
+                    {/* Tech Selector */}
+                    <div className="flex bg-gray-100 p-1 rounded-lg">
+                        {['Tech 1', 'Tech 2', 'Tech 3', 'Tech 4'].map(tech => (
+                            <button
+                                key={tech}
+                                onClick={() => setSelectedTech(tech)}
+                                className={clsx(
+                                    "px-4 py-1.5 text-sm font-medium rounded-md transition-all",
+                                    selectedTech === tech
+                                        ? "bg-white text-blue-600 shadow-sm"
+                                        : "text-gray-500 hover:text-gray-700"
+                                )}
+                            >
+                                {tech}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            </div>
+
+            {isUploadOpen && (
+                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 animate-in fade-in slide-in-from-top-4">
+                    <h4 className="text-lg font-semibold text-gray-800 mb-4">Add More Round Results</h4>
+                    <p className="text-sm text-gray-500 mb-6">
+                        Upload additional round files (e.g., results-r03.xls) to verify trends. The system will automatically merge and sort them.
+                    </p>
+                    <FileUpload onFilesSelected={async (files) => {
+                        await onFileUpload(files);
+                        setIsUploadOpen(false);
+                    }} />
+                </div>
+            )}
+
+            <div className="grid grid-cols-1 gap-8">
+                {/* Profit Trend Chart */}
+                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                    <h4 className="text-lg font-semibold text-gray-800 mb-6 border-l-4 border-indigo-500 pl-3">
+                        Profit Trend (Contribution)
+                    </h4>
+                    <div className="h-[550px]">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <LineChart data={profitData} margin={{ top: 10, right: 30, left: 20, bottom: 5 }}>
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                                <XAxis dataKey="roundName" />
+                                <YAxis tickFormatter={(val) => `${currency}${val.toLocaleString()}`} domain={['auto', 'auto']} />
+                                <Tooltip content={(props) => renderCustomTooltip({ ...props, data: profitData, formatter: (val: number) => `${currency}${val.toLocaleString()}` })} />
+                                <Legend onClick={(e: any) => e.value && handleTeamClick(e.value)} wrapperStyle={{ cursor: 'pointer' }} />
+                                {teamNames.map((team, index) => {
+                                    const color = TEAM_COLORS[index % TEAM_COLORS.length];
+                                    const isDimmed = focusedTeam && focusedTeam !== team;
+                                    return (
+                                        <Line
+                                            key={team}
+                                            type="monotone"
+                                            dataKey={team}
+                                            stroke={color}
+                                            strokeWidth={3}
+                                            strokeDasharray="5 5"
+                                            strokeOpacity={isDimmed ? 0.1 : 1}
+                                            dot={{ r: 6, strokeWidth: 0, fill: color }}
+                                            activeDot={{ r: 9, strokeWidth: 0, fill: color }}
+                                            connectNulls={true}
+                                            cursor="pointer"
+                                            onClick={() => handleTeamClick(team)}
+                                        />
+                                    );
+                                })}
+                            </LineChart>
+                        </ResponsiveContainer>
+                    </div>
+                </div>
+                {/* Price Trend Chart */}
+                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                    <h4 className="text-lg font-semibold text-gray-800 mb-6 border-l-4 border-blue-500 pl-3">
+                        Selling Price Trend ({selectedTech} - {selectedRegion.toUpperCase()})
+                    </h4>
+                    <div className="h-[550px]">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <LineChart data={priceData} margin={{ top: 10, right: 30, left: 20, bottom: 5 }}>
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                                <XAxis dataKey="roundName" />
+                                <YAxis tickFormatter={(val) => `${currency}${val}`} domain={['auto', 'auto']} />
+                                <Tooltip content={(props) => renderCustomTooltip({ ...props, data: priceData, formatter: (val: number) => `${currency}${val}` })} />
+                                <Legend onClick={(e: any) => e.value && handleTeamClick(e.value)} wrapperStyle={{ cursor: 'pointer' }} />
+                                {teamNames.map((team, index) => {
+                                    const color = TEAM_COLORS[index % TEAM_COLORS.length];
+                                    const isDimmed = focusedTeam && focusedTeam !== team;
+                                    return (
+                                        <Line
+                                            key={team}
+                                            type="monotone"
+                                            dataKey={team}
+                                            stroke={color}
+                                            strokeWidth={3}
+                                            strokeDasharray="5 5"
+                                            strokeOpacity={isDimmed ? 0.1 : 1}
+                                            dot={{ r: 6, strokeWidth: 0, fill: color }}
+                                            activeDot={{ r: 9, strokeWidth: 0, fill: color }}
+                                            connectNulls={true}
+                                            cursor="pointer"
+                                            onClick={() => handleTeamClick(team)}
+                                        />
+                                    );
+                                })}
+                            </LineChart>
+                        </ResponsiveContainer>
+                    </div>
+                </div>
+
+                {/* Unit Cost Trend Chart */}
+                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                    <h4 className="text-lg font-semibold text-gray-800 mb-6 border-l-4 border-red-500 pl-3">
+                        Unit Cost Trend (Variable)
+                    </h4>
+                    <div className="h-[550px]">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <LineChart data={unitCostData} margin={{ top: 10, right: 30, left: 20, bottom: 5 }}>
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                                <XAxis dataKey="roundName" />
+                                <YAxis tickFormatter={(val) => `${currency}${val.toLocaleString(undefined, { maximumFractionDigits: 0 })}`} domain={['auto', 'auto']} />
+                                <Tooltip content={(props) => renderCustomTooltip({ ...props, data: unitCostData, formatter: (val: number) => `${currency}${val.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` })} />
+                                <Legend onClick={(e: any) => e.value && handleTeamClick(e.value)} wrapperStyle={{ cursor: 'pointer' }} />
+                                {teamNames.map((team, index) => {
+                                    const color = TEAM_COLORS[index % TEAM_COLORS.length];
+                                    const isDimmed = focusedTeam && focusedTeam !== team;
+                                    return (
+                                        <Line
+                                            key={team}
+                                            type="monotone"
+                                            dataKey={team}
+                                            stroke={color}
+                                            strokeWidth={3}
+                                            strokeDasharray="5 5"
+                                            strokeOpacity={isDimmed ? 0.1 : 1}
+                                            dot={{ r: 6, strokeWidth: 0, fill: color }}
+                                            activeDot={{ r: 9, strokeWidth: 0, fill: color }}
+                                            connectNulls={true}
+                                            cursor="pointer"
+                                            onClick={() => handleTeamClick(team)}
+                                        />
+                                    );
+                                })}
+                            </LineChart>
+                        </ResponsiveContainer>
+                    </div>
+                </div>
+
+                {/* Marketing Trend Chart */}
+                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                    <h4 className="text-lg font-semibold text-gray-800 mb-6 border-l-4 border-purple-500 pl-3">
+                        Marketing/Promotion Spending Trend
+                    </h4>
+                    <div className="h-[550px]">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <LineChart data={marketingData} margin={{ top: 10, right: 30, left: 20, bottom: 5 }}>
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                                <XAxis dataKey="roundName" />
+                                <YAxis tickFormatter={(val) => `$${(val / 1000).toFixed(0)}k`} />
+                                <Tooltip content={(props) => renderCustomTooltip({ ...props, data: marketingData, formatter: (val: number) => `$${val.toLocaleString()}` })} />
+                                <Legend onClick={(e: any) => e.value && handleTeamClick(e.value)} wrapperStyle={{ cursor: 'pointer' }} />
+                                {teamNames.map((team, index) => {
+                                    const color = TEAM_COLORS[index % TEAM_COLORS.length];
+                                    const isDimmed = focusedTeam && focusedTeam !== team;
+                                    return (
+                                        <Line
+                                            key={team}
+                                            type="monotone"
+                                            dataKey={team}
+                                            stroke={color}
+                                            strokeWidth={3}
+                                            strokeDasharray="5 5"
+                                            strokeOpacity={isDimmed ? 0.1 : 1}
+                                            dot={{ r: 6, strokeWidth: 0, fill: color }}
+                                            activeDot={{ r: 9, strokeWidth: 0, fill: color }}
+                                            connectNulls={true}
+                                            cursor="pointer"
+                                            onClick={() => handleTeamClick(team)}
+                                        />
+                                    );
+                                })}
+                            </LineChart>
+                        </ResponsiveContainer>
+                    </div>
+                </div>
+
+                {/* Feature Count Trend Chart */}
+                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                    <h4 className="text-lg font-semibold text-gray-800 mb-6 border-l-4 border-green-500 pl-3">
+                        Feature Count Strategy Trend
+                    </h4>
+                    <div className="h-[550px]">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <LineChart data={featureData} margin={{ top: 10, right: 30, left: 20, bottom: 5 }}>
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                                <XAxis dataKey="roundName" />
+                                <YAxis allowDecimals={false} domain={[0, 'auto']} />
+                                <Tooltip content={(props) => renderCustomTooltip({ ...props, data: featureData, formatter: (val: number) => val.toString() })} />
+                                <Legend onClick={(e: any) => e.value && handleTeamClick(e.value)} wrapperStyle={{ cursor: 'pointer' }} />
+                                {teamNames.map((team, index) => {
+                                    const color = TEAM_COLORS[index % TEAM_COLORS.length];
+                                    const isDimmed = focusedTeam && focusedTeam !== team;
+                                    return (
+                                        <Line
+                                            key={team}
+                                            type="stepAfter"
+                                            dataKey={team}
+                                            stroke={color}
+                                            strokeWidth={3}
+                                            strokeDasharray="5 5"
+                                            strokeOpacity={isDimmed ? 0.1 : 1}
+                                            dot={{ r: 6, strokeWidth: 0, fill: color }}
+                                            activeDot={{ r: 9, strokeWidth: 0, fill: color }}
+                                            connectNulls={true}
+                                            cursor="pointer"
+                                            onClick={() => handleTeamClick(team)}
+                                        />
+                                    );
+                                })}
+                            </LineChart>
+                        </ResponsiveContainer>
+                    </div>
+                </div>
+
+                {/* Market Share Trend Chart */}
+                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                    <h4 className="text-lg font-semibold text-gray-800 mb-6 border-l-4 border-orange-500 pl-3">
+                        Market Share Trend (%)
+                    </h4>
+                    <div className="h-[550px]">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <LineChart data={marketShareData} margin={{ top: 10, right: 30, left: 20, bottom: 5 }}>
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                                <XAxis dataKey="roundName" />
+                                <YAxis tickFormatter={(val) => `${val}%`} domain={[4, 'auto']} />
+                                <Tooltip content={(props) => renderCustomTooltip({ ...props, data: marketShareData, formatter: (val: number) => `${val.toFixed(2)}%` })} />
+                                <Legend onClick={(e: any) => e.value && handleTeamClick(e.value)} wrapperStyle={{ cursor: 'pointer' }} />
+                                {teamNames.map((team, index) => {
+                                    const color = TEAM_COLORS[index % TEAM_COLORS.length];
+                                    const isDimmed = focusedTeam && focusedTeam !== team;
+                                    return (
+                                        <Line
+                                            key={team}
+                                            type="monotone"
+                                            dataKey={team}
+                                            stroke={color}
+                                            strokeWidth={3}
+                                            strokeDasharray="5 5"
+                                            strokeOpacity={isDimmed ? 0.1 : 1}
+                                            dot={{ r: 6, strokeWidth: 0, fill: color }}
+                                            activeDot={{ r: 9, strokeWidth: 0, fill: color }}
+                                            connectNulls={true}
+                                            cursor="pointer"
+                                            onClick={() => handleTeamClick(team)}
+                                        />
+                                    );
+                                })}
+                            </LineChart>
+                        </ResponsiveContainer>
+                    </div>
+                </div>
+
+                {/* Unit Sales Trend Chart */}
+                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                    <h4 className="text-lg font-semibold text-gray-800 mb-6 border-l-4 border-teal-500 pl-3">
+                        Unit Sales Trend
+                    </h4>
+                    <div className="h-[550px]">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <LineChart data={unitSalesData} margin={{ top: 10, right: 30, left: 20, bottom: 5 }}>
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                                <XAxis dataKey="roundName" />
+                                <YAxis tickFormatter={(val) => val.toLocaleString()} domain={['auto', 'auto']} />
+                                <Tooltip content={(props) => renderCustomTooltip({ ...props, data: unitSalesData, formatter: (val: number) => val.toLocaleString() })} />
+                                <Legend onClick={(e: any) => e.value && handleTeamClick(e.value)} wrapperStyle={{ cursor: 'pointer' }} />
+                                {teamNames.map((team, index) => {
+                                    const color = TEAM_COLORS[index % TEAM_COLORS.length];
+                                    const isDimmed = focusedTeam && focusedTeam !== team;
+                                    return (
+                                        <Line
+                                            key={team}
+                                            type="monotone"
+                                            dataKey={team}
+                                            stroke={color}
+                                            strokeWidth={3}
+                                            strokeDasharray="5 5"
+                                            strokeOpacity={isDimmed ? 0.1 : 1}
+                                            dot={{ r: 6, strokeWidth: 0, fill: color }}
+                                            activeDot={{ r: 9, strokeWidth: 0, fill: color }}
+                                            connectNulls={true}
+                                            cursor="pointer"
+                                            onClick={() => handleTeamClick(team)}
+                                        />
+                                    );
+                                })}
+                            </LineChart>
+                        </ResponsiveContainer>
+                    </div>
+                </div>
             </div>
         </div>
     );

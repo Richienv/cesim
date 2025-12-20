@@ -37,11 +37,12 @@ export function RegionalStrategyTable({ teams, region }: RegionalStrategyTablePr
         return sortDirection === 'asc' ? <ArrowUp className="w-3 h-3 ml-1 text-blue-600" /> : <ArrowDown className="w-3 h-3 ml-1 text-blue-600" />;
     };
 
-    // 1. Identify Momentum or Target Team (support '多财多亿')
-    const heroTeam = teams.find(t => t.name === 'Momentum') || teams.find(t => t.name === '多财多亿');
+    // 1. Identify Momentum or Target Team (support '多财多亿'), fallback to first team
+    const heroTeam = teams.find(t => t.name === 'Momentum') || teams.find(t => t.name === '多财多亿') || teams[0];
 
     // Helper to calculate strategy (simplified version of TeamDetailView logic)
     const getStrategy = (team: TeamData, allTeams: TeamData[]) => {
+        if (!team) return "Unknown";
         // Calculate Market Averages
         let totalPrices = 0, priceCount = 0, totalPromo = 0, totalRnD = 0;
         allTeams.forEach(t => {
@@ -82,14 +83,14 @@ export function RegionalStrategyTable({ teams, region }: RegionalStrategyTablePr
     // 2. Use All Teams (No Filtering)
     const relevantTeams = teams;
 
-    if (!heroTeam) return <div>Momentum/&quot;多财多亿&quot; team not found.</div>;
+    if (!heroTeam) return <div className="p-4 text-red-500">No teams available for analysis.</div>;
 
     return (
         <div className="space-y-8">
             <div className="flex items-center justify-between bg-blue-50 p-4 rounded-lg border border-blue-100 mb-4">
                 <div>
-                    <h4 className="font-bold text-blue-900">Strategy Focus: All Teams</h4>
-                    <p className="text-sm text-blue-700">Comparing <strong>{heroTeam.name}</strong> with <strong>all teams</strong>. Your strategy: <strong>{heroStrategy}</strong>.</p>
+                    <h4 className="font-bold text-blue-900">Strategy Focus: Market Overview</h4>
+                    <p className="text-sm text-blue-700">Comprehensive strategy analysis comparing <strong>all teams</strong> across regions. Top performer strategy: <strong>{heroStrategy}</strong>.</p>
                 </div>
                 <div className="flex items-center gap-4">
                     <label className="flex items-center gap-2 cursor-pointer select-none">
@@ -99,7 +100,7 @@ export function RegionalStrategyTable({ teams, region }: RegionalStrategyTablePr
                             onChange={(e) => setOnlyMomentum(e.target.checked)}
                             className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
                         />
-                        <span className="text-sm font-medium text-blue-900">Only {heroTeam.name}</span>
+                        <span className="text-sm font-medium text-blue-900">Filter: {heroTeam.name}</span>
                     </label>
                     <label className="flex items-center gap-2 cursor-pointer select-none">
                         <input
@@ -252,15 +253,15 @@ export function RegionalStrategyTable({ teams, region }: RegionalStrategyTablePr
                                         <th className="px-4 py-3 text-right cursor-pointer hover:bg-gray-100" onClick={() => handleSort('demand')}>DEMAND <SortIcon column="demand" /></th>
                                         <th className="px-4 py-3 text-right cursor-pointer hover:bg-gray-100" onClick={() => handleSort('sales')}>SALES UNIT <SortIcon column="sales" /></th>
                                         <th className="px-4 py-3 text-right cursor-pointer hover:bg-gray-100" onClick={() => handleSort('marketing')}>MARKETING <SortIcon column="marketing" /></th>
-                                        <th className="px-4 py-3 text-right cursor-pointer hover:bg-gray-100" onClick={() => handleSort('contribution')}>(PROFIT-E) <SortIcon column="contribution" /></th>
-                                        <th className="px-4 py-3 text-right cursor-pointer hover:bg-gray-100" onClick={() => handleSort('ebitda')}>EBITDA <SortIcon column="ebitda" /></th>
-                                        <th className="px-4 py-3 text-right cursor-pointer hover:bg-gray-100" onClick={() => handleSort('netProfit')}>NET PROFIT <SortIcon column="netProfit" /></th>
+                                        <th className="px-4 py-3 text-right cursor-pointer hover:bg-gray-100" onClick={() => handleSort('contribution')}>PROFIT A-Z <SortIcon column="contribution" /></th>
+                                        {/* <th className="px-4 py-3 text-right cursor-pointer hover:bg-gray-100" onClick={() => handleSort('ebitda')}>EBITDA <SortIcon column="ebitda" /></th> */}
+                                        <th className="px-4 py-3 text-right cursor-pointer hover:bg-gray-100" onClick={() => handleSort('netProfit')}>PROFIT AFTER-FARIT <SortIcon column="netProfit" /></th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-100">
                                     {sortedData.map((row) => (
-                                        <tr key={row.name} className={clsx("hover:bg-gray-50 transition-colors", row.name === heroTeam.name ? "bg-blue-50/30" : "")}>
-                                            <td className={clsx("px-4 py-3 font-medium", row.name === heroTeam.name ? "text-blue-700 font-bold" : "text-gray-900")}>
+                                        <tr key={row.name} className="hover:bg-gray-50 transition-colors">
+                                            <td className="px-4 py-3 font-medium text-gray-900">
                                                 {row.name}
                                             </td>
                                             <td className="px-4 py-3 text-right text-gray-600">
@@ -335,43 +336,6 @@ export function RegionalStrategyTable({ teams, region }: RegionalStrategyTablePr
                                                     } else { // Green for others
                                                         return (
                                                             <span className="bg-gradient-to-r from-green-600 via-green-400 to-green-600 bg-clip-text text-transparent font-extrabold animate-shimmer bg-[length:200%_auto]">
-                                                                {content}
-                                                            </span>
-                                                        );
-                                                    }
-                                                })()}
-                                            </td>
-                                            <td className="px-4 py-3 text-right font-bold">
-                                                {(() => {
-                                                    const val = row.ebitda;
-                                                    const absVal = Math.abs(val);
-                                                    const isSemanticallyNegative = val < 0;
-
-                                                    let content = "";
-                                                    if (absVal >= 1000000) content = `$${(absVal / 1000000).toFixed(1)}M`;
-                                                    else content = `$${(absVal / 1000).toFixed(0)}K`;
-
-                                                    if (isSemanticallyNegative) {
-                                                        return (
-                                                            <span className="bg-gradient-to-r from-red-600 via-red-400 to-red-600 bg-clip-text text-transparent font-extrabold animate-shimmer bg-[length:200%_auto]">
-                                                                -{content}
-                                                            </span>
-                                                        );
-                                                    } else if (absVal >= 1000000) {
-                                                        return (
-                                                            <span className="bg-gradient-to-r from-emerald-600 via-emerald-400 to-emerald-600 bg-clip-text text-transparent font-extrabold animate-shimmer bg-[length:200%_auto]">
-                                                                {content}
-                                                            </span>
-                                                        );
-                                                    } else if (absVal >= 100000) {
-                                                        return (
-                                                            <span className="bg-gradient-to-r from-yellow-600 via-yellow-400 to-yellow-600 bg-clip-text text-transparent font-extrabold animate-shimmer bg-[length:200%_auto]">
-                                                                {content}
-                                                            </span>
-                                                        );
-                                                    } else {
-                                                        return (
-                                                            <span className="bg-gradient-to-r from-purple-600 via-purple-400 to-purple-600 bg-clip-text text-transparent font-extrabold animate-shimmer bg-[length:200%_auto]">
                                                                 {content}
                                                             </span>
                                                         );

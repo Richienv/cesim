@@ -166,6 +166,7 @@ export const TRANSLATION_MAP: Record<string, string> = {
     "边际收益明细（按技术划分）, 千 USD, 美国": "Margin breakdown by tech, k USD, USA",
     "自身和外包生产": "In-house and contract manufacturing",
     "单位销售的成本总额": "Total costs of unit sold",
+    "位销售的成本总额": "Total costs of unit sold",
     "销售利润": "Gross profit",
     "边际收益明细（按技术划分）, 千 USD, 亚洲": "Margin breakdown by tech, k USD, Asia",
     "边际收益明细（按技术划分）, 千 USD, 欧洲": "Margin breakdown by tech, k USD, Europe",

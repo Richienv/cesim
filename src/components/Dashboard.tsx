@@ -23,6 +23,7 @@ import { TeamDetailView } from './views/TeamDetailView';
 
 interface DashboardProps {
     data: RoundData[];
+    onFileUpload: (files: File[]) => Promise<void>;
 }
 
 const TABS = [
@@ -38,7 +39,7 @@ const TABS = [
     { id: "Margins", label: "Margins", icon: TrendingUp },
 ];
 
-export function Dashboard({ data }: DashboardProps) {
+export function Dashboard({ data, onFileUpload }: DashboardProps) {
     const [activeTab, setActiveTab] = useState("Overview");
     const [selectedTeamForAnalysis, setSelectedTeamForAnalysis] = useState<string | undefined>(undefined);
     const [selectedTech, setSelectedTech] = useState("Tech 1");
@@ -1413,7 +1414,9 @@ export function Dashboard({ data }: DashboardProps) {
             )}
 
             {activeTab === "TeamAnalysis" && <TeamDetailView teams={teams} initialTeam={selectedTeamForAnalysis} />}
-            {activeTab === "Comparison" && <ComparisonView teams={teams} />}
+            {activeTab === "Comparison" && (
+                <ComparisonView teams={teams} roundData={data} onFileUpload={onFileUpload} />
+            )}
             {activeTab === "Financials" && <FinancialsView teams={teams} />}
             {activeTab === "Market" && <MarketView teams={teams} />}
             {activeTab === "Manufacturing" && <ManufacturingView teams={teams} />}

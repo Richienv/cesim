@@ -14,10 +14,10 @@ export function HiddenInsightsTable({ teams }: HiddenInsightsTableProps) {
     const [sortKey, setSortKey] = useState<SortKey>('factories');
     const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
 
-    // 1. Identify Momentum or Target Team
-    const heroTeam = teams.find(t => t.name === 'Momentum') || teams.find(t => t.name === '多财多亿');
+    // 1. Identify Momentum or Target Team (fallback to first)
+    const heroTeam = teams.find(t => t.name === 'Momentum') || teams.find(t => t.name === '多财多亿') || teams[0];
 
-    if (!heroTeam) return null;
+    if (!heroTeam) return <div className="text-gray-500">No data for insights.</div>;
 
     const handleSort = (key: SortKey) => {
         if (sortKey === key) {
@@ -35,9 +35,15 @@ export function HiddenInsightsTable({ teams }: HiddenInsightsTableProps) {
 
     // Prepare data for sorting
     const tableData = teams.map(team => {
-        const factoriesUSA = team.manufacturing.usa.factories || 12;
-        const factoriesAsia = team.manufacturing.asia.factories || 0;
+        // Use Next Round Factories for "Strategic" insight
+        const factoriesUSA = team.manufacturing.usa.factoriesNext ?? (team.manufacturing.usa.factories || 12);
+        const factoriesAsia = team.manufacturing.asia.factoriesNext ?? (team.manufacturing.asia.factories || 0);
         const totalFactories = factoriesUSA + factoriesAsia;
+
+        // Calculate "Building" (Difference between Next and Current)
+        const currentUSA = team.manufacturing.usa.factories || 12;
+        const currentAsia = team.manufacturing.asia.factories || 0;
+        const building = totalFactories - (currentUSA + currentAsia);
 
         const inHouseUSA = Object.values(team.manufacturing.usa.inHouse).reduce((a, b) => a + b, 0);
         const inHouseAsia = Object.values(team.manufacturing.asia.inHouse).reduce((a, b) => a + b, 0);
@@ -60,6 +66,7 @@ export function HiddenInsightsTable({ teams }: HiddenInsightsTableProps) {
             factoriesUSA,
             factoriesAsia,
             totalFactories,
+            building,
             totalProduction,
             totalOutsourcing,
             taxRate,
@@ -149,18 +156,25 @@ export function HiddenInsightsTable({ teams }: HiddenInsightsTableProps) {
                         </thead>
                         <tbody className="divide-y divide-gray-100">
                             {sortedData.map((row) => {
-                                const isHero = row.name === heroTeam.name;
-
                                 return (
-                                    <tr key={row.name} className={clsx("hover:bg-gray-50", isHero ? "bg-blue-50/30" : "")}>
-                                        <td className={clsx("px-6 py-4 font-medium", isHero ? "text-blue-700 font-bold" : "text-gray-900")}>
+                                    <tr key={row.name} className="hover:bg-gray-50">
+                                        <td className="px-6 py-4 font-medium text-gray-900">
                                             {row.name}
                                         </td>
                                         <td className="px-6 py-4 text-right text-gray-700">
-                                            <span className="font-bold">{row.totalFactories}</span>
-                                            <span className="text-gray-400 text-xs ml-1">
-                                                ({row.factoriesUSA} US / {row.factoriesAsia} Asia)
-                                            </span>
+                                            <div className="flex flex-col items-end">
+                                                <div className="flex items-center gap-1">
+                                                    <span className="font-bold">{row.totalFactories}</span>
+                                                    {row.building > 0 && (
+                                                        <span className="text-emerald-600 text-xs font-bold bg-emerald-50 px-1.5 py-0.5 rounded-full border border-emerald-100 flex items-center">
+                                                            +{row.building}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                <span className="text-gray-400 text-xs">
+                                                    ({row.factoriesUSA} US / {row.factoriesAsia} Asia)
+                                                </span>
+                                            </div>
                                         </td>
                                         <td className="px-6 py-4 text-right text-gray-600">
                                             {(row.totalProduction / 1000).toFixed(1)}k

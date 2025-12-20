@@ -339,6 +339,18 @@ export const parseCesimData = (fileBuffer: ArrayBuffer): RoundData => {
                 continue;
             }
 
+            // Handle factories_next
+            if ((label === "USA" || label === "Asia") && currentSection === "factories_next") {
+                teams.forEach((team, idx) => {
+                    let val = row[idx + 1];
+                    if (typeof val === 'string') val = parseFloat(val.replace(/,/g, ''));
+                    if (typeof val === 'number' && !isNaN(val)) {
+                        team.manufacturing[currentRegion as "usa" | "asia"].factoriesNext = val;
+                    }
+                });
+                continue;
+            }
+
             if (label === "USA" || label === "Asia" || label === "Europe") {
                 currentRegion = label.toLowerCase();
 

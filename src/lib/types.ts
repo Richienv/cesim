@@ -18,6 +18,7 @@ export interface RegionManufacturing {
     capacityUsage?: Record<string, number>;
     productionCost?: Record<string, number>;
     factories?: number;
+    factoriesNext?: number;
 }
 
 export interface LogisticsData {

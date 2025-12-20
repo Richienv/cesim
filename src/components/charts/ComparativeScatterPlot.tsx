@@ -21,7 +21,7 @@ interface ComparativeScatterPlotProps {
     xFormatter?: (val: number) => string;
     yFormatter?: (val: number) => string;
     highlightTeam?: string;
-    focusedTeam?: string | null;
+    focusedTeams?: string[];
     onTeamClick?: (team: string) => void;
 }
 
@@ -33,7 +33,7 @@ export function ComparativeScatterPlot({
     xFormatter = (val) => val.toString(),
     yFormatter = (val) => val.toString(),
     highlightTeam,
-    focusedTeam,
+    focusedTeams = [],
     onTeamClick
 }: ComparativeScatterPlotProps) {
 
@@ -130,19 +130,20 @@ export function ComparativeScatterPlot({
                                 return null;
                             }}
                         />
-                        <Scatter name={title} data={validData}>
+                        <Scatter name={title} data={validData} shape="circle">
                             {validData.map((entry, index) => {
-                                const isFocused = focusedTeam === entry.name;
-                                const isDimmed = focusedTeam && !isFocused;
+                                const isFocused = focusedTeams.length > 0 ? focusedTeams.includes(entry.name) : false;
+                                const isDimmed = focusedTeams.length > 0 && !isFocused;
                                 return (
                                     <Cell
                                         key={`cell-${index}`}
                                         fill={entry.fill || '#94a3b8'}
+                                        r={isFocused ? 8 : 5}
                                         stroke="#fff"
-                                        strokeWidth={isFocused ? 3 : 2}
-                                        fillOpacity={isDimmed ? 0.15 : 1}
-                                        strokeOpacity={isDimmed ? 0.15 : 1}
-                                        className="transition-all duration-300 cursor-pointer hover:opacity-100"
+                                        strokeWidth={isFocused ? 2 : 1}
+                                        fillOpacity={isDimmed ? 0.2 : 1}
+                                        strokeOpacity={isDimmed ? 0.2 : 1}
+                                        className="transition-all duration-300 cursor-pointer"
                                         onClick={() => handleTeamClick(entry.name)}
                                     />
                                 );
@@ -155,15 +156,15 @@ export function ComparativeScatterPlot({
             {/* Custom Legend */}
             <div className="mt-4 flex flex-wrap justify-center gap-x-4 gap-y-2 px-2 border-t border-gray-50 pt-3">
                 {legendItems.map((item) => {
-                    const isFocused = focusedTeam === item.name;
-                    const isDimmed = focusedTeam && !isFocused;
+                    const isFocused = focusedTeams.length > 0 ? focusedTeams.includes(item.name) : false;
+                    const isDimmed = focusedTeams.length > 0 && !isFocused;
                     return (
                         <div
                             key={item.name}
                             className={`flex items-center gap-1.5 cursor-pointer transition-opacity duration-300 ${isDimmed ? 'opacity-30' : 'opacity-100'}`}
                             onClick={() => handleTeamClick(item.name)}
                         >
-                            <div className={`w-2.5 h-2.5 rounded-full ring-1 ring-inset ring-black/10 ${isFocused ? 'ring-2 ring-offset-1 ring-offset-white ring-gray-400' : ''}`} style={{ backgroundColor: item.color }} />
+                            <div className={`w-3 h-3 rounded-full ring-1 ring-inset ring-black/10 transition-all ${isFocused ? 'ring-2 ring-offset-1 ring-offset-white ring-gray-400 scale-125' : ''}`} style={{ backgroundColor: item.color }} />
                             <span className={`text-[10px] font-medium truncate max-w-[80px] ${isFocused ? 'text-gray-900 font-bold' : 'text-gray-600'}`}>{item.name}</span>
                         </div>
                     );

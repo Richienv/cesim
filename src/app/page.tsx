@@ -100,7 +100,7 @@ export default function Home() {
                     )}
 
                     {data.length > 0 && (
-                        <Dashboard data={data} />
+                        <Dashboard data={data} onFileUpload={handleFilesSelected} />
                     )}
                 </div>
             </main>
